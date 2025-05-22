@@ -1,6 +1,42 @@
+import 'dart:async';
+import 'dart:math';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<FlSpot> chartData = [];
+  double btcPrice = 63000.00;
+  int _time = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startUpdatingData();
+  }
+
+  void _startUpdatingData() {
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      setState(() {
+        _time += 1;
+        btcPrice = 62000 + Random().nextDouble() * 2000; // Simulated price
+        chartData.add(FlSpot(_time.toDouble(), btcPrice));
+        if (chartData.length > 20) chartData.removeAt(0);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -44,11 +80,22 @@ class HomePage extends StatelessWidget {
                               color: Colors.grey[850],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Center(
-                              child: Text(
-                                '1H / 4H Chart\n(Placeholder)',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white70),
+                            padding: EdgeInsets.all(8),
+                            child: LineChart(
+                              LineChartData(
+                                backgroundColor: Colors.grey[850],
+                                gridData: FlGridData(show: false),
+                                titlesData: FlTitlesData(show: false),
+                                borderData: FlBorderData(show: false),
+                                lineBarsData: [
+                                  LineChartBarData(
+                                    spots: chartData,
+                                    isCurved: true,
+                                    color: Colors.orangeAccent,
+                                    barWidth: 2,
+                                    dotData: FlDotData(show: false),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -62,11 +109,11 @@ class HomePage extends StatelessWidget {
                               Icon(Icons.currency_bitcoin, size: 48, color: Colors.orangeAccent),
                               SizedBox(height: 10),
                               Text(
-                                '\$63,000.00',
+                                '\$${btcPrice.toStringAsFixed(2)}',
                                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'BTC/USD',
+                                'BTC Live Price',
                                 style: TextStyle(color: Colors.grey),
                               )
                             ],
