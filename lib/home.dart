@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('BTC Mining Dashboard'),
+          title: Text('BTC Mining'),
           backgroundColor: Colors.black,
         ),
         body: Padding(
@@ -197,16 +198,54 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[850],
+                          width: 120,
+                          height: 120,
+                          child: SfRadialGauge(
+                            axes: <RadialAxis>[
+                              RadialAxis(
+                                minimum: 0,
+                                maximum: 100,
+                                showLabels: false,
+                                showTicks: false,
+                                axisLineStyle: AxisLineStyle(
+                                  thickness: 0.15,
+                                  cornerStyle: CornerStyle.bothFlat,
+                                  color: Colors.grey[700],
+                                  thicknessUnit: GaugeSizeUnit.factor,
+                                ),
+                                pointers: <GaugePointer>[
+                                  NeedlePointer(
+                                    value: 35,
+                                    enableAnimation: true,
+                                    animationDuration: 800,
+                                    needleLength: 0.8,
+                                    lengthUnit: GaugeSizeUnit.factor,
+                                    needleStartWidth: 0,
+                                    needleEndWidth: 4,
+                                    needleColor: Colors.orangeAccent,
+                                    knobStyle: KnobStyle(
+                                      color: Colors.black,
+                                      borderColor: Colors.orangeAccent,
+                                      borderWidth: 2,
+                                      sizeUnit: GaugeSizeUnit.logicalPixel,
+                                      knobRadius: 8,
+                                    ),
+                                  ),
+                                ],
+                                ranges: <GaugeRange>[
+                                  GaugeRange(
+                                    startValue: 0,
+                                    endValue: 100,
+                                    color: Colors.orangeAccent.withOpacity(0.5),
+                                    startWidth: 0.15,
+                                    endWidth: 0.15,
+                                    sizeUnit: GaugeSizeUnit.factor,
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
-                          child: Center(
-                            child: Text('Speed\nMeter', textAlign: TextAlign.center),
-                          ),
-                        )
+                        ),
                       ],
                     ),
                   ),
