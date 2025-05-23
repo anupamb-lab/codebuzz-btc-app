@@ -12,9 +12,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BTC Mining',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: Color(0xFFFEA726),
+        cardColor: Color.fromARGB(255, 7, 28, 71),
+        textTheme: ThemeData.dark().textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFFFC107),
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          selectedItemColor: Color(0xFFFF9800),
+          unselectedItemColor: Colors.grey,
+        ),
       ),
       home: HomePage(),
     );

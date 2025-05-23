@@ -69,6 +69,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   elevation: 8,
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     height: 200,
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -78,13 +82,13 @@ class _HomePageState extends State<HomePage> {
                           flex: 2,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey[850],
+                              color: Color.fromARGB(255,26,54,102),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             padding: EdgeInsets.all(8),
                             child: LineChart(
                               LineChartData(
-                                backgroundColor: Colors.grey[850],
+                                backgroundColor: Color.fromARGB(255,26,54,102),
                                 gridData: FlGridData(show: false),
                                 titlesData: FlTitlesData(show: false),
                                 borderData: FlBorderData(show: false),
@@ -92,7 +96,14 @@ class _HomePageState extends State<HomePage> {
                                   LineChartBarData(
                                     spots: chartData,
                                     isCurved: true,
-                                    color: Colors.orangeAccent,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFFFF8826),
+                                        Color(0xFFE71010),
+                                        Color(0xFFFF8826), 
+                                      ],
+                                      stops: [0.0, 0.5, 1.0],
+                                    ),
                                     barWidth: 2,
                                     dotData: FlDotData(show: false),
                                   ),
@@ -135,6 +146,10 @@ class _HomePageState extends State<HomePage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         elevation: 6,
                         child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 44, 44, 44),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           height: 80,
                           alignment: Alignment.center,
                           child: Column(
@@ -144,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(height: 4),
                               Text(
                                 '0.0000000000',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green[400]),
                               )
                             ],
                           ),
@@ -157,6 +172,10 @@ class _HomePageState extends State<HomePage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         elevation: 6,
                         child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 44, 44, 44),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           height: 80,
                           alignment: Alignment.center,
                           child: Column(
@@ -166,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(height: 4),
                               Text(
                                 '0.0000000000',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green[400]),
                               )
                             ],
                           ),
@@ -183,6 +202,10 @@ class _HomePageState extends State<HomePage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 6,
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     height: 120,
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -198,6 +221,10 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           width: 120,
                           height: 120,
                           child: SfRadialGauge(
@@ -236,10 +263,13 @@ class _HomePageState extends State<HomePage> {
                                   GaugeRange(
                                     startValue: 0,
                                     endValue: 100,
-                                    color: Colors.orangeAccent.withOpacity(0.5),
                                     startWidth: 0.15,
                                     endWidth: 0.15,
                                     sizeUnit: GaugeSizeUnit.factor,
+                                    gradient: SweepGradient(
+                                      colors: [const Color.fromARGB(255, 255, 136, 38), const Color.fromARGB(255, 231, 16, 16)],
+                                      stops: [0.25, 1.0],
+                                    ),
                                   )
                                 ],
                               ),
@@ -255,6 +285,7 @@ class _HomePageState extends State<HomePage> {
 
                 // Hashpower Claim Options
                 Card(
+                  color: Theme.of(context).cardColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 6,
                   child: Padding(
@@ -269,6 +300,9 @@ class _HomePageState extends State<HomePage> {
                             ElevatedButton(
                               onPressed: () {},
                               child: Text('Claim'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 255, 186, 2)
+                              )
                             ),
                           ],
                         ),
@@ -281,6 +315,9 @@ class _HomePageState extends State<HomePage> {
                             ElevatedButton(
                               onPressed: () {},
                               child: Text('Watch'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 255, 186, 2)
+                              )
                             ),
                           ],
                         ),
@@ -294,6 +331,9 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () {
                               },
                               child: Text('Buy'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 255, 186, 2)
+                              ),
                             ),
                           ],
                         ),
