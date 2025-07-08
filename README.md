@@ -1,2 +1,1 @@
-# bitcoin_mining
-A Mobile App to buy hashpower for mining BTC
+# fake_mining_app_1

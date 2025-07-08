@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BitcoinMining</string>
+
+    <!-- Facebook App ID - Replace with your actual Facebook App ID -->
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_client_token">YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
+
+    <!-- Google Web Client ID - Replace with your actual Google Web Client ID -->
+    <string name="google_web_client_id">YOUR_GOOGLE_WEB_CLIENT_ID</string>
+</resources>

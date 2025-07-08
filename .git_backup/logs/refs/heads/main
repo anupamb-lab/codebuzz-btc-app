@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 ae16de31a2231295490b4fb9097d81dc385b8668 vaibhav_xi <vaibhav28890@gmail.com> 1751816681 +0530	clone: from github.com:growthdev1/fake_mining_app.git
+ae16de31a2231295490b4fb9097d81dc385b8668 de97378e0352e4fff2e7399bc0c6353aa5e3bac6 vaibhav_xi <vaibhav28890@gmail.com> 1751822937 +0530	commit: First Update | Home Screen and Bottom Nav
+de97378e0352e4fff2e7399bc0c6353aa5e3bac6 2f9b73ea20c9d556ebd12079c63895a21fb926b9 vaibhav_xi <vaibhav28890@gmail.com> 1751822944 +0530	pull --tags origin main: Merge made by the 'ort' strategy.
+2f9b73ea20c9d556ebd12079c63895a21fb926b9 ea565b10437bd7f5592c7e220eb6d05374616eef vaibhav_xi <vaibhav28890@gmail.com> 1751823269 +0530	commit: Add icons to gradle
+ea565b10437bd7f5592c7e220eb6d05374616eef f0fa0d00adefa2ad8d9b5065d3f188ca14444928 vaibhav_xi <vaibhav28890@gmail.com> 1751881558 +0530	pull --tags origin main: Fast-forward
+f0fa0d00adefa2ad8d9b5065d3f188ca14444928 17fa86fd62a70d8a06edde9573a0d2a22a9a0d81 vaibhav_xi <vaibhav28890@gmail.com> 1751886617 +0530	pull --tags origin main: Fast-forward
+17fa86fd62a70d8a06edde9573a0d2a22a9a0d81 747099472bb824b3047f561a22ab8abd953c9a42 vaibhav_xi <vaibhav28890@gmail.com> 1751922231 +0530	commit: Login Screen UI fix
+747099472bb824b3047f561a22ab8abd953c9a42 4704af7154c37708300159434c35a70df91854f5 vaibhav_xi <vaibhav28890@gmail.com> 1751922661 +0530	commit: Updated Icons
+4704af7154c37708300159434c35a70df91854f5 623b143cfee5570e646b76329dd029f171b8c436 vaibhav_xi <vaibhav28890@gmail.com> 1751961829 +0530	pull --tags origin main: Fast-forward
+623b143cfee5570e646b76329dd029f171b8c436 211b44dafa4f337b5af0b5db514f1b4689df06d9 vaibhav_xi <vaibhav28890@gmail.com> 1751967016 +0530	commit: App Name Change
+211b44dafa4f337b5af0b5db514f1b4689df06d9 1f066760f1ef27a49afd989a977bcfb03e99a543 vaibhav_xi <vaibhav28890@gmail.com> 1751967309 +0530	commit: assets change
