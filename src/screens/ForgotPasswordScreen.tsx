@@ -7,22 +7,28 @@ import {
   StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
-  Platform,ImageBackground,
+  Platform,
+  ScrollView,
+  ImageBackground,
   Alert,
   StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 
 interface ForgotPasswordScreenProps {}
 
+type ForgotPasswordScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ForgotPassword'>;
+
 const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,7 +68,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('OTPVerification' as never, { email }),
+            onPress: () => navigation.navigate('OTPVerification', { email, type: 'forgot_password' }),
           },
         ]
       );
@@ -87,7 +93,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('OTPVerification' as never, { email }),
+            onPress: () => navigation.navigate('OTPVerification', { email, type: 'forgot_password' }),
           },
         ]
       );
@@ -107,7 +113,13 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
         >
-          <View style={styles.content}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <View style={styles.content}>
             {/* icon */}
             {/* <View style={styles.logoContainer}>
               <View style={styles.bitcoinLogo}>
@@ -205,6 +217,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
                          <Text style={styles.footerText}>Bitcoin Mining</Text>
                        </View>
           </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ImageBackground>
@@ -266,6 +279,9 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
     flex: 1,

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1041648646860",
+    "project_id": "bitcoinmining-4c1c7",
+    "storage_bucket": "bitcoinmining-4c1c7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041648646860:android:bf2159a2f094381b30e069",
+        "android_client_info": {
+          "package_name": "com.mining.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1041648646860-vc882ffhfhf8irrr25ejcoud5l5hi8td.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mining.app",
+            "certificate_hash": "2375277f5c01d9a14bca119d6dadf103a4b72f45"
+          }
+        },
+        {
+          "client_id": "1041648646860-lmiast9jtve78qvnd1sfgsfkocoif2oa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBre4omjmBe1x5aD-nmIfwLMLID32kqZJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1041648646860-lmiast9jtve78qvnd1sfgsfkocoif2oa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,6 +3,16 @@ import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+// Generate unique referral code
+const generateReferralCode = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 const MONGODB_URI = 'mongodb+srv://growthdev1:Ji0LlqjCuFzlYP9s@cluster0.zgxt7d9.mongodb.net/fakeminingapp?retryWrites=true&w=majority&appName=Cluster0';
 const JWT_SECRET = 'your-super-secret-jwt-key-for-fake-mining-app-2024';
 
@@ -74,11 +84,24 @@ export default async function handler(req, res) {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    // Generate unique referral code
+    let referralCode;
+    let isUnique = false;
+
+    while (!isUnique) {
+      referralCode = generateReferralCode();
+      const existingUser = await users.findOne({ referralCode });
+      if (!existingUser) {
+        isUnique = true;
+      }
+    }
+
     // Create user
     const newUser = {
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
+      referralCode,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -102,6 +125,7 @@ export default async function handler(req, res) {
         name: newUser.name,
         email: newUser.email,
         isActive: newUser.isActive,
+        referralCode: newUser.referralCode,
         createdAt: newUser.createdAt
       }
     });

@@ -24,6 +24,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 import { Image } from 'react-native';
+import { useAuth } from '../auth/AuthProvider';
 const { width, height } = Dimensions.get('window');
 
 interface LoginScreenProps {}
@@ -34,6 +35,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -94,19 +96,36 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       setIsLoading(false);
 
       if (data.success) {
-        console.log("Data: ", data);
-        setTimeout(() => {
-          Alert.alert('Success', 'Login successful!', [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.replace('Main');
-              },
-            },
-          ]);
-        }, 100);
+        console.log("Login Success Data: ", data);
+
+        // Check if user's email is verified
+        if (data.user && data.user.emailVerified) {
+          // Email verified - authenticate user and go to referral screen
+          await login(data.token, data.user);
+          navigation.replace('ReferralScreen');
+        } else {
+          // Email not verified - go to TwofactorOTP (or dashboard based on your preference)
+          navigation.replace('TwofactorOTP', {
+            token: data.token,
+            user: data.user,
+          });
+        }
       } else {
-        Alert.alert('Error', data.message || 'Login failed');
+        console.log("Login Failed Data: ", data);
+
+        // Check if email verification is required (status 403)
+        if (data.emailVerified === false && data.user) {
+          console.log("Redirecting to email verification screen");
+          // Direct redirect to email verification screen without alert
+          navigation.replace('OTPVerification', {
+            email: email.toLowerCase(),
+            type: 'email_verification',
+            user: data.user,
+            fromLogin: true
+          });
+        } else {
+          Alert.alert('Error', data.message || 'Login failed');
+        }
       }
     } catch (error: any) {
       setIsLoading(false);
@@ -129,24 +148,53 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
     );
   };
 
-  const handleSocialLoginSuccess = (userData: any) => {
-    Alert.alert(
-      'Login Successful',
-      `Welcome ${userData.user?.name || 'User'}!`,
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Navigate to main app screen
-            navigation.replace('Main')
+  const handleSocialLoginSuccess = async (userData: any) => {
+    try {
+      // Authenticate user with the auth context
+      await login(userData.token, userData.user);
+
+      // Always navigate to referral screen after social login
+      Alert.alert(
+        'Login Successful',
+        `Welcome ${userData.user?.name || 'User'}!`,
+        [
+          {
+            text: 'Continue',
+            onPress: () => {
+              navigation.replace('ReferralScreen');
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    } catch (error) {
+      console.error('Social login success handler error:', error);
+      Alert.alert('Error', 'Failed to complete login. Please try again.');
+    }
   };
 
   const handleSocialLoginError = (error: string) => {
     Alert.alert('Social Login Error', error, [{ text: 'OK' }]);
+  };
+
+  const handleResendVerification = async (email: string) => {
+    try {
+      const data = await apiRequest(API_ENDPOINTS.RESEND_VERIFICATION, {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+
+      if (data.success) {
+        Alert.alert(
+          'Success',
+          'Verification email sent successfully. Please check your email.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert('Error', data.message || 'Failed to send verification email');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Network error. Please try again.');
+    }
   };
 
   return (
@@ -162,7 +210,13 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
         >
-          <View style={styles.content}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <View style={styles.content}>
             {/* Bitcoin Logo */}
             <View style={styles.logoContainer}>
               <View style={styles.bitcoinLogo}>
@@ -288,6 +342,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
               <Text style={styles.footerText}>Bitcoin Mining</Text>
             </View>
           </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ImageBackground>
@@ -361,6 +416,10 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    minHeight: Dimensions.get('window').height - 100,
   },
   content: {
     flex: 1,

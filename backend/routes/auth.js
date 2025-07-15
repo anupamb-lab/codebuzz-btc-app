@@ -7,7 +7,10 @@ const {
   forgotPassword,
   resetPassword,
   updatePasswordDirect,
-  logout
+  logout,
+  verifyEmail,
+  verifyEmailOTP,
+  resendEmailVerification
 } = require('../controllers/authController');
 
 const auth = require('../middleware/auth');
@@ -21,6 +24,9 @@ router.post('/social-login', socialLogin);
 router.post('/forgotpassword', forgotPassword);
 router.put('/resetpassword/:resettoken', resetPassword);
 router.post('/update-password-direct', updatePasswordDirect); // For testing purposes
+router.get('/verify-email/:token', verifyEmail);
+router.get('/verify-email-otp/:otp/:email', verifyEmailOTP);
+router.post('/resend-verification', resendEmailVerification);
 
 // Protected routes
 router.get('/me', auth, getMe);

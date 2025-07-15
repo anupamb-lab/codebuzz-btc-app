@@ -3,6 +3,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
+// Generate unique referral code
+const generateReferralCode = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -52,19 +62,48 @@ const userSchema = new mongoose.Schema({
   },
   lastLogin: {
     type: Date
-  }
+  },
+  referralCode: {
+    type: String,
+    unique: true,
+    required: false
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: String,
+  emailVerificationExpire: Date,
+  emailVerificationOTP: String,
+  emailVerificationOTPExpire: Date
 }, {
   timestamps: true
 });
 
-// Encrypt password using bcrypt
+// Encrypt password using bcrypt and generate referral code
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    return next();
+  // Hash password if modified
+  if (this.isModified('password')) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  // Generate unique referral code for new users
+  if (this.isNew && !this.referralCode) {
+    let isUnique = false;
+    let referralCode;
+
+    while (!isUnique) {
+      referralCode = generateReferralCode();
+      const existingUser = await mongoose.model('User').findOne({ referralCode });
+      if (!existingUser) {
+        isUnique = true;
+      }
+    }
+
+    this.referralCode = referralCode;
+  }
+
   next();
 });
 
@@ -95,6 +134,35 @@ userSchema.methods.getResetPasswordToken = function() {
   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;
+};
+
+// Generate and hash email verification token
+userSchema.methods.getEmailVerificationToken = function() {
+  // Generate token
+  const verificationToken = crypto.randomBytes(20).toString('hex');
+
+  // Hash token and set to emailVerificationToken field
+  this.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+
+  // Set expire (24 hours)
+  this.emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+  return verificationToken;
+};
+
+// Generate email verification OTP
+userSchema.methods.generateEmailVerificationOTP = function() {
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Set OTP and expiry (10 minutes)
+  this.emailVerificationOTP = otp;
+  this.emailVerificationOTPExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return otp;
 };
 
 module.exports = mongoose.model('User', userSchema);

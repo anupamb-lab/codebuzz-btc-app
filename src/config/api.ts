@@ -21,11 +21,15 @@ export const API_BASE_URL = PRODUCTION_API_URL;
 export const API_ENDPOINTS = {
   // Authentication
   LOGIN: '/api/auth/login',
+  LOGOUT: '/api/auth/logout',
   REGISTER: '/api/auth/register',
   SOCIAL_LOGIN: '/api/auth/social-login',
   ME: '/api/auth/me',
   FORGOT_PASSWORD: '/api/auth/forgotpassword',
   RESET_PASSWORD: '/api/auth/resetpassword', // PUT /api/auth/resetpassword/:resettoken
+  VERIFY_EMAIL: '/api/auth/verify-email', // GET /api/auth/verify-email/:token
+  VERIFY_EMAIL_OTP: '/api/auth/verify-email-otp', // GET /api/auth/verify-email-otp/:otp
+  RESEND_VERIFICATION: '/api/auth/resend-verification',
   
   // Health Check
   HEALTH: '/api/health',
@@ -78,6 +82,12 @@ export const apiRequest = async (
     });
 
     const data = await response.json();
+
+    // Special handling for 403 status (email verification required)
+    if (response.status === 403 && data.emailVerified === false) {
+      console.log('Email verification required - returning data for handling');
+      return data; // Return data instead of throwing error
+    }
 
     if (!response.ok) {
       const errorMessage = data.message || `HTTP error! status: ${response.status}`;

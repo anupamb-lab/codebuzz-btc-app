@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+// App.tsx
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar, useColorScheme } from 'react-native';
+
+import { AuthProvider, useAuth } from './src/auth/AuthProvider';
+import { initializeFacebookSDK, initializeGoogleSignIn } from './src/services/socialAuth';
 
 // Screens
 import SplashScreen from './src/screens/SplashScreen';
@@ -11,34 +15,76 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import OTPVerificationScreen from './src/screens/OTPVerificationScreen';
 import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 import MainTabNavigator from './src/navigation/MainTabNavigator';
-
-export type RootStackParamList = {
-  Splash: undefined;
-  Login: undefined;
-  SignUp: undefined;
-  ForgotPassword: undefined;
-  OTPVerification: undefined;
-  ChangePassword: undefined;
-  Main: undefined;
-};
+import TwofactorOTP from './src/screens/TwofactorOTP';
+import ReferralScreen from './src/screens/referral_code';
+import { RootStackParamList } from './src/components/types';
+import AllActivity from './src/screens/AllActivity';
+import InternalReferralScreen from './src/screens/MainReferralScreen';
+import WalletScreen from './src/screens/Wallet';
+import DepositScreen from './src/screens/DepositScreen';
+import WithdrawScreen from './src/screens/WithdrawScreen';
+import MyProfileScreen from './src/screens/MyProfileScreen';
+import FAQScreen from './src/screens/FAQScreen';
+import SupportScreen from './src/screens/SupportScreen';
+import StoreScreen from './src/screens/Store';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
-export default function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const AppNavigator = () => {
+  const { authenticated, loading } = useAuth();
+
+  if (loading) {
+    return <SplashScreen />;
+  }
 
   return (
-    <NavigationContainer>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <RootStack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name="Splash" component={SplashScreen} />
-        <RootStack.Screen name="Login" component={LoginScreen} />
-        <RootStack.Screen name="SignUp" component={SignUpScreen} />
-        <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <RootStack.Screen name="OTPVerification" component={OTPVerificationScreen} />
-        <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      {authenticated ? (
+        <>
         <RootStack.Screen name="Main" component={MainTabNavigator} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+        <RootStack.Screen name="MyProfileScreen" component={MyProfileScreen} />
+        <RootStack.Screen name="AllActivity" component={AllActivity} />
+        <RootStack.Screen name="InternalReferral" component={InternalReferralScreen} />
+        <RootStack.Screen name="Store" component={StoreScreen} />
+        <RootStack.Screen name="Wallet" component={WalletScreen} />
+        <RootStack.Screen name="DepositScreen" component={DepositScreen} />
+        <RootStack.Screen name="WithdrawScreen" component={WithdrawScreen} />
+        <RootStack.Screen name="FAQScreen" component={FAQScreen} />
+        <RootStack.Screen name="SupportScreen" component={SupportScreen} />
+        </>
+      ) : (
+        <>
+          <RootStack.Screen name="Login" component={LoginScreen} />
+          <RootStack.Screen name="SignUp" component={SignUpScreen} />
+          <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <RootStack.Screen name="OTPVerification" component={OTPVerificationScreen} />
+          <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+          <RootStack.Screen name="TwofactorOTP" component={TwofactorOTP} />
+          <RootStack.Screen name="ReferralScreen" component={ReferralScreen} />
+          <RootStack.Screen name="Main" component={MainTabNavigator} />
+        </>
+      )}
+    </RootStack.Navigator>
   );
-}
+};
+
+const App = () => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    // Initialize social SDKs
+    initializeFacebookSDK();
+    initializeGoogleSignIn();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <NavigationContainer>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <AppNavigator />
+      </NavigationContainer>
+    </AuthProvider>
+  );
+};
+
+export default App;

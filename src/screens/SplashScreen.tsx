@@ -71,7 +71,7 @@ const SplashScreen: React.FC = () => {
                     </View>
 
         <Animated.Text style={[styles.appName, { opacity: fadeAnim }]}>
-          BB Mining
+          Bitcoin Mining
         </Animated.Text>
 
         <Animated.Text style={[styles.tagline, { opacity: fadeAnim }]}>

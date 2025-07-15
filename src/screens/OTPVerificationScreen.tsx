@@ -7,58 +7,98 @@ import {
   StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
+  ScrollView,
   ImageBackground,
   Platform,
   Alert,
   StatusBar,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
+import { useAuth } from '../auth/AuthProvider';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import { Image } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 
 interface OTPVerificationScreenProps {}
 
+type OTPVerificationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'OTPVerification'>;
+type OTPVerificationScreenRouteProp = RouteProp<RootStackParamList, 'OTPVerification'>;
+
 const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  const [otp, setOtp] = useState('');
    const [otpError, setOtpError] = useState('');
    const [isLoading, setIsLoading] = useState(false);
-   const navigation = useNavigation();
-   const route = useRoute();
-   const { email } = route.params as { email: string };
+   const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
+   const route = useRoute<OTPVerificationScreenRouteProp>();
+   const { email, type, user, token, fromLogin } = route.params;
+  const { login } = useAuth();
  
    const handleVerifyOTP = async () => {
      // Reset errors
      setOtpError('');
- 
+
      // Validate OTP
      if (!otp) {
-       setOtpError('Reset token is required');
+       setOtpError(type === 'email_verification' ? 'Verification code is required' : 'Reset token is required');
        return;
      }
- 
+
+     // TEMPORARY: Accept 4-digit OTP for development
      if (otp.length < 4) {
-       setOtpError('Please enter a valid reset token');
+       setOtpError(type === 'email_verification' ? 'Please enter a valid 4-digit OTP (Development Mode)' : 'Please enter a valid reset token');
        return;
      }
- 
+
      setIsLoading(true);
- 
+
      try {
-       // For demo purposes, we'll treat the OTP as a reset token
-       // In a real implementation, the user would get this token from their email
-       // We'll pass this token to the ChangePassword screen
- 
-       // Simulate API delay
-       await new Promise(resolve => setTimeout(resolve, 1000));
- 
-       Alert.alert('Token Verified', 'Reset token verified successfully', [
-         {
-           text: 'OK',
-           onPress: () => navigation.navigate('ChangePassword' as never, { email, resetToken: otp }),
-         },
-       ]);
+       if (type === 'email_verification') {
+         // Email verification flow - actual API call
+         try {
+           const data = await apiRequest(`${API_ENDPOINTS.VERIFY_EMAIL_OTP}/${otp}/${encodeURIComponent(email)}`, {
+             method: 'GET',
+           });
+
+           if (data.success) {
+             Alert.alert('Email Verified', 'Your email has been verified successfully!', [
+               {
+                 text: 'OK',
+                 onPress: () => {
+                   console.log('Email verification success, navigating to ReferralScreen');
+                   console.log('User data:', user || data.user);
+                   console.log('Token:', token);
+                   console.log('FromLogin:', fromLogin);
+
+                   // Always redirect to ReferralScreen for both login and signup
+                   navigation.replace('ReferralScreen', {
+                     user: user || data.user,
+                     token: token || data.token || '',
+                     fromLogin: fromLogin || false
+                   });
+                 },
+               },
+             ]);
+           } else {
+             setOtpError(data.message || 'Invalid verification code');
+           }
+         } catch (error: any) {
+           setOtpError(error.message || 'Verification failed. Please try again.');
+         }
+       } else {
+         // Forgot password flow
+         await new Promise(resolve => setTimeout(resolve, 1000));
+
+         Alert.alert('Token Verified', 'Reset token verified successfully', [
+           {
+             text: 'OK',
+             onPress: () => navigation.navigate('ChangePassword', { email, resetToken: otp }),
+           },
+         ]);
+       }
      } catch (error) {
        Alert.alert('Error', 'Network error. Please try again.');
      } finally {
@@ -94,7 +134,13 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
            style={styles.keyboardAvoidingView}
          >
-           <View style={styles.content}>
+           <ScrollView
+             contentContainerStyle={styles.scrollContent}
+             showsVerticalScrollIndicator={false}
+             keyboardShouldPersistTaps="handled"
+             bounces={false}
+           >
+             <View style={styles.content}>
              {/* Logo */}
               <View style={styles.logoContainer}>
                                        <View style={styles.bitcoinLogo}>
@@ -108,9 +154,14 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  
              {/* Title */}
              <View style={styles.titleContainer}>
-               <Text style={styles.title}>VERIFY OTP</Text>
+               <Text style={styles.title}>
+                 {type === 'email_verification' ? 'VERIFY EMAIL (DEV MODE)' : 'VERIFY OTP'}
+               </Text>
                <Text style={styles.subtitle}>
-                 Check your email ({email}) for the reset password otp
+                 {type === 'email_verification'
+                   ? `Enter any 4-digit number (Development Mode)`
+                   : `Check your email (${email}) for the reset password otp`
+                 }
                </Text>
              </View>
 
@@ -139,7 +190,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
                                          />
                    <TextInput
                      style={styles.input}
-                     placeholder="OTP"
+                     placeholder={type === 'email_verification' ? '4-Digit OTP (Dev Mode)' : 'OTP'}
                      placeholderTextColor="#8a8a8a"
                      value={otp}
                      onChangeText={(text) => {
@@ -174,7 +225,9 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  
                {/* Resend OTP */}
                <View style={styles.resendContainer}>
-                 <Text style={styles.resendText}>Didn't receive the otp? </Text>
+                 <Text style={styles.resendText}>
+                   {type === 'email_verification' ? "Didn't receive the code? " : "Didn't receive the otp? "}
+                 </Text>
                  <TouchableOpacity onPress={handleResendOTP}>
                    <Text style={styles.resendLink}>Resend</Text>
                  </TouchableOpacity>
@@ -193,6 +246,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
                           <Text style={styles.footerText}>Bitcoin Mining</Text>
                         </View>
            </View>
+           </ScrollView>
          </KeyboardAvoidingView>
        </SafeAreaView>
      </ImageBackground>
@@ -254,6 +308,9 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
     flex: 1,
@@ -399,10 +456,15 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   inputIconImage: {
-  width: 20,
-  height: 20,
-  marginRight: 8,
-},
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  formBox: {
+    width: '100%',
+    borderRadius: 16,
+    padding: 16,
+  },
 });
 
 export default OTPVerificationScreen;

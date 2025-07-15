@@ -4,10 +4,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 // Import your actual screen components
 import HomeScreen from '../screens/HomeScreen';
-
-const WalletScreen = () => <></>;
-const StoreScreen = () => <></>;
-const ProfileScreen = () => <></>;
+import MyProfileScreen from '../screens/MyProfileScreen';
+import WalletScreen from '../screens/Wallet';
+import StoreScreen from '../screens/Store';
 
 export type MainTabParamList = {
   Home: undefined;
@@ -61,7 +60,7 @@ export default function MainTabNavigator() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={MyProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account-circle" color={color} size={size} />

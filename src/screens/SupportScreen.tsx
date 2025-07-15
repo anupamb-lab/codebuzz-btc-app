@@ -9,10 +9,12 @@ import {
   StatusBar,
   TextInput,
   Alert,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { Image } from 'react-native';
 
 const SupportScreen = ({ navigation }: any) => {
   const [formData, setFormData] = useState({
@@ -58,7 +60,7 @@ const SupportScreen = ({ navigation }: any) => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/support/contact', {
+      const response = await fetch('https://fake-mining-backend.onrender.com/api/support/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,31 +95,32 @@ const SupportScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+ <ImageBackground
+      source={require('../assets/images/bg_support.png')}
+      style={[styles.backgroundImage, { backgroundColor: '#0F172A' }]}
+      resizeMode="cover">
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
-      
+
+    <SafeAreaView style={styles.container}>      
+      <View style={styles.header}>
+              <Text style={styles.headerTitle}>SUPPORT</Text>
+              <View style={styles.placeholder} />
+            </View>
       <KeyboardAvoidingView 
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>SUPPORT</Text>
-          <View style={styles.placeholder} />
-        </View>
 
         {/* Support Icon */}
-        <View style={styles.iconContainer}>
-          <View style={styles.iconBackground}>
-            <Text style={styles.iconText}>📧</Text>
-          </View>
-        </View>
+                    <View style={styles.logoContainer}>
+                      <View style={styles.supportLogo}>
+                        <Image
+                          source={require('../assets/images/icon_support.png')}
+                          style={styles.supportImage}
+                          resizeMode="contain"
+                        />
+                      </View>
+                    </View>
 
         {/* Form */}
         <ScrollView 
@@ -180,7 +183,7 @@ const SupportScreen = ({ navigation }: any) => {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={['#00d4ff', '#5b2c87']}
+              colors={['#6465F1', '#A755F7']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.submitGradient}
@@ -213,13 +216,13 @@ const SupportScreen = ({ navigation }: any) => {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
+     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
   },
   keyboardView: {
     flex: 1,
@@ -227,8 +230,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#2d2d44',
@@ -257,6 +259,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     marginVertical: 30,
+  },
+   backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   iconBackground: {
     width: 80,
@@ -316,9 +323,12 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
   submitButton: {
-    marginTop: 20,
-    borderRadius: 25,
+    marginTop: 5,
+    borderRadius: 10,
     overflow: 'hidden',
+    height: 48,
+    width: 150,
+    alignSelf: 'center',
   },
   submitButtonDisabled: {
     opacity: 0.6,
@@ -327,10 +337,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   submitButtonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
@@ -352,6 +363,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#00d4ff',
     borderRadius: 15,
   },
+  supportLogo: {
+    width: 64,
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+   supportImage: {
+    width: '100%',
+    height: '100%',
+    transform: [{ rotate: '3deg' }],
+  },
+   logoContainer: {
+    alignItems: 'center',
+    marginTop: 75,
+  },
+
 });
 
 export default SupportScreen;

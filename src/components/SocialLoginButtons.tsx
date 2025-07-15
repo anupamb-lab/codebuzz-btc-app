@@ -17,6 +17,7 @@ import {
   signInWithGoogle,
   signInWithFacebook,
   signInWithLinkedIn,
+  signInWithTelegram,
 } from '../services/socialAuth';
 
 interface SocialLoginButtonsProps {
@@ -34,10 +35,12 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     google: boolean;
     facebook: boolean;
     linkedin: boolean;
+    telegram: boolean;
   }>({
     google: false,
     facebook: false,
     linkedin: false,
+    telegram: false,
   });
 
   const handleGoogleSignIn = async () => {
@@ -70,7 +73,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
   const handleLinkedInSignIn = async () => {
     if (disabled) return;
-    
+
     setLoading(prev => ({ ...prev, linkedin: true }));
     try {
       const result = await signInWithLinkedIn();
@@ -79,6 +82,20 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       onError(error.message);
     } finally {
       setLoading(prev => ({ ...prev, linkedin: false }));
+    }
+  };
+
+  const handleTelegramSignIn = async () => {
+    if (disabled) return;
+
+    setLoading(prev => ({ ...prev, telegram: true }));
+    try {
+      const result = await signInWithTelegram();
+      onSuccess(result);
+    } catch (error: any) {
+      onError(error.message);
+    } finally {
+      setLoading(prev => ({ ...prev, telegram: false }));
     }
   };
 
@@ -136,10 +153,10 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             styles.telegramButton,
             disabled && styles.disabledButton,
           ]}
-          onPress={handleLinkedInSignIn}
-          disabled={disabled || loading.linkedin}
+          onPress={handleTelegramSignIn}
+          disabled={disabled || loading.telegram}
         >
-          {loading.linkedin ? (
+          {loading.telegram ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Image

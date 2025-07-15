@@ -5,10 +5,12 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ImageBackground,
   SafeAreaView,
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { Image } from 'react-native';
 
 interface FAQItem {
   id: number;
@@ -96,27 +98,32 @@ const FAQScreen = ({ navigation }: any) => {
   };
 
   return (
+     <ImageBackground
+          source={require('../assets/images/bg_faq.png')}
+          style={[styles.backgroundImage, { backgroundColor: '#0F172A' }]}
+          resizeMode="cover">
+          <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>FAQ</Text>
         <View style={styles.placeholder} />
       </View>
 
       {/* FAQ Icon */}
-      <View style={styles.iconContainer}>
-        <View style={styles.iconBackground}>
-          <Text style={styles.iconText}>FAQ</Text>
-        </View>
-      </View>
+   
+                         <View style={styles.logoContainer}>
+                           <View style={styles.supportLogo}>
+                             <Image
+                               source={require('../assets/images/icon_faq.png')}
+                               style={styles.supportImage}
+                               resizeMode="contain"
+                             />
+                           </View>
+                         </View>
+     
+             {/* Form */}
 
       {/* FAQ List */}
       <ScrollView 
@@ -148,18 +155,18 @@ const FAQScreen = ({ navigation }: any) => {
         ))}
       </View>
     </SafeAreaView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
@@ -275,6 +282,27 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#00d4ff',
     transform: [{ rotate: '45deg' }],
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+   supportLogo: {
+    width: 64,
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+   supportImage: {
+    width: '100%',
+    height: '100%',
+    transform: [{ rotate: '3deg' }],
+  },
+   logoContainer: {
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 20,
   },
 });
 

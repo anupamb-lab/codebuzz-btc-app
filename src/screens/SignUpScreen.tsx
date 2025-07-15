@@ -8,18 +8,22 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-
+  ScrollView,
   ImageBackground,
   Alert,
   StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import SocialLoginButtons from '../components/SocialLoginButtons';
 import { Image } from 'react-native';
 
 interface SignUpScreenProps {}
+
+type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
 const SignUpScreen: React.FC<SignUpScreenProps> = () => {
   const [name, setName] = useState('');
@@ -29,7 +33,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const navigation = useNavigation();
+    const navigation = useNavigation<SignUpScreenNavigationProp>();
   
     const validateEmail = (email: string): boolean => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,10 +99,15 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
         setIsLoading(false);
   
         if (data.success) {
-          Alert.alert('Success', 'Account created successfully! Please login.', [
+          Alert.alert('Success', 'Account created successfully! Please verify your email.', [
             {
               text: 'OK',
-              onPress: () => navigation.navigate('Login' as never),
+              onPress: () => navigation.navigate('OTPVerification', {
+                email: email.toLowerCase(),
+                type: 'email_verification',
+                user: data.user,
+                token: data.token
+              }),
             },
           ]);
         } else {
@@ -110,14 +119,30 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
       }
     };
   
-    const handleSocialSignUpSuccess = (userData: any) => {
-      console.log('Social Sign Up Success:', userData);
-      Alert.alert('Success', 'Account created successfully! Please login.', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Login' as never),
-        },
-      ]);
+    const handleSocialSignUpSuccess = async (userData: any) => {
+      try {
+        console.log('Social Sign Up Success:', userData);
+
+        // Authenticate user with the auth context
+        await login(userData.token, userData.user);
+
+        // Always navigate to referral screen after social signup
+        Alert.alert(
+          'Signup Successful',
+          `Welcome ${userData.user?.name || 'User'}! Your account has been created successfully.`,
+          [
+            {
+              text: 'Continue',
+              onPress: () => {
+                navigation.replace('ReferralScreen');
+              },
+            },
+          ]
+        );
+      } catch (error) {
+        console.error('Social signup success handler error:', error);
+        Alert.alert('Error', 'Failed to complete signup. Please try again.');
+      }
     };
   
     const handleSocialSignUpError = (error: string) => {
@@ -138,7 +163,13 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
         >
-          <View style={styles.content}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <View style={styles.content}>
             {/* Bitcoin Logo */}
             <View style={styles.logoContainer}>
               <View style={styles.bitcoinLogo}>
@@ -288,6 +319,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
               <Text style={styles.footerText}>Bitcoin Mining</Text>
             </View>
           </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ImageBackground>
@@ -361,6 +393,9 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
     flex: 1,

@@ -1,4 +1,4 @@
-package com.fakemining.app
+package com.mining.app
 
 import android.app.Application
 import com.facebook.react.PackageList

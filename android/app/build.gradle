@@ -78,9 +78,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.fakemining.app"
+    namespace "com.mining.app"
     defaultConfig {
-        applicationId "com.fakemining.app"
+        applicationId "com.mining.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -94,10 +94,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('fake-mining-release-key.keystore')
-            storePassword 'fakemining123'
-            keyAlias 'fake-mining-key'
-            keyPassword 'fakemining123'
+            storeFile file('bitcoinmining-release-key.keystore')
+            storePassword 'mining123'
+            keyAlias 'bitcoinmining-key-alias'
+            keyPassword 'mining123'
         }
     }
     buildTypes {
@@ -105,8 +105,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Using debug keystore for release build
-            signingConfig signingConfigs.debug
+            // Using release keystore for production build
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             debuggable false
@@ -114,9 +114,16 @@ android {
     }
 }
 
+project.ext.react = [
+  enableHermes: true,
+]
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    // Google Sign-in
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

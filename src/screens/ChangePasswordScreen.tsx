@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
+  ScrollView,
   ImageBackground,
   Platform,
   Alert,
@@ -147,7 +148,13 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
         >
-          <View style={styles.content}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <View style={styles.content}>
             {/* Logo */}
              <View style={styles.logoContainer}>
                           <View style={styles.bitcoinLogo}>
@@ -263,6 +270,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
                           <Text style={styles.footerText}>Bitcoin Mining</Text>
                         </View>
           </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ImageBackground>
@@ -324,6 +332,9 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
     flex: 1,

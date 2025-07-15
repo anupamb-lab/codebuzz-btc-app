@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,19 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { LineChart, Grid } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
+// import { LineChart, Grid } from 'react-native-svg-charts';
+// import * as shape from 'd3-shape';
+import { useAuth } from '../auth/AuthProvider';
+import { Sidebar } from '../components/Sidebar';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
 
 interface GradientButtonProps {
   icon?: string;
   text: string;
   fullWidth?: boolean;
+  onPress?: () => void;
 }
 
 interface StatCardProps {
@@ -31,6 +37,7 @@ interface InfoCardProps {
   icon: string;
   value: string;
   label: string;
+  onPress?: () => void;
 }
 
 interface ActionCardProps {
@@ -39,91 +46,118 @@ interface ActionCardProps {
 }
 
 const Page: React.FC = () => {
+  const { user } = useAuth();
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const data = [50, 10, 40, 95, 85, 91, 35];
 
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Page'>;
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.topBar}>
-        <Icon name="menu" size={30} color={'#fff'} />
-        <View style={styles.profileContainer}>
-          <Text style={styles.username}>Peter Doe</Text>
-          <Icon name="account-circle" size={40} color={'#9333EA'} />
+    <View style={{ flex: 1 }}>
+      <Sidebar visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
+
+      <ScrollView style={styles.container}>
+        <View style={styles.topBar}>
+          
+          <TouchableOpacity onPress={() => setSidebarVisible(true)}>
+            <Icon name="menu" size={30} color={'#fff'} />
+          </TouchableOpacity>
+
+          <View style={styles.profileContainer}>
+            <Text style={styles.username}>{user?.name}</Text>
+            <Icon name="account-circle" size={40} color={'#9333EA'} />
+          </View>
         </View>
-      </View>
 
-      <LinearGradient
-        colors={['#1A202C', '#2D3748']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.welcomeCard}
-      >
-        <Text style={styles.welcomeText}>Welcome back, Peter!</Text>
-        <Text style={styles.subText}>Your digital assets at glance.</Text>
-      </LinearGradient>
-
-      <View style={styles.buttonRow}>
-        <GradientButton icon="gift" text="Daily Rewards" />
-        <GradientButton icon="play-circle" text="Watch Videos" />
-      </View>
-      <GradientButtonB icon="credit-card-outline" text="Paid Plans" fullWidth />
-
-      <View style={styles.cardRow}>
-        <StatCard icon="currency-usd" value="$12.50" label="Daily Profit" />
-        <StatCard icon="chart-line" value="200 TH/s" label="Current Hashrate" />
-        <StatCard icon="speedometer" value="98%" label="Efficiency" />
-      </View>
-
-      <View style={styles.cardRow}>
-        <InfoCard icon="wallet" value="$0" label="Total Wallet Balance" />
-        <InfoCard icon="account-group" value="0" label="Total Referrals" />
-      </View>
-
-      <LinearGradient
-        colors={['#1A202C', '#2D3748']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.portfolioBox}
-      >
-        <Text style={styles.sectionTitle}>Portfolio Performance</Text>
-        <LineChart
-          style={styles.chart}
-          data={data}
-          svg={{ stroke: '#22D3EE', strokeWidth: 3, fill: 'rgba(34, 211, 238, 0.3)' }}
-          contentInset={{ top: 20, bottom: 20 }}
-          curve={shape.curveNatural}
+        <LinearGradient
+          colors={['#1A202C', '#2D3748']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.welcomeCard}
         >
-          <Grid svg={{ stroke: 'rgba(255,255,255,0.05)' }} />
-        </LineChart>
-        <View style={styles.filters}>
-          {['1D', '1W', '1M', '1Y', 'ALL'].map((filter) => (
-            <View key={filter} style={styles.filterBox}>
-              <Text style={styles.filterText}>{filter}</Text>
+          <Text style={styles.welcomeText}>Welcome back, {user?.name}!</Text>
+          <Text style={styles.subText}>Your digital assets at glance.</Text>
+        </LinearGradient>
+
+        <View style={styles.buttonRow}>
+          <GradientButton icon="gift" text="Daily Rewards" />
+          <GradientButton icon="play-circle" text="Watch Videos" />
+        </View>
+        <GradientButtonB icon="credit-card-outline" text="Paid Plans" fullWidth />
+
+        <View style={styles.cardRow}>
+          <StatCard icon="currency-usd" value="$12.50" label="Daily Profit" />
+          <StatCard icon="chart-line" value="200 TH/s" label="Current Hashrate" />
+          <StatCard icon="speedometer" value="98%" label="Efficiency" />
+        </View>
+
+        <View style={styles.cardRow}>
+          <InfoCard icon="wallet" value="$0" label="Total Wallet Balance" onPress={() => {
+            navigation.navigate('Wallet');
+          }}
+          />
+
+          <InfoCard icon="account-group" value="0" label="Total Referrals" onPress={() => {
+            navigation.navigate('InternalReferral');
+          }}/>
+        </View>
+
+        <LinearGradient
+          colors={['#1A202C', '#2D3748']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.portfolioBox}
+        >
+          <Text style={styles.sectionTitle}>Portfolio Performance</Text>
+          {/* Temporary placeholder for chart - will add back when SVG packages are fixed */}
+          <View style={styles.chart}>
+            <View style={styles.chartPlaceholder}>
+              <Icon name="chart-line" size={40} color="#22D3EE" />
+              <Text style={styles.chartPlaceholderText}>Portfolio Chart</Text>
+              <Text style={styles.chartPlaceholderSubtext}>Chart will be restored soon</Text>
+            </View>
+          </View>
+          <View style={styles.filters}>
+            {['1D', '1W', '1M', '1Y', 'ALL'].map((filter) => (
+              <View key={filter} style={styles.filterBox}>
+                <Text style={styles.filterText}>{filter}</Text>
+              </View>
+            ))}
+          </View>
+        </LinearGradient>
+
+        <View style={styles.cardRow}>
+          <ActionCard icon="cash-minus" label="Withdraw Funds" />
+          <ActionCard icon="cash-plus" label="Deposit Funds" />
+        </View>
+
+        <View style={styles.recentBox}>
+          <Text style={styles.sectionTitleRC}>Recent Activity</Text>
+
+          {[50.64, 850.64, 150.64, 920.64].map((value, index) => (
+            <View key={index} style={styles.transactionRow}>
+              <View>
+                <Text style={styles.transactionType}>Deposit</Text>
+                <Text style={styles.transactionCrypto}>0.001 BTC</Text>
+              </View>
+              <Text style={styles.transactionValue}>+${value.toFixed(2)}</Text>
             </View>
           ))}
+
+          <GradientButtonB text="View All Activity" 
+            fullWidth 
+            onPress={() => {
+
+              navigation.navigate('AllActivity');
+
+            }}
+          />
+          
         </View>
-      </LinearGradient>
-
-      <View style={styles.cardRow}>
-        <ActionCard icon="cash-minus" label="Withdraw Funds" />
-        <ActionCard icon="cash-plus" label="Deposit Funds" />
-      </View>
-
-      <View style={styles.recentBox}>
-        <Text style={styles.sectionTitleRC}>Recent Activity</Text>
-
-        {[50.64, 850.64, 150.64, 920.64].map((value, index) => (
-          <View key={index} style={styles.transactionRow}>
-            <View>
-              <Text style={styles.transactionType}>Deposit</Text>
-              <Text style={styles.transactionCrypto}>0.001 BTC</Text>
-            </View>
-            <Text style={styles.transactionValue}>+${value.toFixed(2)}</Text>
-          </View>
-        ))}
-
-        <GradientButtonB text="View All Activity" fullWidth />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -141,14 +175,14 @@ const GradientButton: React.FC<GradientButtonProps> = ({ icon, text }) => (
   </LinearGradient>
 );
 
-const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text }) => (
+const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress }) => (
   <LinearGradient
     colors={['#22D3EE', '#C084FC']}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 0 }}
     style={[styles.gradientButtonB, { width: '100%' }]}
   >
-    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8}  onPress={onPress}>
       {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>
@@ -163,12 +197,17 @@ const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color = '#22D3E
   </View>
 );
 
-const InfoCard: React.FC<InfoCardProps> = ({ icon, value, label }) => (
-  <View style={styles.infoCard}>
+
+const InfoCard: React.FC<InfoCardProps> = ({ icon, value, label, onPress }) => (
+  <TouchableOpacity
+    style={styles.infoCard}
+    onPress={onPress}
+    activeOpacity={onPress ? 0.7 : 1}
+  >
     <Icon name={icon} size={48} color="#0891B2" />
     <Text style={styles.infoValue}>{value}</Text>
     <Text style={styles.infoLabel}>{label}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 const ActionCard: React.FC<ActionCardProps> = ({ icon, label }) => (
@@ -323,6 +362,27 @@ const styles = StyleSheet.create({
   },
   chart: {
     height: 180,
+  },
+  chartPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(34, 211, 238, 0.1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 211, 238, 0.3)',
+    borderStyle: 'dashed',
+  },
+  chartPlaceholderText: {
+    color: '#22D3EE',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  chartPlaceholderSubtext: {
+    color: '#94A3B8',
+    fontSize: 12,
+    marginTop: 4,
   },
   filters: {
     flexDirection: 'row',
