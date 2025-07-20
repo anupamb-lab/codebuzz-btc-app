@@ -34,4 +34,5 @@ export type RootStackParamList = {
   DeleteAccount: undefined;
   NotificationScreen: undefined;
   Sidebar: undefined;
+  AchievementsScreen: undefined;
 };

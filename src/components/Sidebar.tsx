@@ -46,7 +46,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
               <Text style={styles.title}>Bitcoin Mining</Text>
             </View>
             {[
-                { label: 'Achievements', onPress: () => console.log('Achievements') },
+                { label: 'Achievements', onPress: () => {
+                  navigation.replace('AchievementsScreen');
+                } },
                 { label: 'Notifications', onPress: () => {
                   navigation.replace('NotificationScreen');
                 } },
@@ -57,9 +59,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
                 { label: 'Settings', onPress: () => {
                   navigation.replace('MyProfileScreen');
                 } },
-                { label: 'Help', onPress: () => console.log('Help') },
-                { label: 'Withdraw', onPress: () => console.log('Withdraw') },
-                { label: 'Deposit', onPress: () => console.log('Deposit') },
+                { label: 'Help', onPress: () => {
+                  navigation.replace('SupportScreen');
+                } },
                 { label: 'Logout', onPress: async () => {
                     console.log("Logout Initiated!!");
                     await logout();

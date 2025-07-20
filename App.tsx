@@ -31,6 +31,7 @@ import MakePaymentScreen from './src/screens/PaymentScreen';
 import CustomQuote from './src/screens/CustomQuote';
 import DeleteAccountScreen from './src/screens/DeleteAccount';
 import NotificationScreen from './src/screens/NotificationsScreen';
+import AchievementsScreen from './src/screens/AchievementsScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -59,6 +60,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="CustomQuote" component={CustomQuote} />
         <RootStack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
         <RootStack.Screen name="NotificationScreen" component={NotificationScreen} />
+        <RootStack.Screen name="AchievementsScreen" component={AchievementsScreen} />
         </>
       ) : (
         <>
