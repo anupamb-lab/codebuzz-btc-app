@@ -23,7 +23,7 @@ type SidebarProps = {
 
 export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
 
-  type SidebarNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+  type SidebarNavigationProp = StackNavigationProp<RootStackParamList, 'Sidebar'>;
 
   const navigation = useNavigation<SidebarNavigationProp>();
 
@@ -47,7 +47,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
             </View>
             {[
                 { label: 'Achievements', onPress: () => console.log('Achievements') },
-                { label: 'Notifications', onPress: () => console.log('Notifications') },
+                { label: 'Notifications', onPress: () => {
+                  navigation.replace('NotificationScreen');
+                } },
                 { label: 'Show Subscriptions', onPress: () => console.log('Subscriptions') },
                 { label: 'Delete Account', onPress: () => {
                   navigation.replace('DeleteAccount');

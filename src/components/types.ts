@@ -32,4 +32,6 @@ export type RootStackParamList = {
   MakePaymentScreen: {package_id: any; };
   CustomQuote: undefined;
   DeleteAccount: undefined;
+  NotificationScreen: undefined;
+  Sidebar: undefined;
 };
