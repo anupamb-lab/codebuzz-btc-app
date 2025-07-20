@@ -29,6 +29,7 @@ import SupportScreen from './src/screens/SupportScreen';
 import StoreScreen from './src/screens/Store';
 import MakePaymentScreen from './src/screens/PaymentScreen';
 import CustomQuote from './src/screens/CustomQuote';
+import DeleteAccountScreen from './src/screens/DeleteAccount';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -55,6 +56,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="SupportScreen" component={SupportScreen} />
         <RootStack.Screen name="MakePaymentScreen" component={MakePaymentScreen} />
         <RootStack.Screen name="CustomQuote" component={CustomQuote} />
+        <RootStack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
         </>
       ) : (
         <>

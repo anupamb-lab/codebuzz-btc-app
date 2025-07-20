@@ -49,7 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
                 { label: 'Achievements', onPress: () => console.log('Achievements') },
                 { label: 'Notifications', onPress: () => console.log('Notifications') },
                 { label: 'Show Subscriptions', onPress: () => console.log('Subscriptions') },
-                { label: 'Delete Account', onPress: () => console.log('Delete Account') },
+                { label: 'Delete Account', onPress: () => {
+                  navigation.replace('DeleteAccount');
+                } },
                 { label: 'Settings', onPress: () => {
                   navigation.replace('MyProfileScreen');
                 } },
