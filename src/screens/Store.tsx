@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const plans = [
   {
+    id: 1,
     name: 'Starter Miner Pack',
     hashrate: '10 TH/s',
     duration: '12 Months',
@@ -24,7 +25,8 @@ const plans = [
     price: '$99.00',
     color: '#06B6D4',
   },
-  {
+  { 
+    id: 2,
     name: 'Pro Miner Pack',
     hashrate: '50 TH/s',
     duration: '18 Months',
@@ -33,6 +35,7 @@ const plans = [
     color: '#C084FC',
   },
   {
+    id: 3,
     name: 'Enterprise Miner Pack',
     hashrate: '200 TH/s',
     duration: '24 Months',
@@ -47,6 +50,10 @@ const StoreScreen = () => {
     type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Store'>;
     
     const navigation = useNavigation<LoginScreenNavigationProp>();
+
+    const handlePurchase = (plan) => {
+      navigation.navigate('MakePaymentScreen', { package_id: plan.id });
+    };
 
   return (
     <View style={styles.container}>
@@ -75,17 +82,19 @@ const StoreScreen = () => {
         {/* Available Contracts */}
         <Text style={styles.sectionTitle}>Available Contracts</Text>
         {plans.map((plan, index) => (
-          <View key={index} style={styles.planCard}>
-            <View style={styles.planHeader}>
-              <MaterialIcon name="flash" color={plan.color} size={18} style={{ marginRight: 6 }} />
-              <Text style={styles.planTitle}>{plan.name}</Text>
-            </View>
-            <Text style={styles.planSub}>Hashrate: {plan.hashrate}</Text>
-            <Text style={styles.planSub}>Duration: {plan.duration}</Text>
-            <Text style={styles.planSub}>Daily Maintenance: {plan.daily_maintenance}</Text>
+        <View key={index} style={styles.planCard}>
+          <View style={styles.planHeader}>
+            <MaterialIcon name="flash" color={plan.color} size={18} style={{ marginRight: 6 }} />
+            <Text style={styles.planTitle}>{plan.name}</Text>
+          </View>
+          <Text style={styles.planSub}>Hashrate: {plan.hashrate}</Text>
+          <Text style={styles.planSub}>Duration: {plan.duration}</Text>
+          <Text style={styles.planSub}>Daily Maintenance: {plan.daily_maintenance}</Text>
 
-            <View style={styles.planFooter}>
-              <Text style={[styles.planPrice, { color: plan.color }]}>{plan.price}</Text>
+          <View style={styles.planFooter}>
+            <Text style={[styles.planPrice, { color: plan.color }]}>{plan.price}</Text>
+            
+            <TouchableOpacity onPress={() => handlePurchase(plan)}>
               <LinearGradient
                 colors={['#22D3EE', '#C084FC']}
                 start={{ x: 0, y: 0 }}
@@ -94,9 +103,10 @@ const StoreScreen = () => {
               >
                 <Text style={styles.planButtonText}>Purchase Plan</Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           </View>
-        ))}
+        </View>
+      ))}
 
         {/* Custom Hashrate Plan */}
         <View style={styles.customBox}>
@@ -107,7 +117,9 @@ const StoreScreen = () => {
           <Text style={styles.customSubtitle}>
             Need a specific hashrate or duration? Contact us{'\n'}for a custom quote tailored to your needs.
           </Text>
-          <TouchableOpacity style={styles.customButton}>
+          <TouchableOpacity style={styles.customButton} onPress={ () => {
+            navigation.navigate("CustomQuote")
+          }}>
             <Text style={styles.customButtonText}>Request Custom Quote</Text>
           </TouchableOpacity>
         </View>
