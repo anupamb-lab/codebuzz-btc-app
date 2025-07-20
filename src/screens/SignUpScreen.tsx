@@ -306,11 +306,11 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
               </LinearGradient>
 
               {/* Social Login */}
-                <SocialLoginButtons
+                {/* <SocialLoginButtons
                   onSuccess={handleSocialSignUpSuccess}
                   onError={handleSocialSignUpError}
                   disabled={isLoading}
-                />
+                /> */}
 
             </View>
 

@@ -42,9 +42,9 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   // Initialize Google Sign-In when component mounts
-  React.useEffect(() => {
-    initializeGoogleSignIn();
-  }, []);
+  // React.useEffect(() => {
+  //   initializeGoogleSignIn();
+  // }, []);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -329,11 +329,11 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
               </LinearGradient>
 
-              <SocialLoginButtons
+              {/* <SocialLoginButtons
                 onSuccess={handleSocialLoginSuccess}
                 onError={handleSocialLoginError}
                 disabled={isLoading}
-              />
+              /> */}
 
             </View>
 

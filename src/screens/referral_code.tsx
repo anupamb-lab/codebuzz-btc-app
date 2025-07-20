@@ -52,7 +52,7 @@ const ReferralScreen: React.FC<ReferralScreenProps> = () => {
 
   // Initialize Google Sign-In and load referral code when component mounts
   React.useEffect(() => {
-    initializeGoogleSignIn();
+    // initializeGoogleSignIn();
 
     // Load user's referral code
     const loadReferralCode = () => {
