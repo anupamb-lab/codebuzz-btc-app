@@ -5,15 +5,15 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Image,
   Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { ProgressBar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 
-const screenWidth = Dimensions.get('window').width;
+const { height: screenHeight } = Dimensions.get('window');
 
 const achievements = [
   {
@@ -47,45 +47,48 @@ const achievements = [
 ];
 
 const AchievementsScreen = () => {
-    type SidebarNavigationProp = StackNavigationProp<RootStackParamList, 'AchievementsScreen'>;
+  type SidebarNavigationProp = StackNavigationProp<RootStackParamList, 'AchievementsScreen'>;
   
-    const navigation = useNavigation<SidebarNavigationProp>();
+  const navigation = useNavigation<SidebarNavigationProp>();
 
   return (
     <View style={styles.container}>
       {/* Top Bar */}
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')} style={styles.backRow}>
-          <Icon name="chevron-back" size={24} color="white" />
-          <Text style={styles.topBarTitle}>Achievements</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backRow}>
+          <Icon name="chevron-back" size={20} color="white" />
+          <Text style={styles.topBarTitle}>ACHIEVEVEMENTS</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.card}>
+          {/* Header */}
           <View style={styles.headerRow}>
-            <Text style={styles.badgeCount}>
-              <Text style={{ color: 'white' }}>7</Text>
-              <Text style={{ color: '#9CA3AF' }}>/21</Text>
-            </Text>
-            <Icon name="trophy" size={20} color="#FFD700" style={{ marginHorizontal: 4 }} />
-            <Text style={styles.headerText}>Achievement Badges</Text>
-            <Icon name="information-circle-outline" size={16} color="#9CA3AF" style={{ marginLeft: 4 }} />
+            <Text style={styles.bigCount}>7/21</Text>
+            <Image
+              source={require('../assets/images/trophy.png')}
+              style={styles.trophyIcon}
+              resizeMode="contain"
+            />
           </View>
-
+          <Text style={styles.headerTitle}>Achievement Badges</Text>
           <Text style={styles.subText}>
             Unlock achievements to gain extra rewards
           </Text>
 
+          <View style={styles.dividerTop} />
           <Text style={styles.sectionTitle}>Achievements in Process</Text>
 
           {achievements.map((item, index) => {
             const percentage = item.goal === 0 ? 0 : item.progress / item.goal;
-
             return (
               <View key={index} style={styles.achievementCard}>
                 <View style={styles.achievementHeader}>
-                  <Icon name="medal-outline" size={24} color="#E11D48" />
+                  <Image
+                    source={require('../assets/images/medal.png')}
+                    style={styles.avatar}
+                  />
                   <View style={{ marginLeft: 10 }}>
                     <Text style={styles.achievementTitle}>{item.title}</Text>
                     <Text style={styles.achievementSub}>
@@ -128,8 +131,7 @@ const styles = StyleSheet.create({
   topBar: {
     paddingHorizontal: 16,
     paddingTop: 50,
-    paddingBottom: 10,
-    backgroundColor: '#0F172A',
+    paddingBottom: 40,
   },
   backRow: {
     flexDirection: 'row',
@@ -137,51 +139,71 @@ const styles = StyleSheet.create({
   },
   topBarTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
+    fontWeight: '500',
     marginLeft: 8,
-    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   scrollContainer: {
-    paddingBottom: 30,
+    paddingBottom: 40,
   },
   card: {
     backgroundColor: '#1E293B',
-    margin: 16,
+    marginHorizontal: 16,
+    borderRadius: 16,
     padding: 16,
-    borderRadius: 12,
+    minHeight: screenHeight * 0.85,
+    justifyContent: 'flex-start',
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
   },
-  badgeCount: {
-    fontSize: 26,
+  bigCount: {
+    fontSize: 36,
+    color: 'white',
     fontWeight: 'bold',
   },
-  headerText: {
-    color: 'white',
+  trophyIcon: {
+    width: 36,
+    height: 36,
+    marginLeft: 6,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    marginLeft: 6,
+    marginTop: 6,
   },
   subText: {
     color: '#9CA3AF',
     fontSize: 12,
-    marginBottom: 16,
+    marginTop: 4,
+  },
+  dividerTop: {
+    borderBottomColor: '#334155',
+    borderBottomWidth: 1,
+    marginTop: 14,
+    marginBottom: 12,
   },
   sectionTitle: {
     color: '#F3F4F6',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     marginBottom: 10,
   },
   achievementCard: {
+    marginTop: 25,
     marginBottom: 16,
   },
   achievementHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   achievementTitle: {
     color: '#F9FAFB',
@@ -190,7 +212,8 @@ const styles = StyleSheet.create({
   },
   achievementSub: {
     color: '#9CA3AF',
-    fontSize: 12,
+    fontSize: 11,
+    marginTop: 2,
   },
   rewardBox: {
     marginLeft: 'auto',
@@ -211,15 +234,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#334155',
     borderRadius: 3,
     marginTop: 10,
+    marginLeft: 40,
     overflow: 'hidden',
+    width: 200
   },
   progressFill: {
     height: 6,
     backgroundColor: '#00FFA6',
   },
   divider: {
-    marginTop: 12,
-    borderBottomColor: '#475569',
+    marginTop: 20,
+    borderBottomColor: '#334155',
     borderBottomWidth: 1,
   },
 });
