@@ -55,7 +55,7 @@ const AchievementsScreen = () => {
     <View style={styles.container}>
       {/* Top Bar */}
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backRow}>
+        <TouchableOpacity onPress={() => navigation.reset({index: 0, routes: [{ name: 'Main' }],})} style={styles.backRow}>
           <Icon name="chevron-back" size={20} color="white" />
           <Text style={styles.topBarTitle}>ACHIEVEVEMENTS</Text>
         </TouchableOpacity>

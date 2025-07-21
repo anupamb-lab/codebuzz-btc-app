@@ -90,7 +90,7 @@ const NotificationScreen = () => {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.topBar}>
             <View style={styles.topBarContent}>
-                <TouchableOpacity onPress={() => navigation.navigate('Main')} style={styles.backRow}>
+                <TouchableOpacity onPress={() => navigation.reset({index: 0, routes: [{ name: 'Main' }],})} style={styles.backRow}>
                 <Icon name="chevron-back" size={24} color="white" />
                 <Text style={styles.topBarTitle}>Notifications</Text>
                 </TouchableOpacity>
