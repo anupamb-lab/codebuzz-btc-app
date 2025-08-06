@@ -4,7 +4,7 @@
  */
 
 // Production API URL (Render deployment) - Working live server
-const PRODUCTION_API_URL = 'https://fake-mining-backend.onrender.com';
+const PRODUCTION_API_URL = 'http://31.97.189.9/mobile_api';
 
 // Development API URLs (for local testing with cloud database)
 const DEVELOPMENT_API_URLS = {
