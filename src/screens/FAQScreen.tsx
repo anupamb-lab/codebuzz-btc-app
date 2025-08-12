@@ -15,13 +15,13 @@ import { Image } from 'react-native';
 import { DATA_ENDPOINTS, get_data_uri } from '../config/api';
 
 interface FAQItem {
-  id: number;
+  _id: string;
   name: string;
   message: string;
 }
 
 const FAQScreen = ({ navigation }: any) => {
-  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const [faqData, setFaqData] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,22 +50,22 @@ const FAQScreen = ({ navigation }: any) => {
     fetchFAQ();
   }, []);
 
-  const toggleExpanded = (id: number) => {
-    setExpandedItems(prev => 
-      prev.includes(id) 
+  const toggleExpanded = (id: string) => {
+    setExpandedItems(prev =>
+      prev.includes(id)
         ? prev.filter(item => item !== id)
         : [...prev, id]
     );
   };
 
   const renderFAQItem = (item: FAQItem) => {
-    const isExpanded = expandedItems.includes(item.id);
-    
+    const isExpanded = expandedItems.includes(item._id);
+
     return (
-      <View key={item.id} style={styles.faqItem}>
+      <View key={item._id} style={styles.faqItem}>
         <TouchableOpacity
           style={styles.questionContainer}
-          onPress={() => toggleExpanded(item.id)}
+          onPress={() => toggleExpanded(item._id)}
           activeOpacity={0.7}
         >
           <Text style={styles.questionText}>{item.name}</Text>
@@ -73,7 +73,7 @@ const FAQScreen = ({ navigation }: any) => {
             ▼
           </Text>
         </TouchableOpacity>
-        
+
         {isExpanded && (
           <View style={styles.answerContainer}>
             <Text style={styles.answerText}>{item.message}</Text>
