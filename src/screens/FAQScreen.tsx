@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
-import { DATA_ENDPOINTS, get_data_uri } from '../config/api';
+import { get_data_uri } from '../config/api';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface FAQItem {
   _id: string;
@@ -93,8 +94,14 @@ const FAQScreen = ({ navigation }: any) => {
       
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Icon name="chevron-back" size={24} color="white" />
+        </TouchableOpacity>
+
         <Text style={styles.headerTitle}>FAQ</Text>
-        <View style={styles.placeholder} />
       </View>
 
       {/* FAQ Icon */}
@@ -164,26 +171,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#2d2d44',
+    paddingVertical: 16,
+    position: 'relative',
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#2d2d44',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonText: {
-    color: '#00d4ff',
-    fontSize: 20,
-    fontWeight: 'bold',
+    position: 'absolute',
+    left: 16,
+    padding: 8,
   },
   headerTitle: {
     color: '#ffffff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  backButtonText: {
+    color: '#00d4ff',
     fontSize: 20,
     fontWeight: 'bold',
   },
