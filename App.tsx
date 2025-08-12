@@ -34,6 +34,7 @@ import NotificationScreen from './src/screens/NotificationsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import WatchVideoScreen from './src/screens/WatchVideoScreen';
 import TwoFactorScreen from './src/screens/TwoFactorScreen';
+import NotificationPreferencesScreen from './src/screens/NotificationPreferencesScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -65,6 +66,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="AchievementsScreen" component={AchievementsScreen} />
         <RootStack.Screen name="WatchVideoScreen" component={WatchVideoScreen} />
         <RootStack.Screen name="TwoFactorScreen" component={TwoFactorScreen} />
+        <RootStack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
         </>
       ) : (
         <>

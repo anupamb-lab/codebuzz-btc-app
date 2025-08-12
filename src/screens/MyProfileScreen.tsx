@@ -87,8 +87,7 @@ const MyProfileScreen = () => {
         <TouchableOpacity
           style={styles.row}
           onPress={() => {
-            // TODO: Implement NotificationPrefs screen
-            console.log('Notification Preferences clicked');
+            navigation.navigate('NotificationPreferencesScreen');
           }}
         >
           <View style={styles.rowLine} />

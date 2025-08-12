@@ -36,4 +36,5 @@ export type RootStackParamList = {
   Sidebar: undefined;
   AchievementsScreen: undefined;
   WatchVideoScreen: undefined;
+  NotificationPreferencesScreen: undefined
 };
