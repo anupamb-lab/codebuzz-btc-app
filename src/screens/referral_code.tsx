@@ -99,10 +99,11 @@ const ReferralScreen: React.FC<ReferralScreenProps> = () => {
                 // If coming from login email verification, authenticate and go to dashboard
                 console.log('Authenticating from login flow');
                 await login(token, user);
+                navigation.replace('Main');
             } else {
                 // If coming from signup, just authenticate and go to dashboard
-                console.log('Authenticating from signup flow');
                 await login(token, user);
+                navigation.replace('Main');
             }
             // After authentication, navigation will be handled by AuthProvider
             // User will automatically be redirected to Main screen

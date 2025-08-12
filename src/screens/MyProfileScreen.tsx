@@ -52,8 +52,9 @@ const MyProfileScreen = () => {
         <TouchableOpacity
           style={styles.row}
           onPress={() => {
-            // TODO: Implement ChangePassword screen
-            console.log('Change Password clicked');
+            navigation.navigate('ForgotPassword', {
+              screen_heading: 'Change Password'
+            });
           }}
         >
           <View style={styles.rowLine} />

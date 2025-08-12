@@ -2,7 +2,7 @@ export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   SignUp: undefined;
-  ForgotPassword: undefined;
+  ForgotPassword: {screen_heading: string};
   OTPVerification: {
     email: string;
     type: 'forgot_password' | 'email_verification';
@@ -36,5 +36,6 @@ export type RootStackParamList = {
   Sidebar: undefined;
   AchievementsScreen: undefined;
   WatchVideoScreen: undefined;
-  NotificationPreferencesScreen: undefined
+  NotificationPreferencesScreen: undefined;
+  ChangePasswordScreen: {email: string, resetToken: string};
 };

@@ -85,7 +85,6 @@ const StoreScreen = () => {
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Text style={styles.topBarTitle}>Store</Text>
-        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>

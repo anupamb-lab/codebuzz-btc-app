@@ -179,7 +179,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
                             colors={['#1B202CAA', '#2E3646AA']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
-                            style={styles.formBox}
+                            // style={styles.formBox}
                           >
 
             {/* Form Container */}

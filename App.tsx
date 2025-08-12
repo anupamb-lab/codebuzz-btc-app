@@ -67,6 +67,11 @@ const AppNavigator = () => {
         <RootStack.Screen name="WatchVideoScreen" component={WatchVideoScreen} />
         <RootStack.Screen name="TwoFactorScreen" component={TwoFactorScreen} />
         <RootStack.Screen name="NotificationPreferencesScreen" component={NotificationPreferencesScreen} />
+        <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <RootStack.Screen name="OTPVerification" component={OTPVerificationScreen} />
+        <RootStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+        <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+        <RootStack.Screen name="ReferralScreen" component={ReferralScreen} />
         </>
       ) : (
         <>
@@ -77,7 +82,6 @@ const AppNavigator = () => {
           <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           <RootStack.Screen name="TwofactorOTP" component={TwofactorOTP} />
           <RootStack.Screen name="ReferralScreen" component={ReferralScreen} />
-          <RootStack.Screen name="Main" component={MainTabNavigator} />
         </>
       )}
     </RootStack.Navigator>

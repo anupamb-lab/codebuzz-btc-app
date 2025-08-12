@@ -13,7 +13,7 @@ import {
   Alert,
   StatusBar,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
@@ -29,6 +29,9 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
+
+  const route = useRoute();
+  const { screen_heading } = route.params as { screen_heading: string; };
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,7 +142,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
 
             {/* Title */}
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>FORGOT PASSWORD</Text>
+              <Text style={styles.title}>{screen_heading}</Text>
               <Text style={styles.subtitle}>
                 Enter your email address and we'll send you an OTP to reset your password
               </Text>
