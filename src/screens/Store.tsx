@@ -114,12 +114,12 @@ const StoreScreen = () => {
                 <Text style={styles.planTitle}>{plan.name}</Text>
               </View>
 
-              <Text style={styles.planSub}>Hashrate: {plan.hashrate}</Text>
-              <Text style={styles.planSub}>Duration: {plan.duration}</Text>
-              <Text style={styles.planSub}>Daily Maintenance: {plan.maintenance_cost}</Text>
+              <Text style={styles.planSub}>Hashrate: {`${plan.hashrate} TH/s`}</Text>
+              <Text style={styles.planSub}>Duration: {`${plan.duration} Months`}</Text>
+              <Text style={styles.planSub}>Daily Maintenance: {`$ ${plan.maintenance_cost}/day`}</Text>
 
               <View style={styles.planFooter}>
-                <Text style={[styles.planPrice, { color: fcolor }]}>{plan.plan_cost}</Text>
+                <Text style={[styles.planPrice, { color: fcolor }]}>{`$${plan.plan_cost}.00`}</Text>
 
                 <TouchableOpacity onPress={() => handlePurchase(plan)}>
                   <LinearGradient
