@@ -181,9 +181,10 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'center',
+    paddingVertical: 16,
+    position: 'relative',
   },
   backArrow: {
     color: 'white',

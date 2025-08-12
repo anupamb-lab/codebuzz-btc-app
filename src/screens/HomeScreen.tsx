@@ -85,7 +85,7 @@ const Page: React.FC = () => {
           <GradientButton icon="gift" text="Daily Rewards" />
           <GradientButton icon="play-circle" text="Watch Videos" />
         </View>
-        <GradientButtonB icon="credit-card-outline" text="Paid Plans" fullWidth />
+        <GradientButtonB icon="credit-card-outline" onPress={() => navigation.navigate('Store')} text="Paid Plans" fullWidth />
 
         <View style={styles.cardRow}>
           <StatCard icon="currency-usd" value="$12.50" label="Daily Profit" />
