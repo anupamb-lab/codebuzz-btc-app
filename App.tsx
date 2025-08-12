@@ -33,6 +33,7 @@ import DeleteAccountScreen from './src/screens/DeleteAccount';
 import NotificationScreen from './src/screens/NotificationsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import WatchVideoScreen from './src/screens/WatchVideoScreen';
+import TwoFactorScreen from './src/screens/TwoFactorScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -63,6 +64,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="NotificationScreen" component={NotificationScreen} />
         <RootStack.Screen name="AchievementsScreen" component={AchievementsScreen} />
         <RootStack.Screen name="WatchVideoScreen" component={WatchVideoScreen} />
+        <RootStack.Screen name="TwoFactorScreen" component={TwoFactorScreen} />
         </>
       ) : (
         <>

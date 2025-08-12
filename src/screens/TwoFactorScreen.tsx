@@ -26,6 +26,8 @@ const TwoFactorScreen = () => {
       'Two-Factor Authentication',
       newStatus ? '2FA has been enabled.' : '2FA has been disabled.'
     );
+
+    navigation.goBack();
   };
 
   return (

@@ -76,8 +76,7 @@ const MyProfileScreen = () => {
         <TouchableOpacity
           style={styles.row}
           onPress={() => {
-            // TODO: Implement TwoFactorScreen
-            console.log('Two Factor Authentication clicked');
+            navigation.navigate('TwoFactorScreen');
           }}
         >
           <View style={styles.rowLine} />
