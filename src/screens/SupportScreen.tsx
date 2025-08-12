@@ -15,9 +15,14 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
 
 const SupportScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
+  
   const [formData, setFormData] = useState({
+    user: user?.id,
     name: '',
     email: '',
     message: '',
@@ -56,38 +61,41 @@ const SupportScreen = ({ navigation }: any) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('https://fake-mining-backend.onrender.com/api/support/contact', {
+      const response = await fetch(get_data_uri('CREATE_SUPPORT_TICKET'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      let data;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Invalid response from server");
+      }
 
       if (data.success) {
-        Alert.alert(
-          'Success',
-          'Your message has been sent successfully! We will get back to you soon.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                setFormData({ name: '', email: '', message: '' });
-                navigation.goBack();
-              },
+        Alert.alert('Success', 'Your message has been sent successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              setFormData({ user: '', name: '', email: '', message: '' });
+              navigation.goBack();
             },
-          ]
-        );
+          },
+        ]);
       } else {
         Alert.alert('Error', data.message || 'Failed to send message');
       }
     } catch (error) {
+      console.log("Error: ", error);
       Alert.alert('Error', 'Network error. Please try again later.');
     } finally {
       setIsLoading(false);

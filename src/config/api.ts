@@ -22,6 +22,7 @@ export const API_BASE_URL = PRODUCTION_API_URL;
 export const DATA_ENDPOINTS = {
   GET_FAQS: '/api/faqs',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
+  CREATE_SUPPORT_TICKET: '/api/help/create',
 } as const;
 
 type DataEndpointKey = keyof typeof DATA_ENDPOINTS;
