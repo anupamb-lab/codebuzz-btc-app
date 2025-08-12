@@ -83,7 +83,7 @@ const Page: React.FC = () => {
 
         <View style={styles.buttonRow}>
           <GradientButton icon="gift" text="Daily Rewards" />
-          <GradientButton icon="play-circle" text="Watch Videos" />
+          <GradientButton icon="play-circle" text="Watch Video" onPress={() => navigation.navigate('WatchVideoScreen')} />
         </View>
         <GradientButtonB icon="credit-card-outline" onPress={() => navigation.navigate('Store')} text="Paid Plans" fullWidth />
 
@@ -161,14 +161,14 @@ const Page: React.FC = () => {
   );
 };
 
-const GradientButton: React.FC<GradientButtonProps> = ({ icon, text }) => (
+const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress }) => (
   <LinearGradient
     colors={['#22D3EE', '#C084FC']}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 0 }}
     style={[styles.gradientButton, { width: '48%' }]}
   >
-    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8} onPress={onPress}>
       {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>
