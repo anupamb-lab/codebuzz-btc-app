@@ -4,7 +4,9 @@
  */
 
 // Production API URL (Render deployment) - Working live server
-const PRODUCTION_API_URL = 'http://31.97.189.9/mobile_api';
+
+const SERVER_URL = 'http://31.97.189.9'
+const PRODUCTION_API_URL = `${SERVER_URL}/mobile_api`;
 
 // Development API URLs (for local testing with cloud database)
 const DEVELOPMENT_API_URLS = {
@@ -16,6 +18,16 @@ const DEVELOPMENT_API_URLS = {
 // Use production Render backend with cloud database (MongoDB Atlas)
 // This provides live server with cloud data persistence - fully deployed solution
 export const API_BASE_URL = PRODUCTION_API_URL;
+
+export const DATA_ENDPOINTS = {
+  GET_FAQS: '/api/faqs',
+} as const;
+
+type DataEndpointKey = keyof typeof DATA_ENDPOINTS;
+
+export const get_data_uri = (endpoint: DataEndpointKey): string => {
+  return `${SERVER_URL}${DATA_ENDPOINTS[endpoint]}`;
+};
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -45,7 +57,7 @@ export const getApiUrl = (endpoint: string): string => {
 
 // API Configuration
 export const API_CONFIG = {
-  timeout: 10000, // 10 seconds
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -118,4 +130,6 @@ export default {
   API_ENDPOINTS,
   getApiUrl,
   apiRequest,
+  get_data_uri,
+  DATA_ENDPOINTS
 };

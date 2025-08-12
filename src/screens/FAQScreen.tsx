@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -11,58 +12,43 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
+import { DATA_ENDPOINTS, get_data_uri } from '../config/api';
 
 interface FAQItem {
   id: number;
-  question: string;
-  answer: string;
+  name: string;
+  message: string;
 }
 
 const FAQScreen = ({ navigation }: any) => {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
 
-  const faqData: FAQItem[] = [
-    {
-      id: 1,
-      question: 'What is Bitcoin mining?',
-      answer: 'Bitcoin mining involves solving complex mathematical problems to validate transactions on the blockchain, earning newly minted bitcoins as rewards.',
-    },
-    {
-      id: 2,
-      question: 'Do I need special hardware?',
-      answer: 'While specialized ASIC miners are most efficient, our app allows you to start with basic hardware and gradually upgrade as you earn more.',
-    },
-    {
-      id: 3,
-      question: 'Can I mine on my phone?',
-      answer: 'Our app provides mobile monitoring and management of your mining operations, though actual mining requires dedicated hardware for optimal results.',
-    },
-    {
-      id: 4,
-      question: 'How do I withdraw earnings?',
-      answer: 'You can withdraw your earnings to your personal wallet once you reach the minimum threshold. Go to Wallet > Withdraw and follow the instructions.',
-    },
-    {
-      id: 5,
-      question: 'Is Bitcoin mining profitable?',
-      answer: 'Profitability depends on electricity costs, hardware efficiency, and Bitcoin price. Our app provides real-time profitability calculators to help you make informed decisions.',
-    },
-    {
-      id: 6,
-      question: 'How secure is my account?',
-      answer: 'We use industry-standard encryption, two-factor authentication, and secure wallet integration to protect your account and earnings.',
-    },
-    {
-      id: 7,
-      question: 'What are mining pools?',
-      answer: 'Mining pools combine computational power from multiple miners to increase chances of solving blocks and earning rewards, which are then distributed among participants.',
-    },
-    {
-      id: 8,
-      question: 'How often are rewards distributed?',
-      answer: 'Rewards are distributed automatically based on your contribution to the mining pool, typically every 24 hours or when blocks are successfully mined.',
-    },
-  ];
+  const [faqData, setFaqData] = useState<FAQItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  type FAQResponse = {
+    success: boolean;
+    faqs: FAQItem[];
+  };
+
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      try {
+        const response = await axios.get<FAQResponse>(
+          get_data_uri('GET_FAQS')
+        );
+        setFaqData(response.data.faqs);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load FAQ data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFAQ();
+  }, []);
 
   const toggleExpanded = (id: number) => {
     setExpandedItems(prev => 
@@ -82,7 +68,7 @@ const FAQScreen = ({ navigation }: any) => {
           onPress={() => toggleExpanded(item.id)}
           activeOpacity={0.7}
         >
-          <Text style={styles.questionText}>{item.question}</Text>
+          <Text style={styles.questionText}>{item.name}</Text>
           <Text style={[styles.expandIcon, isExpanded && styles.expandIconRotated]}>
             ▼
           </Text>
@@ -90,7 +76,7 @@ const FAQScreen = ({ navigation }: any) => {
         
         {isExpanded && (
           <View style={styles.answerContainer}>
-            <Text style={styles.answerText}>{item.answer}</Text>
+            <Text style={styles.answerText}>{item.message}</Text>
           </View>
         )}
       </View>
@@ -126,17 +112,28 @@ const FAQScreen = ({ navigation }: any) => {
              {/* Form */}
 
       {/* FAQ List */}
-      <ScrollView 
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+
+      {
+        loading ? (
+          <Text style={{ color: '#fff', textAlign: 'center' }}>Loading FAQs...</Text>
+        ) : error ? (
+          <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+        ) : (
         
-        {faqData.map(renderFAQItem)}
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+          
+          {faqData.map(renderFAQItem)}
+          
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
         
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+        )
+      }
 
       {/* Background Decoration */}
       <View style={styles.backgroundDecoration}>
