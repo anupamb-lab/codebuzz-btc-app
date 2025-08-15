@@ -19,11 +19,14 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 
+import { showRewardedAd } from '../services/googleAds';
+
 interface GradientButtonProps {
   icon?: string;
   text: string;
   fullWidth?: boolean;
   onPress?: () => void;
+  disabled?: boolean; 
 }
 
 interface StatCardProps {
@@ -54,6 +57,12 @@ const Page: React.FC = () => {
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
+  const handleReward = (amount: number, type: string) => {
+    console.log(`User earned reward: ${amount} ${type}`);
+  };
+
+  const { show, loading, loaded } = showRewardedAd(handleReward);
+
   return (
     <View style={{ flex: 1 }}>
       <Sidebar visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
@@ -83,7 +92,12 @@ const Page: React.FC = () => {
 
         <View style={styles.buttonRow}>
           <GradientButton icon="gift" text="Daily Rewards" />
-          <GradientButton icon="play-circle" text="Watch Video" onPress={() => navigation.navigate('WatchVideoScreen')} />
+          <GradientButton
+            icon="play-circle"
+            text={loading ? "Loading..." : "Watch Video"}
+            onPress={show}
+            disabled={loading}
+          />
         </View>
         <GradientButtonB icon="credit-card-outline" onPress={() => navigation.navigate('Store')} text="Paid Plans" fullWidth />
 
@@ -161,14 +175,14 @@ const Page: React.FC = () => {
   );
 };
 
-const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress }) => (
+const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress, disabled = false }) => (
   <LinearGradient
     colors={['#22D3EE', '#C084FC']}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 0 }}
     style={[styles.gradientButton, { width: '48%' }]}
   >
-    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8} onPress={onPress}>
+    <TouchableOpacity style={styles.buttonContent} activeOpacity={0.8} onPress={onPress} disabled={disabled}>
       {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
       <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>

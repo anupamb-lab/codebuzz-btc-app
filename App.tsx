@@ -6,6 +6,7 @@ import { StatusBar, useColorScheme } from 'react-native';
 
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { initializeFacebookSDK, initializeGoogleSignIn } from './src/services/socialAuth';
+import { initializeGoogleAds } from './src/services/googleAds';
 
 // Screens
 import SplashScreen from './src/screens/SplashScreen';
@@ -95,6 +96,7 @@ const App = () => {
     // Initialize social SDKs
     initializeFacebookSDK();
     initializeGoogleSignIn();
+    initializeGoogleAds();
   }, []);
 
   return (
