@@ -19,7 +19,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 
-import { showRewardedAd } from '../services/googleAds';
+import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 interface GradientButtonProps {
   icon?: string;
@@ -171,6 +172,16 @@ const Page: React.FC = () => {
           
         </View>
       </ScrollView>
+
+      <View style={styles.bannerContainer}>
+        <BannerAd
+          unitId={HOMEBANNER_AD_UNIT_ID}
+          size={BannerAdSize.FULL_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -234,8 +245,15 @@ const ActionCard: React.FC<ActionCardProps> = ({ icon, label }) => (
 export default Page;
 
 // Styles
-
 const styles = StyleSheet.create({
+  bannerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     padding: 16,

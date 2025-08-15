@@ -11,6 +11,10 @@ import { useEffect, useState, useCallback } from 'react';
 const AD_UNIT_ID =
   __DEV__ ? TestIds.REWARDED : 'ca-app-pub-9138199693214957/5211655924';
 
+const HOMEBANNER_AD_UNIT_ID = __DEV__ 
+  ? TestIds.BANNER 
+  : 'ca-app-pub-9138199693214957/6069958941';
+
 type Props = { onReward?: (amount: number, type: string) => void };
 
 const initializeGoogleAds = async () => {
@@ -124,5 +128,6 @@ function showRewardedAd(onReward?: (amount: number, type: string) => void) {
 export {
     initializeGoogleAds,
     RewardButton,
-    showRewardedAd
+    showRewardedAd,
+    HOMEBANNER_AD_UNIT_ID
 }
