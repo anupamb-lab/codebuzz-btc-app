@@ -8,12 +8,18 @@ import {
 } from 'react-native-google-mobile-ads';
 import { useEffect, useState, useCallback } from 'react';
 
-const AD_UNIT_ID =
-  __DEV__ ? TestIds.REWARDED : 'ca-app-pub-9138199693214957/5211655924';
 
-const HOMEBANNER_AD_UNIT_ID = __DEV__ 
-  ? TestIds.BANNER 
-  : 'ca-app-pub-9138199693214957/6069958941';
+// Real ones
+
+// const AD_UNIT_ID = 'ca-app-pub-9138199693214957/5211655924';
+
+// const HOMEBANNER_AD_UNIT_ID = 'ca-app-pub-9138199693214957/6069958941';
+
+// Testing purpose
+
+const AD_UNIT_ID = 'ca-app-pub-3940256099942544/5224354917';
+
+const HOMEBANNER_AD_UNIT_ID = 'ca-app-pub-3940256099942544/6300978111';
 
 type Props = { onReward?: (amount: number, type: string) => void };
 
