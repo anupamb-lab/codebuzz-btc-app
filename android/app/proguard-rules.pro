@@ -8,3 +8,10 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+-keep public class com.google.android.gms.ads.** {
+    public *;
+}
+
+-keep class class com.google.ads.** {
+    public *;
+}
