@@ -64,13 +64,13 @@ const Page: React.FC = () => {
 
   const { show, loading, loaded } = showRewardedAd(handleReward);
 
-  const [btcBalance, setBtcBalance] = useState(0.00000000);
+  const [btcBalance, setBtcBalance] = useState(0.000000000000);
 
   React.useEffect(() => {
-  const rewardRate = 0.00000001; // reward increment per tick
+  const rewardRate = 0.000000000001;
   const interval = setInterval(() => {
-    setBtcBalance(prev => parseFloat((prev + rewardRate).toFixed(8)));
-  }, 1000); // every second
+    setBtcBalance(prev => parseFloat((prev + rewardRate).toFixed(12)));
+  }, 1000);
 
   return () => clearInterval(interval);
 }, []);
@@ -109,7 +109,7 @@ const Page: React.FC = () => {
           style={styles.btcBox}
         >
           <Icon name="bitcoin" size={28} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.btcText}>{btcBalance.toFixed(8)} BTC</Text>
+          <Text style={styles.btcText}>{btcBalance.toFixed(12)} BTC</Text>
         </LinearGradient>
 
         <View style={styles.buttonRow}>
