@@ -64,6 +64,17 @@ const Page: React.FC = () => {
 
   const { show, loading, loaded } = showRewardedAd(handleReward);
 
+  const [btcBalance, setBtcBalance] = useState(0.00000000);
+
+  React.useEffect(() => {
+  const rewardRate = 0.00000001; // reward increment per tick
+  const interval = setInterval(() => {
+    setBtcBalance(prev => parseFloat((prev + rewardRate).toFixed(8)));
+  }, 1000); // every second
+
+  return () => clearInterval(interval);
+}, []);
+
   return (
     <View style={{ flex: 1 }}>
       <Sidebar visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
@@ -89,6 +100,16 @@ const Page: React.FC = () => {
         >
           <Text style={styles.welcomeText}>Welcome back, {user?.name}!</Text>
           <Text style={styles.subText}>Your digital assets at glance.</Text>
+        </LinearGradient>
+
+        <LinearGradient
+          colors={['#70ecffff', '#a694b8ff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.btcBox}
+        >
+          <Icon name="bitcoin" size={28} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.btcText}>{btcBalance.toFixed(8)} BTC</Text>
         </LinearGradient>
 
         <View style={styles.buttonRow}>
@@ -246,6 +267,24 @@ export default Page;
 
 // Styles
 const styles = StyleSheet.create({
+  btcBox: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderRadius: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  btcText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    fontFamily: 'Inter',
+  },
   bannerContainer: {
     position: 'absolute',
     bottom: 0,
