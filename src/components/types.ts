@@ -38,4 +38,5 @@ export type RootStackParamList = {
   WatchVideoScreen: undefined;
   NotificationPreferencesScreen: undefined;
   ChangePasswordScreen: {email: string, resetToken: string};
+  DailyRewardsScreen: undefined;
 };

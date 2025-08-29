@@ -182,7 +182,7 @@ const Page: React.FC = () => {
         </LinearGradient>
 
         <View style={styles.buttonRow}>
-          <GradientButton icon="gift" text="Daily Rewards" />
+          <GradientButton icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Daily Rewards" />
           <GradientButton
             icon="play-circle"
             text={loading ? "Loading..." : adsWatched >= MAX_ADS ? "Max Videos Reached" : "Watch Video"}
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 40,
+    paddingBottom: 30,
     backgroundColor: '#111827'
   },
   profileContainer: {
@@ -564,6 +564,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginTop: 20,
+    marginBottom: 60,
     elevation: 2,
   },
   transactionRow: {

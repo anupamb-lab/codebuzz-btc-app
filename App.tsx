@@ -36,6 +36,7 @@ import AchievementsScreen from './src/screens/AchievementsScreen';
 import WatchVideoScreen from './src/screens/WatchVideoScreen';
 import TwoFactorScreen from './src/screens/TwoFactorScreen';
 import NotificationPreferencesScreen from './src/screens/NotificationPreferencesScreen';
+import DailyRewardsScreen from './src/screens/DailyRewardsScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -51,6 +52,7 @@ const AppNavigator = () => {
       {authenticated ? (
         <>
         <RootStack.Screen name="Main" component={MainTabNavigator} />
+        <RootStack.Screen name="DailyRewardsScreen" component={DailyRewardsScreen} />
         <RootStack.Screen name="MyProfileScreen" component={MyProfileScreen} />
         <RootStack.Screen name="AllActivity" component={AllActivity} />
         <RootStack.Screen name="InternalReferral" component={InternalReferralScreen} />
