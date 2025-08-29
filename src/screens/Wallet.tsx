@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
+  RefreshControl,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
@@ -28,58 +29,70 @@ const WalletScreen = () => {
   const [btcBalance, setBtcBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showUSD, setShowUSD] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Wallet'>;
-  const navigation = useNavigation<LoginScreenNavigationProp>();
+  type WalletNav = StackNavigationProp<RootStackParamList, 'Wallet'>;
+  const navigation = useNavigation<WalletNav>();
 
-  useEffect(() => {
-    const loadBtc = async () => {
-      try {
-        const storedBtc = await AsyncStorage.getItem("btcBalance");
-        if (storedBtc) {
-          setBtcBalance(parseFloat(storedBtc));
-        }
-      } catch (e) {
-        console.error("Error loading BTC balance", e);
+  const loadData = useCallback(async () => {
+    try {
+      const storedBtc = await AsyncStorage.getItem("btcBalance");
+      if (storedBtc) {
+        setBtcBalance(parseFloat(storedBtc));
       }
-    };
-    loadBtc();
+
+      const storedTxns = await AsyncStorage.getItem("transactions");
+      if (storedTxns) {
+        setTransactions(JSON.parse(storedTxns));
+      }
+    } catch (e) {
+      console.error("Error loading wallet data", e);
+    }
   }, []);
 
-  const handleDeposit = () => {
-    navigation.navigate('DepositScreen');
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
   };
 
-  const handleWithdraw = () => {
-    navigation.navigate('WithdrawScreen');
-  };
-
-  const handleViewAll = () => {
-    console.log('View All Transactions');
-  };
+  const handleDeposit = () => navigation.navigate('DepositScreen');
+  const handleWithdraw = () => navigation.navigate('WithdrawScreen');
+  const handleViewAll = () => console.log('View All Transactions');
 
   const displayedValue = showUSD
-    ? `$${((btcBalance / 4) * BTC_TO_USD).toFixed(5)}`
+    ? `$${((btcBalance / 4) * BTC_TO_USD).toFixed(4)}`
     : `${(btcBalance / 4).toFixed(12)} BTC`;
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#15213B" />
-      <ScrollView contentContainerStyle={styles.scrollView}>
-
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFFFFF"
+          />
+        }
+      >
         {/* Balance Box */}
         <View style={styles.balanceBox}>
           <Text style={styles.balanceLabel}>Your Current Balance</Text>
           <Text style={styles.balanceAmount}>{displayedValue}</Text>
           <Text style={styles.balanceChange}>Mining earnings</Text>
 
-          {/* Convert Button */}
           <TouchableOpacity
             style={styles.convertButton}
             onPress={() => setShowUSD(!showUSD)}
           >
             <Text style={styles.convertText}>
-              {showUSD ? "Show in BTC" : "show in USD"}
+              {showUSD ? "Show in BTC" : "Convert to USD"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -149,7 +162,6 @@ const WalletScreen = () => {
             </>
           )}
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
