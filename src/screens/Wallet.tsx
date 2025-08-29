@@ -22,9 +22,12 @@ interface Transaction {
   isPositive: boolean;
 }
 
+const BTC_TO_USD = 120000;
+
 const WalletScreen = () => {
   const [btcBalance, setBtcBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [showUSD, setShowUSD] = useState(false);
 
   type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Wallet'>;
   const navigation = useNavigation<LoginScreenNavigationProp>();
@@ -55,6 +58,10 @@ const WalletScreen = () => {
     console.log('View All Transactions');
   };
 
+  const displayedValue = showUSD
+    ? `$${((btcBalance / 4) * BTC_TO_USD).toFixed(5)}`
+    : `${(btcBalance / 4).toFixed(12)} BTC`;
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#15213B" />
@@ -63,10 +70,18 @@ const WalletScreen = () => {
         {/* Balance Box */}
         <View style={styles.balanceBox}>
           <Text style={styles.balanceLabel}>Your Current Balance</Text>
-          <Text style={styles.balanceAmount}>
-            {(btcBalance / 4).toFixed(12)} BTC
-          </Text>
-          <Text style={styles.balanceChange}>Mining earnings simulation</Text>
+          <Text style={styles.balanceAmount}>{displayedValue}</Text>
+          <Text style={styles.balanceChange}>Mining earnings</Text>
+
+          {/* Convert Button */}
+          <TouchableOpacity
+            style={styles.convertButton}
+            onPress={() => setShowUSD(!showUSD)}
+          >
+            <Text style={styles.convertText}>
+              {showUSD ? "Show in BTC" : "show in USD"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Buttons */}
@@ -171,7 +186,19 @@ const styles = StyleSheet.create({
   balanceChange: {
     color: '#34D399',
     fontSize: 14,
-    marginTop: 4,
+    marginTop: 10,
+  },
+  convertButton: {
+    marginTop: 12,
+    backgroundColor: '#374151',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  convertText: {
+    color: '#F9FAFB',
+    fontSize: 14,
+    fontWeight: '500',
   },
   buttonRow: {
     flexDirection: 'row',
