@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import { RootStackParamList } from '../components/types';
 
 import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface GradientButtonProps {
   icon?: string;
@@ -49,31 +50,99 @@ interface ActionCardProps {
   label: string;
 }
 
+const MAX_ADS = 10;
+const BASE_HASHPOWER_PER_AD = 5;
+const BTC_PER_HASHPOWER_PER_SEC = 0.000000000001;
+
 const Page: React.FC = () => {
   const { user } = useAuth();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const data = [50, 10, 40, 95, 85, 91, 35];
 
+  const [btcBalance, setBtcBalance] = useState(0);
+  const [hashPower, setHashPower] = useState(0);
+  const [adsWatched, setAdsWatched] = useState(0);
+
   type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Page'>;
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const handleReward = (amount: number, type: string) => {
+  const handleReward = async (amount: number, type: string) => {
     console.log(`User earned reward: ${amount} ${type}`);
+
+    if (adsWatched >= MAX_ADS) return;
+
+    const newAdsCount = adsWatched + 1;
+    const newHashPower = hashPower + BASE_HASHPOWER_PER_AD;
+
+    setAdsWatched(newAdsCount);
+    setHashPower(newHashPower);
+
+    await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
+    await AsyncStorage.setItem("hashPower", newHashPower.toString());
   };
 
   const { show, loading, loaded } = showRewardedAd(handleReward);
 
-  const [btcBalance, setBtcBalance] = useState(0.000000000000);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  React.useEffect(() => {
-  const rewardRate = 0.000000000001;
-  const interval = setInterval(() => {
-    setBtcBalance(prev => parseFloat((prev + rewardRate).toFixed(12)));
-  }, 1000);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const storedBtc = await AsyncStorage.getItem("btcBalance");
+        const storedHash = await AsyncStorage.getItem("hashPower");
+        const storedAds = await AsyncStorage.getItem("adsWatched");
+        const lastTimestamp = await AsyncStorage.getItem("lastTimestamp");
 
-  return () => clearInterval(interval);
-}, []);
+        const btc = storedBtc ? parseFloat(storedBtc) : 0;
+        const hash = storedHash ? parseInt(storedHash) : 0;
+        const ads = storedAds ? parseInt(storedAds) : 0;
+
+        if (lastTimestamp) {
+          const now = Date.now();
+          const elapsed = Math.floor((now - parseInt(lastTimestamp)) / 1000);
+          const mined = elapsed * hash * BTC_PER_HASHPOWER_PER_SEC;
+          setBtcBalance(btc + mined);
+        } else {
+          setBtcBalance(btc);
+        }
+
+        setHashPower(hash);
+        setAdsWatched(ads);
+      } catch (e) {
+        console.error("Error loading mining state", e);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        await AsyncStorage.setItem("btcBalance", btcBalance.toString());
+        await AsyncStorage.setItem("hashPower", hashPower.toString());
+        await AsyncStorage.setItem("adsWatched", adsWatched.toString());
+        await AsyncStorage.setItem("lastTimestamp", Date.now().toString());
+      } catch (e) {
+        console.error("Error saving mining state", e);
+      }
+    };
+
+    saveData();
+  }, [btcBalance, hashPower, adsWatched]);
+
+  useEffect(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
+      setBtcBalance(prev => prev + hashPower * BTC_PER_HASHPOWER_PER_SEC);
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [hashPower]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -116,16 +185,20 @@ const Page: React.FC = () => {
           <GradientButton icon="gift" text="Daily Rewards" />
           <GradientButton
             icon="play-circle"
-            text={loading ? "Loading..." : "Watch Video"}
+            text={loading ? "Loading..." : adsWatched >= MAX_ADS ? "Max Videos Reached" : "Watch Video"}
             onPress={show}
-            disabled={loading}
+            disabled={loading || adsWatched >= MAX_ADS}
           />
         </View>
         <GradientButtonB icon="credit-card-outline" onPress={() => navigation.navigate('Store')} text="Paid Plans" fullWidth />
 
         <View style={styles.cardRow}>
           <StatCard icon="currency-usd" value="$12.50" label="Daily Profit" />
-          <StatCard icon="chart-line" value="200 TH/s" label="Current Hashrate" />
+          <StatCard 
+            icon="chart-line" 
+            value={`${hashPower.toLocaleString()} TH/s`} 
+            label="Current Hashrate" 
+          />
           <StatCard icon="speedometer" value="98%" label="Efficiency" />
         </View>
 
