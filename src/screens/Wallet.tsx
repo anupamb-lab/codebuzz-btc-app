@@ -13,7 +13,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
 
-const transactions = [
+interface Transaction {
+  type: string;
+  method: string;
+  date: string;
+  amount: string;
+  isPositive: boolean;
+}
+
+const transactions_list = [
   {
     type: 'Deposit',
     method: 'Bank Transfer',
@@ -52,6 +60,10 @@ const transactions = [
 ];
 
 const WalletScreen = () => {
+
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+  // const [transactions, setTransactions] = React.useState<Transaction[]>(transactions_list);
+  
   const handleDeposit = () => {
     navigation.navigate('DepositScreen');
   };
@@ -107,35 +119,44 @@ const WalletScreen = () => {
 
         {/* Transaction History */}
         <View style={styles.transactionContainer}>
-          <Text style={styles.transactionHeader}>Transaction History</Text>
-          {transactions.map((txn, index) => (
-                <View
+        <Text style={styles.transactionHeader}>Transaction History</Text>
+
+        {transactions.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>No transactions yet</Text>
+          </View>
+        ) : (
+          <>
+            {transactions.map((txn, index) => (
+              <View
                 key={index}
                 style={[
-                    styles.transactionRow,
-                    index !== 0 && styles.transactionRowBorderTop, // Add border if not the first
+                  styles.transactionRow,
+                  index !== 0 && styles.transactionRowBorderTop,
                 ]}
-                >
+              >
                 <View>
-                    <Text style={styles.transactionType}>{txn.type}</Text>
-                    <Text style={styles.transactionMethod}>Method: {txn.method}</Text>
-                    <Text style={styles.transactionDate}>{txn.date}</Text>
+                  <Text style={styles.transactionType}>{txn.type}</Text>
+                  <Text style={styles.transactionMethod}>Method: {txn.method}</Text>
+                  <Text style={styles.transactionDate}>{txn.date}</Text>
                 </View>
                 <Text
-                    style={[
+                  style={[
                     styles.transactionAmount,
                     { color: txn.isPositive ? '#10B981' : '#EF4444' },
-                    ]}
+                  ]}
                 >
-                    {txn.amount}
+                  {txn.amount}
                 </Text>
-                </View>
+              </View>
             ))}
 
-          <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAll}>
-            <Text style={styles.viewAllText}>View All Transactions</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAll}>
+              <Text style={styles.viewAllText}>View All Transactions</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -145,6 +166,16 @@ const WalletScreen = () => {
 export default WalletScreen;
 
 const styles = StyleSheet.create({
+  emptyBox: {
+    paddingVertical: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    fontStyle: 'italic',
+  },
   container: {
     flex: 1,
     backgroundColor: '#15213B',
