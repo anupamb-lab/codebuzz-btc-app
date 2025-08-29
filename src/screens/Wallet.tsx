@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Transaction {
   type: string;
@@ -21,49 +22,27 @@ interface Transaction {
   isPositive: boolean;
 }
 
-const transactions_list = [
-  {
-    type: 'Deposit',
-    method: 'Bank Transfer',
-    date: '2025-07-06 14:32',
-    amount: '+$500.00',
-    isPositive: true,
-  },
-  {
-    type: 'Subscription Fee',
-    method: 'Card Payment',
-    date: '2025-07-05 10:12',
-    amount: '-$29.99',
-    isPositive: false,
-  },
-  {
-    type: 'Sent Payment',
-    method: 'Crypto (BTC)',
-    date: '2025-07-04 18:00',
-    amount: '-$100.00',
-    isPositive: false,
-  },
-  {
-    type: 'Deposit',
-    method: 'Bank Transfer',
-    date: '2025-07-06 14:32',
-    amount: '+$1500.00',
-    isPositive: true,
-  },
-  {
-    type: 'Deposit',
-    method: 'Bank Transfer',
-    date: '2025-07-06 14:32',
-    amount: '+$300.00',
-    isPositive: true,
-  },
-];
-
 const WalletScreen = () => {
+  const [btcBalance, setBtcBalance] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
-  // const [transactions, setTransactions] = React.useState<Transaction[]>(transactions_list);
-  
+  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Wallet'>;
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
+  useEffect(() => {
+    const loadBtc = async () => {
+      try {
+        const storedBtc = await AsyncStorage.getItem("btcBalance");
+        if (storedBtc) {
+          setBtcBalance(parseFloat(storedBtc));
+        }
+      } catch (e) {
+        console.error("Error loading BTC balance", e);
+      }
+    };
+    loadBtc();
+  }, []);
+
   const handleDeposit = () => {
     navigation.navigate('DepositScreen');
   };
@@ -76,10 +55,6 @@ const WalletScreen = () => {
     console.log('View All Transactions');
   };
 
-    type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Wallet'>;
-  
-    const navigation = useNavigation<LoginScreenNavigationProp>();
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#15213B" />
@@ -88,8 +63,10 @@ const WalletScreen = () => {
         {/* Balance Box */}
         <View style={styles.balanceBox}>
           <Text style={styles.balanceLabel}>Your Current Balance</Text>
-          <Text style={styles.balanceAmount}>$12,345.67</Text>
-          <Text style={styles.balanceChange}>+2.5% today</Text>
+          <Text style={styles.balanceAmount}>
+            {(btcBalance / 4).toFixed(12)} BTC
+          </Text>
+          <Text style={styles.balanceChange}>Mining earnings simulation</Text>
         </View>
 
         {/* Buttons */}
@@ -119,44 +96,44 @@ const WalletScreen = () => {
 
         {/* Transaction History */}
         <View style={styles.transactionContainer}>
-        <Text style={styles.transactionHeader}>Transaction History</Text>
+          <Text style={styles.transactionHeader}>Transaction History</Text>
 
-        {transactions.length === 0 ? (
-          <View style={styles.emptyBox}>
-            <Text style={styles.emptyText}>No transactions yet</Text>
-          </View>
-        ) : (
-          <>
-            {transactions.map((txn, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.transactionRow,
-                  index !== 0 && styles.transactionRowBorderTop,
-                ]}
-              >
-                <View>
-                  <Text style={styles.transactionType}>{txn.type}</Text>
-                  <Text style={styles.transactionMethod}>Method: {txn.method}</Text>
-                  <Text style={styles.transactionDate}>{txn.date}</Text>
-                </View>
-                <Text
+          {transactions.length === 0 ? (
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyText}>No transactions yet</Text>
+            </View>
+          ) : (
+            <>
+              {transactions.map((txn, index) => (
+                <View
+                  key={index}
                   style={[
-                    styles.transactionAmount,
-                    { color: txn.isPositive ? '#10B981' : '#EF4444' },
+                    styles.transactionRow,
+                    index !== 0 && styles.transactionRowBorderTop,
                   ]}
                 >
-                  {txn.amount}
-                </Text>
-              </View>
-            ))}
+                  <View>
+                    <Text style={styles.transactionType}>{txn.type}</Text>
+                    <Text style={styles.transactionMethod}>Method: {txn.method}</Text>
+                    <Text style={styles.transactionDate}>{txn.date}</Text>
+                  </View>
+                  <Text
+                    style={[
+                      styles.transactionAmount,
+                      { color: txn.isPositive ? '#10B981' : '#EF4444' },
+                    ]}
+                  >
+                    {txn.amount}
+                  </Text>
+                </View>
+              ))}
 
-            <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAll}>
-              <Text style={styles.viewAllText}>View All Transactions</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+              <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAll}>
+                <Text style={styles.viewAllText}>View All Transactions</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -166,16 +143,6 @@ const WalletScreen = () => {
 export default WalletScreen;
 
 const styles = StyleSheet.create({
-  emptyBox: {
-    paddingVertical: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    color: '#9CA3AF',
-    fontSize: 14,
-    fontStyle: 'italic',
-  },
   container: {
     flex: 1,
     backgroundColor: '#15213B',
@@ -185,7 +152,7 @@ const styles = StyleSheet.create({
     paddingTop: 60
   },
   balanceBox: {
-    backgroundColor: 'rgba(240, 255, 255, 0.17)', // azure with opacity
+    backgroundColor: 'rgba(240, 255, 255, 0.17)',
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
@@ -198,7 +165,7 @@ const styles = StyleSheet.create({
   },
   balanceAmount: {
     color: '#FFFFFF',
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: 'bold',
   },
   balanceChange: {
@@ -277,9 +244,19 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   transactionRowBorderTop: {
-  borderTopWidth: 1,
-  borderTopColor: '#334155',
-  paddingTop: 16,
-  marginTop: 16,
-},
+    borderTopWidth: 1,
+    borderTopColor: '#334155',
+    paddingTop: 16,
+    marginTop: 16,
+  },
+  emptyBox: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    fontStyle: 'italic',
+  },
 });
