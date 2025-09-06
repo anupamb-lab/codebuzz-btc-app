@@ -18,8 +18,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { API_BASE_URL } from '../config/api';
 import { Image } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
 
 interface ChangePasswordScreenProps {}
+
+type ChangePasswordNavigationProp = StackNavigationProp<RootStackParamList, 'ChangePasswordScreen'>;
 
 const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
   const [password, setPassword] = useState('');
@@ -27,9 +31,10 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
   const route = useRoute();
   const { email, resetToken } = route.params as { email: string; resetToken: string };
+
+  const navigation = useNavigation<ChangePasswordNavigationProp>();
 
   const validatePassword = (password: string): boolean => {
     return password.length >= 6;
@@ -96,7 +101,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
         Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('Login' as never),
+            onPress: () => navigation.navigate('Main' as never),
           },
         ]);
       } else {
@@ -119,7 +124,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
               Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
                 {
                   text: 'OK',
-                  onPress: () => navigation.navigate('Login' as never),
+                  onPress: () => navigation.navigate('Main' as never),
                 },
               ]);
               return;
@@ -239,26 +244,23 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
               </View>
 
               {/* Set Password Button */}
-               <LinearGradient
-                                  colors={['#2ACFEF', '#BD85FC']}
-                                  style={styles.setPasswordButton}
-                                  start={{x: 0, y: 0}}
-                                  end={{x: 1, y: 0}}
-                                >
-                <TouchableOpacity
-                  style={styles.setPasswordButtonInner}
-                  onPress={handleChangePassword}
-                  disabled={isLoading}
+
+              <TouchableOpacity activeOpacity={0.8} onPress={handleChangePassword}>
+                <LinearGradient
+                  colors={["#22D3EE", "#C084FC"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.setPasswordButton}
                 >
-                  <Text style={styles.setPasswordButtonText}>
-                    {isLoading ? 'SETTING...' : 'SET PASSWORD'}
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                  <View style={styles.setPasswordButtonInner}>
+                    <Text style={styles.setPasswordButtonText}>{isLoading ? 'SETTING...' : 'SET PASSWORD'}</Text>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
 
               {/* Back to Login */}
               <View style={styles.backContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
+                <TouchableOpacity onPress={() => navigation.navigate('Main' as never)}>
                   <Text style={styles.backText}>Back to Login</Text>
                 </TouchableOpacity>
               </View>
@@ -290,43 +292,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#1a1a2e',
   },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
   safeArea: {
     flex: 1,
   },
@@ -343,7 +308,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: Platform.OS === 'ios' ? 0 : 50,
   },
 
   bitcoinLogo: {
