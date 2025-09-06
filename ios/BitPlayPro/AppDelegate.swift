@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow(frame: UIScreen.main.bounds)
 
     factory.startReactNative(
-      withModuleName: "LoginDemo",
+      withModuleName: "BitPlayPro",
       in: window,
       launchOptions: launchOptions
     )
@@ -39,10 +39,6 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   }
 
   override func bundleURL() -> URL? {
-#if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
+    return URL(string: "https://a2da5ec069e2.ngrok-free.app/index.bundle?platform=ios")
   }
 }

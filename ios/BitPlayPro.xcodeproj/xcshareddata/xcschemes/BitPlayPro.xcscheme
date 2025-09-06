@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "LoginDemo.app"
-               BlueprintName = "LoginDemo"
-               ReferencedContainer = "container:LoginDemo.xcodeproj">
+               BuildableName = "BitPlayPro.app"
+               BlueprintName = "BitPlayPro"
+               ReferencedContainer = "container:BitPlayPro.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "LoginDemoTests.xctest"
-               BlueprintName = "LoginDemoTests"
-               ReferencedContainer = "container:LoginDemo.xcodeproj">
+               BuildableName = "BitPlayProTests.xctest"
+               BlueprintName = "BitPlayProTests"
+               ReferencedContainer = "container:BitPlayPro.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "LoginDemo.app"
-            BlueprintName = "LoginDemo"
-            ReferencedContainer = "container:LoginDemo.xcodeproj">
+            BuildableName = "BitPlayPro.app"
+            BlueprintName = "BitPlayPro"
+            ReferencedContainer = "container:BitPlayPro.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "LoginDemo.app"
-            BlueprintName = "LoginDemo"
-            ReferencedContainer = "container:LoginDemo.xcodeproj">
+            BuildableName = "BitPlayPro.app"
+            BlueprintName = "BitPlayPro"
+            ReferencedContainer = "container:BitPlayPro.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
