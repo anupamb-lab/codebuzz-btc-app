@@ -262,17 +262,17 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   logoutButton: {
-  justifyContent: "center",
-  alignItems: "center",
-  borderRadius: 40,
-  minHeight: 50,
-},
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
+    minHeight: 50,
+  },
 
-logoutText: {
-  color: "#fff",
-  fontSize: 16,
-  fontWeight: "600",
-},
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });
 
 export default MyProfileScreen;

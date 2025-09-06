@@ -5,7 +5,7 @@
 
 // Production API URL (Render deployment) - Working live server
 
-const SERVER_URL = 'https://bitplaypro.com'
+const SERVER_URL = 'https://dashboard.bitplaypro.com'
 const PRODUCTION_API_URL = `${SERVER_URL}/mobile_api`;
 
 // Development API URLs (for local testing with cloud database)

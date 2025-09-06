@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -120,16 +121,21 @@ const BalanceHistoryScreen = () => {
         })
       )}
 
-      <LinearGradient
-        colors={['#53D3F6', '#BD85FC', '#F472B6']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.backButton}
+      <TouchableOpacity
+        onPress={async () => {
+          navigation.goBack()
+        }}
+        activeOpacity={0.8}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <LinearGradient
+          colors={['#53D3F6', '#BD85FC', '#F472B6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.backButton}
+        >
           <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-      </LinearGradient>
+        </LinearGradient>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -141,7 +147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   topBar: {
-    paddingVertical: 20,
+    paddingVertical: Platform.OS === 'ios' ? 80 : 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -187,10 +193,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   backButton: {
-    borderRadius: 999,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 300,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
+    minHeight: 40,
+    marginTop: Platform.OS === 'ios' ? 200 : 300,
   },
   backButtonText: {
     color: '#fff',
