@@ -28,7 +28,6 @@ interface SubscriptionItem {
 
 const StoreScreen = () => {
 
-
     const [SubscriptionData, setSubscriptionData] = useState<SubscriptionItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -120,16 +119,19 @@ const StoreScreen = () => {
               <View style={styles.planFooter}>
                 <Text style={[styles.planPrice, { color: fcolor }]}>{`$${plan.plan_cost}.00`}</Text>
 
-                <TouchableOpacity onPress={() => handlePurchase(plan)}>
-                  <LinearGradient
-                    colors={['#22D3EE', '#C084FC']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.planButton}
+                <LinearGradient
+                  colors={['#22D3EE', '#C084FC']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.planButton}
+                >
+                  <TouchableOpacity
+                    onPress={() => handlePurchase(plan)}
+                    activeOpacity={0.8}
                   >
                     <Text style={styles.planButtonText}>Purchase Plan</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </LinearGradient>
               </View>
             </View>
           );
@@ -200,21 +202,33 @@ const styles = StyleSheet.create({
   },
   headerCard: {
     borderRadius: 16,
-    padding: 20,
+    marginBottom: 20,
     alignItems: 'center',
-    marginBottom: 24,
+
+    // Prevent collapse on iOS
+    minHeight: 120,        
+
+    // Shadows for nice card feel
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
   },
+
   headerTitle: {
-    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: 8,
+    paddingTop: Platform.OS === 'ios' ? 25 : 20
   },
+
   headerSubtitle: {
-    color: '#E2E8F0',
-    textAlign: 'center',
     fontSize: 14,
-    marginTop: 8,
+    color: "#E2E8F0",
     lineHeight: 20,
+    textAlign: 'center',
   },
   sectionTitle: {
     color: '#FFFFFF',
@@ -257,11 +271,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 8,
+    minHeight: Platform.OS === 'ios' ? 50 : 40,
+    minWidth: Platform.OS === 'ios' ? 140 : 110,
   },
   planButtonText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 13,
+    paddingRight: Platform.OS === 'ios' ? 5 : 0
   },
   customBox: {
     backgroundColor: '#334155',

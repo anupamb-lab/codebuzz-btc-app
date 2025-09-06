@@ -18,8 +18,6 @@ import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import { testApiConnectivity, getApiInfo } from '../utils/testApi';
-import SocialLoginButtons from '../components/SocialLoginButtons';
-import { initializeGoogleSignIn } from '../services/socialAuth';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import BackgroundWrapper from '../components/BackgroundWrapper';
@@ -301,22 +299,23 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
                   </View>
 
                   {/* Login Button */}
-                  <LinearGradient
-                    colors={['#2ACFEF', '#BD85FC']}
-                    style={styles.loginButton}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
+                  <TouchableOpacity 
+                    style={styles.loginButton} 
+                    onPress={handleLogin} 
+                    disabled={isLoading}
+                    activeOpacity={0.8}
                   >
-                    <TouchableOpacity
-                      style={styles.loginButtonInner}
-                      onPress={handleLogin}
-                      disabled={isLoading}
+                    <LinearGradient
+                      colors={['#2ACFEF', '#BD85FC']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.loginButtonGradient}
                     >
                       <Text style={styles.loginButtonText}>
                         {isLoading ? 'SIGNING IN...' : 'LOG IN'}
                       </Text>
-                    </TouchableOpacity>
-                  </LinearGradient>
+                    </LinearGradient>
+                  </TouchableOpacity>
 
                   {/* Sign Up Link */}
                   <TouchableOpacity style={styles.signUpContainer} onPress={handleSignUpPress}>
@@ -469,8 +468,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: 15,
-    paddingVertical: 18,
+    paddingVertical: 10,
     height: 55,
+    width: Platform.OS === 'ios' ? '90%' : '100%'
   },
   inputIcon: {
     fontSize: 16,
@@ -495,23 +495,30 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   loginButton: {
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 20,
-    height: 45,
-    width: 160,
-    alignSelf: 'center',
+    borderRadius: 25,
+    overflow: "hidden",
+    width: Platform.OS === 'ios' ? '45%' : '50%', 
+    alignSelf: "center",
+    marginVertical: 10,
+    marginBottom: Platform.OS === 'ios' ? '8%' : 0
+  },
+
+  loginButtonGradient: {
+    height: Platform.OS === 'ios' ? 40 : 50,       
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 25,
+  },
+
+  loginButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
   },
   loginButtonInner: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  loginButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    letterSpacing: 1,
   },
   forgotPasswordContainer: {
     alignItems: 'center',
@@ -521,6 +528,7 @@ const styles = StyleSheet.create({
     color: '#42B0FF',
     fontSize: 16,
     fontWeight: '600',
+    paddingBottom: Platform.OS === 'ios' ? '8%' : 0
   },
   signUpContainer: {
     alignItems: 'center',

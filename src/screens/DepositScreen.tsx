@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const currencies = ['USD - United States Dollar', 'BTC - Bitcoin', 'USDT - TRC20'];
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
+
+const currencies = ['USD - United States Dollar', 'BTC - Bitcoin', 'USDT - BEP20', 'USDC - BEP20'];
 const methods = ['Bank Transfer', 'Crypto', 'Payment Gateway'];
 
-const DepositScreen = ({ navigation }: any) => {
+type NavigationProp = StackNavigationProp<RootStackParamList, 'DepositScreen'>;
+
+const DepositScreen = () => {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(currencies[0]);
   const [method, setMethod] = useState(methods[0]);
@@ -26,6 +32,19 @@ const DepositScreen = ({ navigation }: any) => {
 
   const [currencyDropdownVisible, setCurrencyDropdownVisible] = useState(false);
   const [methodDropdownVisible, setMethodDropdownVisible] = useState(false);
+
+  const navigation = useNavigation<NavigationProp>();
+
+  const filteredMethods =
+  currency.startsWith('USD - United States Dollar')
+    ? methods.filter(m => m !== 'Crypto')
+    : ['Crypto'];
+
+  useEffect(() => {
+  if (!filteredMethods.includes(method)) {
+      setMethod(filteredMethods[0]);
+    }
+  }, [currency]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,7 +87,10 @@ const DepositScreen = ({ navigation }: any) => {
 
           {/* Method Dropdown */}
           <Text style={styles.label}>Deposit Method</Text>
-          <TouchableOpacity style={styles.dropdownTrigger} onPress={() => setMethodDropdownVisible(true)}>
+          <TouchableOpacity
+            style={styles.dropdownTrigger}
+            onPress={() => setMethodDropdownVisible(true)}
+          >
             <Text style={styles.dropdownText}>{method}</Text>
             <Icon name="arrow-drop-down" size={24} color="#94A3B8" />
           </TouchableOpacity>
@@ -85,7 +107,19 @@ const DepositScreen = ({ navigation }: any) => {
           />
 
           {/* Confirm Button */}
-          <TouchableOpacity onPress={() => console.log('Deposit confirmed')}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => {
+              if (method === 'Crypto') {
+                navigation.navigate('CryptoDepositScreen', { amount, currency, notes });
+              } else if (method === 'Bank Transfer') {
+                navigation.navigate('CryptoDepositScreen', { amount, currency, notes });
+              } else if (method === 'Payment Gateway') {
+                navigation.navigate('CryptoDepositScreen', { amount, currency, notes });
+              }
+            }}
+            style={{ borderRadius: 10, overflow: "hidden" }}
+          >
             <LinearGradient
               colors={['#9333EA', '#4F46E5']}
               start={{ x: 0, y: 0 }}
@@ -143,7 +177,7 @@ const DepositScreen = ({ navigation }: any) => {
           onPress={() => setMethodDropdownVisible(false)}
         >
           <View style={styles.modalDropdown}>
-            {methods.map((item, index) => (
+            {filteredMethods.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
@@ -239,15 +273,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   confirmButton: {
-    borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: Platform.OS === 'ios' ? 45 : 50,
   },
+
   confirmText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "600",
   },
   noteItem: {
     flexDirection: 'row',

@@ -85,7 +85,14 @@ const WithdrawScreen = ({ navigation }: any) => {
           />
 
           {/* Confirm Button */}
-          <TouchableOpacity onPress={() => console.log('Withdraw confirmed')}>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => {
+              console.log("Asking Withdraw!!");
+            }}
+            style={{ borderRadius: 10, overflow: "hidden" }}
+          >
             <LinearGradient
               colors={['#9333EA', '#4F46E5']}
               start={{ x: 0, y: 0 }}
@@ -239,15 +246,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   confirmButton: {
-    borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: Platform.OS === 'ios' ? 45 : 50,
   },
+
   confirmText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "600",
   },
   noteItem: {
     flexDirection: 'row',

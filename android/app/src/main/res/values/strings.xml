@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bitcoin Mining</string>
+    <string name="app_name">BitPlayPro</string>
 
     <!-- Facebook App ID - Replace with your actual Facebook App ID -->
     <string name="facebook_app_id">562940163421308</string>

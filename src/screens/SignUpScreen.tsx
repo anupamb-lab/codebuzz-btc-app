@@ -118,37 +118,6 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
         Alert.alert('Error', error.message || 'Network error. Please check your connection.');
       }
     };
-  
-    const handleSocialSignUpSuccess = async (userData: any) => {
-      try {
-        console.log('Social Sign Up Success:', userData);
-
-        // Authenticate user with the auth context
-        await login(userData.token, userData.user);
-
-        // Always navigate to referral screen after social signup
-        Alert.alert(
-          'Signup Successful',
-          `Welcome ${userData.user?.name || 'User'}! Your account has been created successfully.`,
-          [
-            {
-              text: 'Continue',
-              onPress: () => {
-                navigation.replace('ReferralScreen');
-              },
-            },
-          ]
-        );
-      } catch (error) {
-        console.error('Social signup success handler error:', error);
-        Alert.alert('Error', 'Failed to complete signup. Please try again.');
-      }
-    };
-  
-    const handleSocialSignUpError = (error: string) => {
-      console.error('Social Sign Up Error:', error);
-      Alert.alert('Error', error);
-    };
 
   return (
     <ImageBackground
@@ -158,170 +127,129 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
 
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
 
-      <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoidingView}
+      <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 30 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            bounces={false}
-          >
-            <View style={styles.content}>
-            {/* Bitcoin Logo */}
-            <View style={styles.logoContainer}>
-              <View style={styles.bitcoinLogo}>
-                <Image
-                  source={require('../assets/images/btc_icon.png')}
-                  style={styles.bitcoinImage}
-                  resizeMode="contain"
-                />
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            
+            {/* Logo */}
+            <View style={{ alignItems: 'center', marginBottom: 30 }}>
+              <Image
+                source={require('../assets/images/btc_icon.png')}
+                style={{ width: 100, height: 100 }}
+                resizeMode="contain"
+              />
+            </View>
+
+            {/* Form Box */}
+            <LinearGradient
+              colors={['#1B202CAA', '#2E3646AA']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ borderRadius: 16, padding: Platform.OS === 'ios' ? 20 : 10, height: Platform.OS === 'ios' ? "58%" : "45%" }}
+            >
+              {/* Name */}
+              <View style={{ marginBottom: 15 }}>
+                <View style={styles.inputWrapper}>
+                  <Image source={require('../assets/images/icon_input_box_user.png')} style={styles.inputIconImage} />
+                  <TextInput
+                    style={{ ...styles.input, flex: 1 }}
+                    placeholder="NAME"
+                    placeholderTextColor="#888"
+                    value={name}
+                    onChangeText={(text) => {
+                      setName(text);
+                      if (nameError) setNameError('');
+                    }}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                  />
+                </View>
+                {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
               </View>
-            </View>
 
-            <View style={styles.screenContainer}>
-              {/* Gradient Form Box */}
-              <LinearGradient
-                colors={['#1B202CAA', '#2E3646AA']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.formBox}
+              {/* Email */}
+              <View style={{ marginBottom: 15 }}>
+                <View style={styles.inputWrapper}>
+                  <Image source={require('../assets/images/icon_input_box_email.png')} style={styles.inputIconImage} />
+                  <TextInput
+                    style={{ ...styles.input, flex: 1 }}
+                    placeholder="EMAIL"
+                    placeholderTextColor="#888"
+                    value={email}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (emailError) setEmailError('');
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+              </View>
+
+              {/* Password */}
+              <View style={{ marginBottom: 15 }}>
+                <View style={styles.inputWrapper}>
+                  <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
+                  <TextInput
+                    style={{ ...styles.input, flex: 1 }}
+                    placeholder="PASSWORD"
+                    placeholderTextColor="#888"
+                    value={password}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (passwordError) setPasswordError('');
+                    }}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+                {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+              </View>
+
+              {/* Signup Button */}
+              <TouchableOpacity
+                style={{
+                  marginTop: 20,
+                  backgroundColor: '#2ACFEF',
+                  borderRadius: 12,
+                  paddingVertical: 14,
+                  alignItems: 'center',
+                  width: Platform.OS === 'ios' ? '88%' : '100%'
+                }}
+                onPress={handleSignUp}
+                disabled={isLoading}
               >
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                  {isLoading ? 'Please wait...' : 'SIGN UP'}
+                </Text>
+              </TouchableOpacity>
 
-                <View style={styles.formContainer}>
+              {/* Already a user */}
+              <TouchableOpacity
+                style={{ marginTop: 10, alignItems: 'center' }}
+                onPress={() => navigation.navigate('Login' as never)}
+              >
+                <Text style={{ color: 'white', fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-13%' : 0, marginTop: Platform.OS === 'ios' ? '4%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
+              </TouchableOpacity>
 
-                {/* Name Input */}
-                <View style={styles.inputContainer}>
-                  <View style={styles.inputWrapper}>
-                    <Image
-                        source={require('../assets/images/icon_input_box_user.png')}
-                        style={styles.inputIconImage}
-                        resizeMode="contain"
-                      />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="NAME"
-                      placeholderTextColor="#888888"
-                      value={name}
-                      onChangeText={(text) => {
-                        setName(text);
-                        if (nameError) setNameError('');
-                      }}
-                      autoCapitalize="words"
-                      autoCorrect={false}
-                      selectionColor="#00d4ff"
-                      underlineColorAndroid="transparent"
-                    />
-                  </View>
-                  {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
-                </View>
+            </LinearGradient>
 
-                  {/* Email Input */}
-                  <View style={styles.inputContainer}>
-                    <View style={styles.inputWrapper}>
-                      <Image
-                        source={require('../assets/images/icon_input_box_email.png')}
-                        style={styles.inputIconImage}
-                        resizeMode="contain"
-                      />
-                      <TextInput
-                        style={styles.input}
-                        placeholder="EMAIL"
-                        placeholderTextColor="#aaaaaa"
-                        value={email}
-                        onChangeText={(text) => {
-                          setEmail(text);
-                          if (emailError) setEmailError('');
-                        }}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        selectionColor="#00d4ff"
-                        underlineColorAndroid="transparent"
-                      />
-                    </View>
-                    {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-                  </View>
-
-                  {/* Password Input */}
-                  <View style={styles.inputContainer}>
-                    <View style={styles.inputWrapper}>
-                      <Image
-                        source={require('../assets/images/icon_input_box_pass.png')}
-                        style={styles.inputIconImage}
-                        resizeMode="contain"
-                      />
-                      <TextInput
-                        style={styles.input}
-                        placeholder="PASSWORD"
-                        placeholderTextColor="#aaaaaa"
-                        value={password}
-                        onChangeText={(text) => {
-                          setPassword(text);
-                          if (passwordError) setPasswordError('');
-                        }}
-                        secureTextEntry
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        selectionColor="#00d4ff"
-                        underlineColorAndroid="transparent"
-                      />
-                    </View>
-                    {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-                  </View>
-
-                  {/* Login Button */}
-                  <LinearGradient
-                    colors={['#2ACFEF', '#BD85FC']}
-                    style={styles.loginButton}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                  >
-                    <TouchableOpacity
-                      style={styles.loginButtonInner}
-                      onPress={handleSignUp}
-                      disabled={isLoading}
-                    >
-                      <Text style={styles.signUpButtonText}>
-                                            {isLoading ? 'please wait..' : 'SIGN UP'}
-                                          </Text>
-                    </TouchableOpacity>
-                  </LinearGradient>
-
-                 {/* Login Link */}
-                  <TouchableOpacity style={styles.signUpContainer} onPress={() => navigation.navigate('Login' as never)}>
-                     {/* <Text style={styles.signUpText}>
-                                       Already a user? <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}><Text style={styles.loginLink}>Sign In</Text></TouchableOpacity>
-                                     </Text> */}
-                    <Text style={styles.signUpText}>
-                      Already a user? <Text style={styles.signUpLink}>Sign In</Text>
-                    </Text>
-                  </TouchableOpacity>
-                                     
-                </View>
-
-
-              </LinearGradient>
-
-              {/* Social Login */}
-                {/* <SocialLoginButtons
-                  onSuccess={handleSocialSignUpSuccess}
-                  onError={handleSocialSignUpError}
-                  disabled={isLoading}
-                /> */}
-
-            </View>
-
-            {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Bitcoin Mining</Text>
-            </View>
           </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
     </ImageBackground>
   );
 };
@@ -437,8 +365,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: 15,
-    paddingVertical: 18,
+    paddingVertical: 10,
     height: 55,
+    width: Platform.OS === 'ios' ? 280 : 350
   },
   inputIcon: {
     fontSize: 16,
@@ -454,7 +383,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     includeFontPadding: false,
     paddingVertical: 0,
-    margin: 0,
+    margin: 0
   },
   errorText: {
     color: '#ff6b6b',

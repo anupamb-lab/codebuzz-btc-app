@@ -74,7 +74,10 @@ const DeleteAccountScreen = () => {
               ))}
 
               {/* Delete Account Button */}
-              <TouchableOpacity style={{ marginTop: 20 }}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={{ borderRadius: 12, overflow: "hidden", marginTop: 20 }}
+              >
                 <LinearGradient
                   colors={['#EE5F22', '#D20BBE']}
                   start={{ x: 0, y: 0 }}
@@ -161,15 +164,18 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   gradientButtonFull: {
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
+    height: 50,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
+
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+},
 });
 
 export default DeleteAccountScreen;

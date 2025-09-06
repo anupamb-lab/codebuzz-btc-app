@@ -7,7 +7,7 @@ import {
   TestIds,
 } from 'react-native-google-mobile-ads';
 import { useEffect, useState, useCallback } from 'react';
-
+import { Platform } from 'react-native';
 
 // Real ones
 
@@ -17,9 +17,15 @@ import { useEffect, useState, useCallback } from 'react';
 
 // Testing purpose
 
-const AD_UNIT_ID = 'ca-app-pub-3940256099942544/5224354917';
+const AD_UNIT_ID = Platform.select({
+  ios: 'ca-app-pub-3940256099942544/1712485313',
+  android: 'ca-app-pub-3940256099942544/5224354917',
+});
 
-const HOMEBANNER_AD_UNIT_ID = 'ca-app-pub-3940256099942544/6300978111';
+const HOMEBANNER_AD_UNIT_ID = Platform.select({
+  ios: 'ca-app-pub-3940256099942544/2934735716',
+  android: 'ca-app-pub-3940256099942544/6300978111',
+});
 
 type Props = { onReward?: (amount: number, type: string) => void };
 
@@ -37,7 +43,7 @@ function RewardButton({ onReward }: Props) {
   const [showing, setShowing] = useState(false);
 
   useEffect(() => {
-    const instance = RewardedAd.createForAdRequest(AD_UNIT_ID);
+    const instance = RewardedAd.createForAdRequest(AD_UNIT_ID ?? "");
     setRewarded(instance);
 
     const unsubLoaded = instance.addAdEventListener(
@@ -76,7 +82,7 @@ function RewardButton({ onReward }: Props) {
 }
 
 function createRewarded() {
-  return RewardedAd.createForAdRequest(AD_UNIT_ID);
+  return RewardedAd.createForAdRequest(AD_UNIT_ID ?? "");
 }
 
 function showRewardedAd(onReward?: (amount: number, type: string) => void) {

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
@@ -46,18 +47,25 @@ const TwoFactorScreen = () => {
             : 'You have not enabled Two-Factor Authentication. Enable it to add an extra layer of security to your account.'}
         </Text>
 
-        <LinearGradient
-          colors={['#2ACFEF', '#BD85FC']}
-          style={styles.buttonContainer}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+        {/* Fixed Button */}
+        <TouchableOpacity
+          onPress={handleToggle2FA}
+          activeOpacity={0.8}
+          style={{ borderRadius: 12, overflow: "hidden", marginTop: 20 }}
         >
-          <TouchableOpacity style={styles.buttonInner} onPress={handleToggle2FA}>
-            <Text style={styles.buttonText}>
-              {is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
-            </Text>
-          </TouchableOpacity>
-        </LinearGradient>
+          <LinearGradient
+            colors={['#2ACFEF', '#BD85FC']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.buttonContainer}
+          >
+            <View style={styles.buttonInner}>
+              <Text style={styles.buttonText}>
+                {is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+              </Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
       </LinearGradient>
     </ScrollView>
   );
@@ -65,15 +73,17 @@ const TwoFactorScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
+    padding: Platform.OS === 'ios' ? 0 : 24,
     flexGrow: 1,
     backgroundColor: '#0F172A', // Matches your theme
     justifyContent: 'center',
   },
   card: {
     borderRadius: 20,
-    padding: 24,
+    padding: Platform.OS === 'ios' ? 0 : 24,
+    minHeight: "30%",
     elevation: 3,
+    paddingTop: 25
   },
   title: {
     fontSize: 20,
@@ -90,19 +100,23 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   buttonContainer: {
-    borderRadius: 999,
-    overflow: 'hidden',
-    alignSelf: 'center',
-    width: 200,
+    height: 45,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
+
   buttonInner: {
-    paddingVertical: 12,
-    alignItems: 'center',
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
+
   buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+    letterSpacing: 0.5,
   },
 });
 

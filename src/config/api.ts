@@ -5,7 +5,7 @@
 
 // Production API URL (Render deployment) - Working live server
 
-const SERVER_URL = 'http://31.97.189.9'
+const SERVER_URL = 'https://bitplaypro.com'
 const PRODUCTION_API_URL = `${SERVER_URL}/mobile_api`;
 
 // Development API URLs (for local testing with cloud database)
@@ -20,6 +20,10 @@ const DEVELOPMENT_API_URLS = {
 export const API_BASE_URL = PRODUCTION_API_URL;
 
 export const DATA_ENDPOINTS = {
+  GET_BALANCE_HISTORY: "/api/wallet/history",
+  SET_WALLET_BALANCE: '/api/wallet/balance',
+  GET_WALLET_BALANCE: '/api/wallet/balance',
+  GET_DEPOSIT_ADDRESS: '/api/deposit-address',
   GET_FAQS: '/api/faqs',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
   CREATE_SUPPORT_TICKET: '/api/help/create',

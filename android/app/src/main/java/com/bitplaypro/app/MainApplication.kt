@@ -1,4 +1,4 @@
-package com.mining.app
+package com.bitplaypro.app
 
 import android.app.Application
 import com.facebook.react.PackageList

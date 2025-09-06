@@ -39,4 +39,6 @@ export type RootStackParamList = {
   NotificationPreferencesScreen: undefined;
   ChangePasswordScreen: {email: string, resetToken: string};
   DailyRewardsScreen: undefined;
+  CryptoDepositScreen: {amount: any, currency: string, notes: string};
+  BalanceHistoryScreen: undefined;
 };

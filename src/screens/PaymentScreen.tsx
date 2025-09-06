@@ -20,8 +20,8 @@ const paymentMethods = [
   { key: 'bank', label: 'Bank Deposit', icon: 'business-outline' },
 ];
 
-const coinOptions = ['BTC', 'ETH', 'USDT'];
-const chainOptions = ['TRC20', 'ERC20', 'BEP20'];
+const coinOptions = ['BTC', 'USDT', 'USDC'];
+const chainOptions = ['BTC', 'BEP20'];
 
 const MakePaymentScreen = ({ navigation, route }) => {
   const { package_id } = route.params;
@@ -29,8 +29,8 @@ const MakePaymentScreen = ({ navigation, route }) => {
   const [btcAddress, setBtcAddress] = useState('1A1zP1eP5QGefi2DMPtFtL5SLmv7DivfNa');
   const [amountBTC, setAmountBTC] = useState('0.0015');
   const [btcUSDValue, setBtcUSDValue] = useState('');
-  const [coin, setCoin] = useState('BTC');
-  const [chain, setChain] = useState('TRC20');
+  const [coin, setCoin] = useState('USDT');
+  const [chain, setChain] = useState('BEP20');
 
   useEffect(() => {
     fetchLiveBTCPrice();
@@ -92,14 +92,18 @@ const MakePaymentScreen = ({ navigation, route }) => {
         <Text style={styles.qrSub}>Scan QR code to pay</Text>
       </TouchableOpacity>
 
-      <LinearGradient
-        colors={["#22D3EE", "#C084FC"]}
-        style={styles.confirmButton}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={styles.confirmButtonText}>I've Made The Payment</Text>
-      </LinearGradient>
+      <TouchableOpacity activeOpacity={0.8}>
+        <LinearGradient
+          colors={["#22D3EE", "#C084FC"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.confirmButton}
+        >
+          <View style={styles.confirmButtonInner}>
+            <Text style={styles.confirmButtonText}>I've Made The Payment</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 
@@ -137,7 +141,7 @@ const MakePaymentScreen = ({ navigation, route }) => {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={{ paddingHorizontal: 16 }}>
+      <ScrollView style={{ paddingHorizontal: Platform.OS === 'ios' ? 13 : 16 }}>
         {/* Order Summary */}
         <LinearGradient
           colors={["#334155", "#1E293B"]}
@@ -145,19 +149,30 @@ const MakePaymentScreen = ({ navigation, route }) => {
           end={{ x: 1, y: 1 }}
           style={styles.orderSummary}
         >
-          <Text style={styles.sectionTitle}>Order Summary</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryText}>Starter Miner Pack (10 TH/s)</Text>
-            <Text style={styles.summaryText}>$99.00</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryText}>Service Fee</Text>
-            <Text style={styles.summaryText}>$1.00</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.summaryRow}>
-            <Text style={[styles.summaryText, { fontWeight: '600' }]}>Total Amount Due</Text>
-            <Text style={[styles.summaryText, { fontWeight: '600', color: '#22D3EE' }]}>$100.00</Text>
+          <View style={styles.orderSummaryContent}>
+            <Text style={styles.sectionTitle}>Order Summary</Text>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>Starter Miner Pack (10 TH/s)</Text>
+              <Text style={styles.summaryText}>$99.00</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryText}>Service Fee</Text>
+              <Text style={styles.summaryText}>$1.00</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.summaryRow}>
+              <Text style={[styles.summaryText, { fontWeight: '600' }]}>
+                Total Amount Due
+              </Text>
+              <Text
+                style={[
+                  styles.summaryText,
+                  { fontWeight: '600', color: '#22D3EE' },
+                ]}
+              >
+                $100.00
+              </Text>
+            </View>
           </View>
         </LinearGradient>
 
@@ -209,6 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    marginTop: Platform.OS === 'ios' ? 50 : 20
   },
   topTitle: {
     color: 'white',
@@ -217,8 +233,11 @@ const styles = StyleSheet.create({
   },
   orderSummary: {
     borderRadius: 12,
-    padding: 16,
     marginVertical: 16,
+    overflow: 'hidden',
+  },
+  orderSummaryContent: {
+    padding: 16,
   },
   sectionTitle: {
     color: 'white',
@@ -313,11 +332,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   confirmButton: {
-    marginTop: 20,
-    paddingVertical: 14,
     borderRadius: 10,
+    marginTop: 20,
+    overflow: 'hidden',
+  },
+
+  confirmButtonInner: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: 'center',
   },
+
   confirmButtonText: {
     color: 'white',
     fontSize: 14,

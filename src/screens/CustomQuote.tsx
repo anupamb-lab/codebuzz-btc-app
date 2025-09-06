@@ -74,7 +74,8 @@ const CustomQuote: React.FC<CustomQuoteProps> = () => {
                     <Text style={styles.label}>Hashrate (TH/s) :</Text>
                     <TextInput style={styles.input} placeholder="600" placeholderTextColor="#aaa" />
                   </View>
-                  <TouchableOpacity style={styles.getPriceButton}>
+                  
+                  <TouchableOpacity activeOpacity={0.8} style={styles.getPriceButton}>
                     <LinearGradient
                       colors={['#2ACEEE', '#BC86FC']}
                       start={{ x: 1, y: 0 }}
@@ -95,7 +96,7 @@ const CustomQuote: React.FC<CustomQuoteProps> = () => {
                 </Text>
 
                 {/* Get Quote Button */}
-                <TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.8} style={{ borderRadius: 10, overflow: 'hidden' }}>
                   <LinearGradient
                     colors={['#2ACEEE', '#BC86FC']}
                     start={{ x: 1, y: 0 }}
@@ -259,18 +260,22 @@ row: {
 },
 getPriceButton: {
   marginLeft: 12,
-  justifyContent: 'center',
-},
-gradientButton: {
-  paddingVertical: 10,
-  paddingHorizontal: 18,
   borderRadius: 10,
+  overflow: 'hidden',
 },
-gradientButtonFull: {
-  paddingVertical: 14,
+
+gradientButton: {
   borderRadius: 10,
   alignItems: 'center',
-  marginTop: 10,
+  justifyContent: 'center',
+  minHeight: Platform.OS === 'ios' ? 30 : 40,
+  minWidth:  100
+},
+
+gradientButtonFull: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: Platform.OS === 'ios' ? 40 : 50
 },
 buttonText: {
   color: '#fff',

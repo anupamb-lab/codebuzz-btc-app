@@ -16,14 +16,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { apiRequest, API_ENDPOINTS } from '../config/api';
-import { testApiConnectivity, getApiInfo } from '../utils/testApi';
-import SocialLoginButtons from '../components/SocialLoginButtons';
-import { initializeGoogleSignIn } from '../services/socialAuth';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
-import BackgroundWrapper from '../components/BackgroundWrapper';
-import { Image } from 'react-native';
 import { useAuth } from '../auth/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons';
 const { width, height } = Dimensions.get('window');
@@ -122,7 +116,7 @@ const styles = StyleSheet.create({
   formBox: {
     width: '100%',
     borderRadius: 16,
-    padding: 16,
+    padding: Platform.OS === 'ios' ? 5 : 16,
   },
 
   container: {
@@ -141,38 +135,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderWidth: 1,
     borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
   },
   safeArea: {
     flex: 1,
@@ -366,6 +328,7 @@ transactionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 16,
+    padding: 15
   },
   transactionType: {
     fontWeight: 'bold',

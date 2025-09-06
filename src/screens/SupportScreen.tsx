@@ -17,8 +17,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
 import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../components/types';
+import { useNavigation } from '@react-navigation/native';
 
-const SupportScreen = ({ navigation }: any) => {
+const SupportScreen = () => {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -27,6 +31,11 @@ const SupportScreen = ({ navigation }: any) => {
     email: '',
     message: '',
   });
+
+  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SupportScreen'>;
+
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
@@ -110,10 +119,14 @@ const SupportScreen = ({ navigation }: any) => {
       <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
 
     <SafeAreaView style={styles.container}>      
-      <View style={styles.header}>
-              <Text style={styles.headerTitle}>SUPPORT</Text>
-              <View style={styles.placeholder} />
-            </View>
+      
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.topBarTitle}>SUPPORT</Text>
+      </View>
+
       <KeyboardAvoidingView 
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -185,16 +198,19 @@ const SupportScreen = ({ navigation }: any) => {
 
           {/* Submit Button */}
           <TouchableOpacity
-            style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
             onPress={handleSubmit}
             disabled={isLoading}
             activeOpacity={0.8}
+            style={{ borderRadius: 40, overflow: "hidden" }}
           >
             <LinearGradient
               colors={['#6465F1', '#A755F7']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.submitGradient}
+              style={[
+                styles.submitGradient,
+                isLoading && styles.submitButtonDisabled,
+              ]}
             >
               <Text style={styles.submitButtonText}>
                 {isLoading ? 'SENDING...' : 'SEND'}
@@ -330,28 +346,21 @@ const styles = StyleSheet.create({
     height: 120,
     paddingTop: 15,
   },
-  submitButton: {
-    marginTop: 5,
-    borderRadius: 10,
-    overflow: 'hidden',
-    height: 48,
-    width: 150,
-    alignSelf: 'center',
+  submitGradient: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
+    minHeight: Platform.OS === 'ios' ? 45 : 55,
   },
+
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
   submitButtonDisabled: {
     opacity: 0.6,
-  },
-  submitGradient: {
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  submitButtonText: {
-    color: '#ffffff',
-    fontSize: 13,
-    fontWeight: 'bold',
-    letterSpacing: 1,
   },
   bottomSpacing: {
     height: 50,
@@ -385,6 +394,23 @@ const styles = StyleSheet.create({
    logoContainer: {
     alignItems: 'center',
     marginTop: 75,
+  },
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 16,
+    position: "relative",
+  },
+
+  topBarTitle: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
   },
 
 });

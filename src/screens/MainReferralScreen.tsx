@@ -125,34 +125,38 @@ const InternalReferralScreen: React.FC<InternalReferralScreenProps> = () => {
 
                 {/* Invite Section */}
                 <LinearGradient
-                    colors={['#1B202CAA', '#2E3646AA']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.formBox}
+                  colors={['#1B202CAA', '#2E3646AA']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.formBox}
                 >
-                    <View style={styles.formContainer}>
+                  <View style={styles.formContainer}>
                     <Text style={styles.earnText}>
-                        Earn up to 50$ for each referral that uses the app for more than 5 days.{' '}
-                        <Text style={styles.learnMore}>Learn more</Text>
+                      Earn up to 50$ for each referral that uses the app for more than 5 days.{' '}
+                      <Text style={styles.learnMore}>Learn more</Text>
                     </Text>
 
-                    <LinearGradient
+                    {/* Fixed Invite Button */}
+                    <TouchableOpacity
+                      onPress={handleInvite}
+                      disabled={isLoading}
+                      activeOpacity={0.8}
+                      style={{ borderRadius: 15, overflow: "hidden", alignSelf: "center" }}
+                    >
+                      <LinearGradient
                         colors={['#2ACFEF', '#BD85FC']}
-                        style={styles.loginButton}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
-                    >
-                        <TouchableOpacity
-                        style={styles.loginButtonInner}
-                        onPress={handleInvite}
-                        disabled={isLoading}
-                        >
-                        <Text style={styles.loginButtonText}>
+                        style={styles.loginButton}
+                      >
+                        <View style={styles.loginButtonInner}>
+                          <Text style={styles.loginButtonText}>
                             {isLoading ? 'Loading...' : 'INVITE'}
-                        </Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                    </View>
+                          </Text>
+                        </View>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
                 </LinearGradient>
 
                 {/* Share From Section */}
@@ -200,61 +204,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-
   formBox: {
     width: '100%',
     borderRadius: 16,
     padding: 16,
   },
-
   container: {
     flex: 1,
     backgroundColor: '#1a1a2e',
-  },
-  backgroundPattern: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#1a1a2e',
-  },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
   },
   safeArea: {
     flex: 1,
@@ -271,7 +228,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 50,
   },
-
   bitcoinLogo: {
     width: 100,
     height: 100,
@@ -283,57 +239,19 @@ const styles = StyleSheet.create({
     height: '100%',
     transform: [{ rotate: '3deg' }],
   },
-  bitcoinSymbol: {
-    fontSize: 80,
-    color: '#8b45ff',
-    fontWeight: 'bold',
-  },
   formContainer: {
     marginBottom: 1,
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 15,
-    paddingVertical: 18,
-    height: 55,
-  },
-  inputIcon: {
-    fontSize: 16,
-    marginRight: 12,
-    color: '#8a8a8a',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#ffffff',
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    textAlignVertical: 'center',
-    includeFontPadding: false,
-    paddingVertical: 0,
-    margin: 0,
-  },
-  errorText: {
-    color: '#ff6b6b',
-    fontSize: 12,
-    marginTop: 5,
-    marginLeft: 15,
+    width: 300
   },
   loginButton: {
     borderRadius: 15,
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 45,
     height: 45,
     width: 160,
-    alignSelf: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
   loginButtonInner: {
     flex: 1,
@@ -346,206 +264,120 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  forgotPasswordContainer: {
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  forgotPasswordText: {
-    color: '#42B0FF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  signUpContainer: {
-    alignItems: 'center',
-  },
-  signUpText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '400',
-  },
-  signUpLink: {
-    color: '#42B0FF',
-    fontWeight: '600',
-  },
-  socialContainer: {
-    alignItems: 'center'
-  },
-  socialText: {
-    color: '#ffffff',
-    fontSize: 12,
-    marginBottom: 20,
-    letterSpacing: 1.5,
-    fontWeight: '500',
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  socialButton: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  facebookButton: {
-    backgroundColor: '#3b5998',
-  },
-  googleButton: {
-    backgroundColor: '#dd4b39',
-  },
-  linkedinButton: {
-    backgroundColor: '#0077b5',
-  },
-  socialIcon: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  footer: {
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 30,
-    left: 0,
-    right: 0,
-  },
-  footerText: {
-    color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '400',
-  },
-  testApiButton: {
-    backgroundColor: '#333',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 20,
-    alignSelf: 'center',
-  },
-  testApiText: {
-    color: '#fff',
-    fontSize: 12,
-    textAlign: 'center',
-  },
   backgroundImage: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
-  inputIconImage: {
-  width: 20,
-  height: 20,
-  marginRight: 8,
-},
-referralTitle: {
-  color: '#4ACDFC',
-  fontSize: 14,
-  marginBottom: 6,
-  marginLeft: 10,
-},
+  referralTitle: {
+    color: '#4ACDFC',
+    fontSize: 14,
+    marginBottom: 6,
+    marginLeft: 10,
+  },
 
-referralBox: {
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  alignItems: 'center',
-  marginBottom: 20,
-  alignSelf: 'center',
-  borderRadius: 15,
-},
+  referralBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+    borderRadius: 15,
+    minHeight: 100,
+    minWidth: 200
+  },
 
-referralCode: {
-  fontSize: 40,
-  color: '#4ACDFC',
-  fontWeight: 'bold',
-},
+  referralCode: {
+    fontSize: 40,
+    color: '#4ACDFC',
+    fontWeight: 'bold',
+  },
 
-underline: {
-  width: '100%',
-  height: 1,
-  backgroundColor: '#fff',
-  marginTop: 5
-},
+  underline: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#fff',
+    marginTop: 5
+  },
 
-tapToCopy: {
-  color: '#ffffff',
-  fontSize: 10,
-  opacity: 0.7,
-  marginTop: 5,
-  textAlign: 'center',
-},
+  tapToCopy: {
+    color: '#ffffff',
+    fontSize: 10,
+    opacity: 0.7,
+    marginTop: 5,
+    textAlign: 'center',
+  },
 
-earnText: {
-  color: '#fff',
-  fontSize: 13,
-  marginBottom: 20,
-  lineHeight: 18,
-},
+  earnText: {
+    color: '#fff',
+    fontSize: 13,
+    marginBottom: 20,
+    lineHeight: 18,
+  },
 
-learnMore: {
-  color: '#6AF3FC',
-  textDecorationLine: 'underline',
-},
+  learnMore: {
+    color: '#6AF3FC',
+    textDecorationLine: 'underline',
+  },
 
-shareBox: {
-  width: '85%',
-  alignSelf: 'center',
-  padding: 15,
-  marginVertical: 25,
-  borderRadius: 12,
-},
+  shareBox: {
+    width: Platform.OS === 'ios' ? '100%' : '85%',
+    minHeight: Platform.OS === 'ios' ? 150 : 120,
+    alignSelf: 'center',
+    padding: 15,
+    marginVertical: 25,
+    borderRadius: 12,
+  },
 
-shareTitle: {
-  color: '#fff',
-  fontSize: 12,
-  marginBottom: 10,
-},
+  shareTitle: {
+    color: '#fff',
+    fontSize: 12,
+    marginBottom: 10,
+  },
 
-iconRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: 10,
-},
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingRight: Platform.OS === 'ios' ? 35 : 0
+  },
 
-shareIcon: {
-  width: 40,
-  height: 40,
-  resizeMode: 'contain',
-},
+  shareIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
 
-skipButton: {
-  alignSelf: 'center',
-  paddingHorizontal: 25,
-  paddingVertical: 8,
-  borderRadius: 30,
-  marginTop: 20,
-},
+  skipButton: {
+    borderRadius: 70,
+    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: Platform.OS === 'ios' ? 40 : 45,
+    width: 150
+  },
 
-skipButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-},
-headerRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingVertical: 16,
-  paddingHorizontal: 5,
-  backgroundColor: 'transparent',
-},
+  skipButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14, 
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 5,
+    backgroundColor: 'transparent',
+  },
 
-backButton: {
-  marginRight: 5,
-},
+  backButton: {
+    marginRight: 5,
+  },
 
-headerTitle: {
-  fontSize: 20,
-  color: '#fff',
-  fontWeight: '600',
-},
+  headerTitle: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '600',
+  },
 });
 
 export default InternalReferralScreen;

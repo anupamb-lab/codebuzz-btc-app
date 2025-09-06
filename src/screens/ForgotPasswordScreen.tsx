@@ -19,6 +19,7 @@ import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface ForgotPasswordScreenProps {}
 
@@ -122,6 +123,13 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
             keyboardShouldPersistTaps="handled"
             bounces={false}
           >
+            <View style={styles.topBar}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Icon name="chevron-back" size={24} color="white" />
+                </TouchableOpacity>
+                <Text style={styles.topTitle}></Text>
+                <View style={{ width: 24 }} />
+              </View>
             <View style={styles.content}>
             {/* icon */}
             {/* <View style={styles.logoContainer}>
@@ -188,22 +196,24 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
                   </View>
 
               {/* Send Code Button */}
-              <LinearGradient
-                                  colors={['#2ACFEF', '#BD85FC']}
-                                  style={styles.sendButton}
-                                  start={{x: 0, y: 0}}
-                                  end={{x: 1, y: 0}}
-                                >
-                <TouchableOpacity
-                  style={styles.sendButtonInner}
-                  onPress={handleSendCode}
-                  disabled={isLoading}
+
+              <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleSendCode} 
+                disabled={isLoading}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={['#2ACFEF', '#BD85FC']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.loginButtonGradient}
                 >
-                  <Text style={styles.sendButtonText}>
+                  <Text style={styles.loginButtonText}>
                     {isLoading ? 'SENDING...' : 'GET CODE'}
                   </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                </LinearGradient>
+              </TouchableOpacity>
 
               {/* Back to Login */}
               {/* <View style={styles.backContainer}>
@@ -228,6 +238,17 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
 };
 
 const styles = StyleSheet.create({
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  topTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     backgroundColor: '#1a1a2e',
@@ -347,6 +368,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 18,
     height: 55,
+    width: Platform.OS === 'ios' ? '90%' : '100%'
   },
   inputIcon: {
     fontSize: 16,
@@ -423,6 +445,27 @@ const styles = StyleSheet.create({
     height: '28%',
     borderRadius: 16,
     padding: 16,
+  },
+  loginButton: {
+    borderRadius: 25,
+    overflow: "hidden",
+    width: Platform.OS === 'ios' ? '45%' : '50%', 
+    alignSelf: "center",
+    marginVertical: 10,
+    marginBottom: Platform.OS === 'ios' ? '8%' : 0
+  },
+
+  loginButtonGradient: {
+    height: Platform.OS === 'ios' ? 40 : 50,       
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+
+  loginButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
   },
 });
 

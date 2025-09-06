@@ -13,12 +13,6 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import {
-  signInWithGoogle,
-  signInWithFacebook,
-  signInWithLinkedIn,
-  signInWithTelegram,
-} from '../services/socialAuth';
 
 interface SocialLoginButtonsProps {
   onSuccess: (userData: any) => void;
@@ -44,59 +38,20 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   });
 
   const handleGoogleSignIn = async () => {
-    if (disabled) return;
-    
-    setLoading(prev => ({ ...prev, google: true }));
-    try {
-      const result = await signInWithGoogle();
-      onSuccess(result);
-    } catch (error: any) {
-      onError(error.message);
-    } finally {
-      setLoading(prev => ({ ...prev, google: false }));
-    }
+    return;
   };
 
   const handleFacebookSignIn = async () => {
-    if (disabled) return;
-    
-    setLoading(prev => ({ ...prev, facebook: true }));
-    try {
-      const result = await signInWithFacebook();
-      onSuccess(result);
-    } catch (error: any) {
-      onError(error.message);
-    } finally {
-      setLoading(prev => ({ ...prev, facebook: false }));
-    }
+    return;
+
   };
 
   const handleLinkedInSignIn = async () => {
-    if (disabled) return;
-
-    setLoading(prev => ({ ...prev, linkedin: true }));
-    try {
-      const result = await signInWithLinkedIn();
-      onSuccess(result);
-    } catch (error: any) {
-      onError(error.message);
-    } finally {
-      setLoading(prev => ({ ...prev, linkedin: false }));
-    }
+    return;
   };
 
   const handleTelegramSignIn = async () => {
-    if (disabled) return;
-
-    setLoading(prev => ({ ...prev, telegram: true }));
-    try {
-      const result = await signInWithTelegram();
-      onSuccess(result);
-    } catch (error: any) {
-      onError(error.message);
-    } finally {
-      setLoading(prev => ({ ...prev, telegram: false }));
-    }
+    return;
   };
 
   return (

@@ -5,7 +5,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar, useColorScheme } from 'react-native';
 
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
-import { initializeFacebookSDK, initializeGoogleSignIn } from './src/services/socialAuth';
 import { initializeGoogleAds } from './src/services/googleAds';
 
 // Screens
@@ -37,6 +36,8 @@ import WatchVideoScreen from './src/screens/WatchVideoScreen';
 import TwoFactorScreen from './src/screens/TwoFactorScreen';
 import NotificationPreferencesScreen from './src/screens/NotificationPreferencesScreen';
 import DailyRewardsScreen from './src/screens/DailyRewardsScreen';
+import CryptoDepositScreen from './src/screens/CryptoDepositScreen';
+import BalanceHistoryScreen from './src/screens/BalanceHistoryScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -52,6 +53,7 @@ const AppNavigator = () => {
       {authenticated ? (
         <>
         <RootStack.Screen name="Main" component={MainTabNavigator} />
+        <RootStack.Screen name="BalanceHistoryScreen" component={BalanceHistoryScreen} />
         <RootStack.Screen name="DailyRewardsScreen" component={DailyRewardsScreen} />
         <RootStack.Screen name="MyProfileScreen" component={MyProfileScreen} />
         <RootStack.Screen name="AllActivity" component={AllActivity} />
@@ -59,6 +61,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="Store" component={StoreScreen} />
         <RootStack.Screen name="Wallet" component={WalletScreen} />
         <RootStack.Screen name="DepositScreen" component={DepositScreen} />
+        <RootStack.Screen name="CryptoDepositScreen" component={CryptoDepositScreen} />
         <RootStack.Screen name="WithdrawScreen" component={WithdrawScreen} />
         <RootStack.Screen name="FAQScreen" component={FAQScreen} />
         <RootStack.Screen name="SupportScreen" component={SupportScreen} />
@@ -78,8 +81,8 @@ const AppNavigator = () => {
         </>
       ) : (
         <>
-          <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="SignUp" component={SignUpScreen} />
+          <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           <RootStack.Screen name="OTPVerification" component={OTPVerificationScreen} />
           <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
@@ -96,8 +99,6 @@ const App = () => {
 
   useEffect(() => {
     // Initialize social SDKs
-    initializeFacebookSDK();
-    initializeGoogleSignIn();
     initializeGoogleAds();
   }, []);
 
