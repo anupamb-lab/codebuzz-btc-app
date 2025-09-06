@@ -206,22 +206,19 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  
  
                {/* Verify Button */}
-               <LinearGradient
-                 colors={['#2ACFEF', '#BD85FC']}
-                 style={styles.verifyButton}
-                 start={{x: 0, y: 0}}
-                 end={{x: 1, y: 0}}
-               >
-                 <TouchableOpacity
-                   style={styles.verifyButtonInner}
-                   onPress={handleVerifyOTP}
-                   disabled={isLoading}
-                 >
-                   <Text style={styles.verifyButtonText}>
-                     {isLoading ? 'VERIFYING...' : 'VERIFY'}
-                   </Text>
-                 </TouchableOpacity>
-               </LinearGradient>
+
+               <TouchableOpacity activeOpacity={0.8} onPress={handleVerifyOTP}>
+                  <LinearGradient
+                    colors={["#22D3EE", "#C084FC"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.verifyButton}
+                  >
+                    <View style={styles.verifyButtonInner}>
+                      <Text style={styles.verifyButtonText}>{isLoading ? 'VERIFYING...' : 'VERIFY'}</Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
  
                {/* Resend OTP */}
                <View style={styles.resendContainer}>
@@ -258,51 +255,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a2e',
   },
-  backgroundPattern: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#1a1a2e',
-  },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
   safeArea: {
     flex: 1,
   },
@@ -314,7 +266,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: Platform.OS === 'ios' ? 0 : 40,
     justifyContent: 'center',
   },
   logoContainer: {
@@ -365,13 +317,14 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(3, 3, 3, 0.05)',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 15,
     paddingVertical: 18,
     height: 55,
+    width: Platform.OS === 'ios' ? "92%" : "100%"
   },
   inputIcon: {
     fontSize: 16,
@@ -395,6 +348,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 15,
   },
+  
   verifyButton: {
     borderRadius: 15,
     marginTop: 0,
@@ -402,17 +356,17 @@ const styles = StyleSheet.create({
     height: 45,
     width: 160,
     alignSelf: 'center',
+    marginLeft: Platform.OS === 'ios' ? "-10%" : 0
   },
   verifyButtonInner: {
-    flex: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   verifyButtonText: {
-    color: '#ffffff',
+    color: 'white',
     fontSize: 14,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    fontWeight: '600',
   },
   resendContainer: {
     flexDirection: 'row',
@@ -423,15 +377,17 @@ const styles = StyleSheet.create({
   resendText: {
     color: '#8a8a8a',
     fontSize: 13,
+    marginLeft: Platform.OS === 'ios' ? "-10%" : 0
   },
   resendLink: {
     color: '#00d4ff',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '600'
   },
   backContainer: {
     alignItems: 'center',
     marginTop: 20,
+    marginLeft: Platform.OS === 'ios' ? "-10%" : 0
   },
   backText: {
     color: '#8a8a8a',

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
+  ActivityIndicator
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 // import Icon from 'react-native-vector-icons/Ionicons';
@@ -54,6 +55,15 @@ const StoreScreen = () => {
 
       fetchSubscriptions();
     }, []);
+
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#22D3EE" />
+          <Text style={styles.loadingText}>Loading store...</Text>
+        </View>
+      );
+    }
 
     type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Store'>;
     
@@ -331,5 +341,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: 6,
     lineHeight: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#111827',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#E2E8F0',
+    fontSize: 14,
   },
 });
