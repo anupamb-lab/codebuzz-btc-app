@@ -14,6 +14,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../auth/AuthProvider';
 
 const currencies = ['USD - United States Dollar', 'BTC - Bitcoin', 'USDT - TRC20'];
 const methods = ['Bank Transfer', 'Crypto', 'Payment Gateway'];
@@ -26,6 +27,10 @@ const WithdrawScreen = ({ navigation }: any) => {
 
   const [currencyDropdownVisible, setCurrencyDropdownVisible] = useState(false);
   const [methodDropdownVisible, setMethodDropdownVisible] = useState(false);
+
+  const { user } = useAuth();
+
+  const initials = user?.name ? user.name[0].toUpperCase() : 'U';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,7 +45,7 @@ const WithdrawScreen = ({ navigation }: any) => {
         <TouchableOpacity style={styles.profileCircle} onPress={() => {
             navigation.navigate('MyProfileScreen')
         }}>
-          <Text style={styles.profileInitial}>JD</Text>
+          <Text style={styles.profileInitial}>{initials}</Text>
         </TouchableOpacity>
       </View>
 

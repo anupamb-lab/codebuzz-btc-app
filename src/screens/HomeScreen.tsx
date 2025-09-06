@@ -50,6 +50,7 @@ interface InfoCardProps {
 interface ActionCardProps {
   icon: string;
   label: string;
+  onPress?: () => void;
 }
 
 const MAX_ADS = 10;
@@ -330,8 +331,12 @@ const Page: React.FC = () => {
         </LinearGradient>
 
         <View style={styles.cardRow}>
-          <ActionCard icon="cash-minus" label="Withdraw Funds" />
-          <ActionCard icon="cash-plus" label="Deposit Funds" />
+          <ActionCard icon="cash-minus" label="Withdraw Funds" onPress={() => {
+            navigation.navigate('WithdrawScreen');
+          }}/>
+          <ActionCard icon="cash-plus" label="Deposit Funds" onPress={() => {
+            navigation.navigate('DepositScreen');
+          }}/>
         </View>
 
         <View style={styles.recentBox}>
@@ -430,11 +435,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, value, label, onPress }) => (
   </TouchableOpacity>
 );
 
-const ActionCard: React.FC<ActionCardProps> = ({ icon, label }) => (
-  <View style={styles.actionCard}>
+const ActionCard: React.FC<ActionCardProps> = ({ icon, label, onPress }) => (
+  <TouchableOpacity style={styles.actionCard} onPress={onPress} activeOpacity={0.7}>
     <Icon name={icon} size={40} color="#22D3EE" />
     <Text style={styles.actionLabel}>{label}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 export default Page;
