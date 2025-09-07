@@ -346,7 +346,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
             {/* Footer */}
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Bitcoin Mining</Text>
+              <Text style={styles.footerText}>BitPlayPro</Text>
             </View>
           </View>
           </ScrollView>
@@ -500,7 +500,8 @@ const styles = StyleSheet.create({
     width: Platform.OS === 'ios' ? '45%' : '50%', 
     alignSelf: "center",
     marginVertical: 10,
-    marginBottom: Platform.OS === 'ios' ? '8%' : 0
+    marginBottom: Platform.OS === 'ios' ? '8%' : "5%",
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
   },
 
   loginButtonGradient: {
@@ -523,6 +524,7 @@ const styles = StyleSheet.create({
   forgotPasswordContainer: {
     alignItems: 'center',
     paddingVertical: 10,
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
   },
   forgotPasswordText: {
     color: '#42B0FF',
@@ -532,6 +534,7 @@ const styles = StyleSheet.create({
   },
   signUpContainer: {
     alignItems: 'center',
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
   },
   signUpText: {
     color: '#ffffff',

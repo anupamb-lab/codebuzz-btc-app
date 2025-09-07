@@ -219,21 +219,22 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
               </View>
 
               {/* Signup Button */}
-              <TouchableOpacity
-                style={{
-                  marginTop: 20,
-                  backgroundColor: '#2ACFEF',
-                  borderRadius: 12,
-                  paddingVertical: 14,
-                  alignItems: 'center',
-                  width: Platform.OS === 'ios' ? '88%' : '100%'
-                }}
-                onPress={handleSignUp}
+              <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleSignUp} 
                 disabled={isLoading}
+                activeOpacity={0.8}
               >
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  {isLoading ? 'Please wait...' : 'SIGN UP'}
-                </Text>
+                <LinearGradient
+                  colors={['#2ACFEF', '#BD85FC']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.loginButtonGradient}
+                >
+                  <Text style={styles.loginButtonText}>
+                    {isLoading ? 'SIGNING IN...' : 'SIGNUP'}
+                  </Text>
+                </LinearGradient>
               </TouchableOpacity>
 
               {/* Already a user */}
@@ -241,10 +242,14 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                 style={{ marginTop: 10, alignItems: 'center' }}
                 onPress={() => navigation.navigate('Login' as never)}
               >
-                <Text style={{ color: 'white', fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-13%' : 0, marginTop: Platform.OS === 'ios' ? '4%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
+                <Text style={{ color: 'white', fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-10%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
               </TouchableOpacity>
 
             </LinearGradient>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>BitPlayPro</Text>
+            </View>
 
           </View>
         </ScrollView>
@@ -267,6 +272,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
 
+  loginButtonGradient: {
+    height: Platform.OS === 'ios' ? 40 : 50,       
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 25,
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#1a1a2e',
@@ -278,43 +290,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: '#1a1a2e',
-  },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
   },
   safeArea: {
     flex: 1,
@@ -398,6 +373,7 @@ const styles = StyleSheet.create({
     height: 45,
     width: 160,
     alignSelf: 'center',
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
   },
   loginButtonInner: {
     flex: 1,
@@ -498,7 +474,7 @@ signUpButtonText: {
   footerText: {
     color: '#ffffff',
     fontSize: 13,
-    fontWeight: '400',
+    fontWeight: '400'
   },
   testApiButton: {
     backgroundColor: '#333',
