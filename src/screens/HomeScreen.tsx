@@ -77,6 +77,14 @@ const Page: React.FC = () => {
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
 
+  interface Activity {
+    type: string;
+    amount: number;
+    crypto: string;
+  }
+
+  const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
+
   // -----------------------------
   // Reward Handler (Ad Watched)
   // -----------------------------
@@ -358,26 +366,41 @@ const Page: React.FC = () => {
         <View style={styles.recentBox}>
           <Text style={styles.sectionTitleRC}>Recent Activity</Text>
 
-          {[50.64, 850.64, 150.64, 920.64].map((value, index) => (
-            <View key={index} style={styles.transactionRow}>
-              <View>
-                <Text style={styles.transactionType}>Deposit</Text>
-                <Text style={styles.transactionCrypto}>0.001 BTC</Text>
-              </View>
-              <Text style={styles.transactionValue}>+${value.toFixed(2)}</Text>
+          {recent_activity_list.length === 0 ? (
+            <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+              <LottieView
+                source={{ uri: 'https://lottie.host/7b3e44d0-5de2-4434-9731-45dcf7f12b7a/cwLLBxENUP.json' }}
+                autoPlay
+                loop
+                style={{ width: 150, height: 150 }}
+              />
+              <Text style={{ color: '#aaa', fontSize: 16, marginTop: 10 }}>
+                No transactions, deposit now
+              </Text>
             </View>
-          ))}
+          ) : (
+            <>
+              {recent_activity_list.map((activity, index) => (
+                <View key={index} style={styles.transactionRow}>
+                  <View>
+                    <Text style={styles.transactionType}>{activity.type}</Text>
+                    <Text style={styles.transactionCrypto}>{activity.crypto}</Text>
+                  </View>
+                  <Text style={styles.transactionValue}>+${activity.amount.toFixed(2)}</Text>
+                </View>
+              ))}
 
-          <GradientButtonB text="View All Activity" 
-            fullWidth 
-            onPress={() => {
-
-              navigation.navigate('AllActivity');
-
-            }}
-          />
-          
+              <GradientButtonB
+                text="View All Activity"
+                fullWidth
+                onPress={() => {
+                  navigation.navigate('AllActivity');
+                }}
+              />
+            </>
+          )}
         </View>
+
       </ScrollView>
 
       <View style={styles.bannerContainer}>
