@@ -417,7 +417,7 @@ const Page: React.FC = () => {
 };
 
 const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress, disabled = false }) => (
-  <TouchableOpacity 
+  <TouchableOpacity
     style={{ flex: 1, borderRadius: 40, overflow: "hidden" }}
     activeOpacity={0.8}
     onPress={onPress}
@@ -429,7 +429,18 @@ const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress, di
       end={{ x: 1, y: 0 }}
       style={styles.gradientButton}
     >
-      {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
+      {text === "Claim Free Miners" ? (
+        <LottieView
+          source={{
+            uri: "https://lottie.host/6c2ebe48-6e55-4edb-9c0b-6fd48360beae/AyZ7cmF141.json",
+          }}
+          autoPlay
+          loop
+          style={styles.headerAnimation}
+        />
+      ) : (
+        icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />
+      )}
       <Text style={styles.buttonText}>{text}</Text>
     </LinearGradient>
   </TouchableOpacity>
@@ -486,18 +497,22 @@ export default Page;
 // Styles
 const styles = StyleSheet.create({
   btcBox: {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderRadius: 20,
-  marginBottom: 20,
-  minHeight:  Platform.OS === 'ios' ? 70 : 80,
-  shadowColor: '#000',
-  shadowOpacity: 0.2,
-  shadowOffset: { width: 0, height: 3 },
-  shadowRadius: 6,
-  elevation: 3,
-},
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginBottom: 20,
+    minHeight:  Platform.OS === 'ios' ? 70 : 80,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  headerAnimation: {
+    width: 30,
+    height: 30,
+  },
   btcText: {
     fontSize: 27,
     fontWeight: 'bold',
