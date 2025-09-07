@@ -17,6 +17,7 @@ import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
 import { get_data_uri } from '../config/api';
 import axios from 'axios';
+import LottieView from 'lottie-react-native';
 
 interface SubscriptionItem {
   _id: string;
@@ -104,10 +105,25 @@ const StoreScreen = () => {
           end={{ x: 1, y: 1 }}
           style={styles.headerCard}
         >
-          <Text style={styles.headerTitle}>Purchase Hashrate</Text>
-          <Text style={styles.headerSubtitle}>
-            Grow your mining power with our{'\n'}competitive contracts.
-          </Text>
+          <View style={styles.headerContent}>
+            {/* Left Text Section */}
+            <View style={styles.textSection}>
+              <Text style={styles.headerTitle}>Purchase Hashrate</Text>
+              <Text style={styles.headerSubtitle}>
+                Grow your mining power with our{"\n"}competitive contracts.
+              </Text>
+            </View>
+
+            {/* Right Animation Section */}
+            <LottieView
+              source={{
+                uri: "https://lottie.host/d55ec37e-ebf6-4d1c-8d46-71c9ab324804/WBVEq8jUUY.json",
+              }}
+              autoPlay
+              loop
+              style={styles.headerAnimation}
+            />
+          </View>
         </LinearGradient>
 
         {/* Available Contracts */}
@@ -213,9 +229,7 @@ const styles = StyleSheet.create({
   headerCard: {
     borderRadius: 16,
     marginBottom: 20,
-    alignItems: 'center',
-
-    // Prevent collapse on iOS
+    // make sure layout works across iOS/Android
     minHeight: 120,        
 
     // Shadows for nice card feel
@@ -226,20 +240,37 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
+  // New for content layout
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: Platform.OS === "ios" ? 20 : 16,
+  },
+  textSection: {
+    flex: 1,
+    paddingRight: 10,
+  },
+
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#fff",
     marginBottom: 8,
-    paddingTop: Platform.OS === 'ios' ? 25 : 20
   },
-
   headerSubtitle: {
     fontSize: 14,
     color: "#E2E8F0",
     lineHeight: 20,
-    textAlign: 'center',
   },
+
+  // Right-side Lottie animation
+  headerAnimation: {
+    width: 100,
+    height: 100,
+  },
+
   sectionTitle: {
     color: '#FFFFFF',
     fontSize: 16,
