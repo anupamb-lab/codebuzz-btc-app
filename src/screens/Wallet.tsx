@@ -14,6 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 interface Transaction {
   type: string;
@@ -23,13 +24,26 @@ interface Transaction {
   isPositive: boolean;
 }
 
-const BTC_TO_USD = 120000;
+async function getBTCPrice() {
+  try {
+    const res = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price",
+      { params: { ids: "bitcoin", vs_currencies: "usd" } }
+    );
+    return res.data.bitcoin.usd;
+  } catch (err) {
+    console.error("Error fetching BTC price:", err.message);
+    return 0;
+  }
+}
 
 const WalletScreen = () => {
   const [btcBalance, setBtcBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showUSD, setShowUSD] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [displayedBalance, setDisplayedBalance] = useState<string>('Loading...');
+  const [balanceLoading, setBalanceLoading] = useState(false);
 
   type WalletNav = StackNavigationProp<RootStackParamList, 'Wallet'>;
   const navigation = useNavigation<WalletNav>();
@@ -54,6 +68,20 @@ const WalletScreen = () => {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    async function updateBalance() {
+      if (showUSD) {
+        setBalanceLoading(true); // start loading
+        const price = await getBTCPrice();
+        setDisplayedBalance(`$${((btcBalance / 4) * price).toFixed(4)}`);
+        setBalanceLoading(false); // done loading
+      } else {
+        setDisplayedBalance(`${(btcBalance / 4).toFixed(12)} BTC`);
+      }
+    }
+    updateBalance();
+  }, [btcBalance, showUSD]);
+
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
@@ -63,10 +91,6 @@ const WalletScreen = () => {
   const handleDeposit = () => navigation.navigate('DepositScreen');
   const handleWithdraw = () => navigation.navigate('WithdrawScreen');
   const handleViewAll = () => console.log('View All Transactions');
-
-  const displayedValue = showUSD
-    ? `$${((btcBalance / 4) * BTC_TO_USD).toFixed(4)}`
-    : `${(btcBalance / 4).toFixed(12)} BTC`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,15 +108,20 @@ const WalletScreen = () => {
         {/* Balance Box */}
         <View style={styles.balanceBox}>
           <Text style={styles.balanceLabel}>Your Current Balance</Text>
-          <Text style={styles.balanceAmount}>{displayedValue}</Text>
+          <Text style={styles.balanceAmount}>{displayedBalance}</Text>
           <Text style={styles.balanceChange}>Mining earnings</Text>
 
           <TouchableOpacity
             style={styles.convertButton}
             onPress={() => setShowUSD(!showUSD)}
+            disabled={balanceLoading}
           >
             <Text style={styles.convertText}>
-              {showUSD ? "Show in BTC" : "Convert to USD"}
+              {balanceLoading
+                ? "Loading..."
+                : showUSD
+                ? "Show in BTC"
+                : "Convert to USD"}
             </Text>
           </TouchableOpacity>
         </View>
