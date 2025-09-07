@@ -8,11 +8,13 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Modal,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { RootStackParamList } from "../components/types";
 import { useNavigation } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from "react-native-vector-icons/Ionicons";
+import LottieView from "lottie-react-native";
 
 interface Reward {
   id: number;
@@ -21,7 +23,7 @@ interface Reward {
   claimed: boolean;
 }
 
-type NavigationProp = StackNavigationProp<RootStackParamList, 'DailyRewardsScreen'>;
+type NavigationProp = StackNavigationProp<RootStackParamList, "DailyRewardsScreen">;
 
 const DailyRewardsScreen = () => {
   const [rewards, setRewards] = useState<Reward[]>([
@@ -30,28 +32,41 @@ const DailyRewardsScreen = () => {
     { id: 3, title: "Loyalty Reward", amount: "+5 Coins", claimed: false },
   ]);
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [claimedReward, setClaimedReward] = useState<Reward | null>(null);
+
   const handleClaim = (id: number) => {
+    const reward = rewards.find((r) => r.id === id);
+    if (!reward) return;
+
     setRewards((prev) =>
       prev.map((reward) =>
         reward.id === id ? { ...reward, claimed: true } : reward
       )
     );
+
+    setClaimedReward(reward);
+    setShowPopup(true);
+
+    setTimeout(() => setShowPopup(false), 2500);
   };
 
   const navigation = useNavigation<NavigationProp>();
 
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.topBar}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Icon name="chevron-back" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.topTitle}>Daily Rewards</Text>
-            <View style={{ width: 24 }} />
-        </View>
-      <StatusBar barStyle="light-content" backgroundColor="#15213B" />
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      {/* Top Bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="chevron-back" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.topTitle}>Daily Rewards</Text>
+        <View style={{ width: 24 }} />
+      </View>
 
+      <StatusBar barStyle="light-content" backgroundColor="#15213B" />
+
+      <ScrollView contentContainerStyle={styles.scrollView}>
         {rewards.map((reward) => (
           <View key={reward.id} style={styles.rewardCard}>
             <View style={styles.rewardInfo}>
@@ -81,6 +96,23 @@ const DailyRewardsScreen = () => {
           </View>
         ))}
       </ScrollView>
+
+      {/* Claim Popup with Lottie */}
+      <Modal transparent visible={showPopup} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <LottieView
+              source={{ uri: "https://lottie.host/6c2ebe48-6e55-4edb-9c0b-6fd48360beae/AyZ7cmF141.json" }}
+              autoPlay
+              loop={false}
+              style={{ width: 250, height: 250 }}
+            />
+            <Text style={styles.modalText}>
+              {claimedReward ? `${claimedReward.title} Claimed!` : "Reward Claimed!"}
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -93,26 +125,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#15213B",
   },
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
   },
   topTitle: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   scrollView: {
     padding: 16,
     paddingTop: 60,
-  },
-  header: {
-    color: "#FFFFFF",
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 24,
-    textAlign: "center",
   },
   rewardCard: {
     backgroundColor: "rgba(240, 255, 255, 0.08)",
@@ -162,5 +187,23 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontWeight: "600",
     fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBox: {
+    backgroundColor: "#1E293B",
+    padding: 20,
+    borderRadius: 16,
+    alignItems: "center",
+  },
+  modalText: {
+    marginTop: 12,
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
