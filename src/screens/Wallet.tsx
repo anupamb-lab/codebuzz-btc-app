@@ -15,6 +15,8 @@ import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import LottieView from 'lottie-react-native';
+import noTxAnimation from '../assets/animations/no-data.json';
 
 interface Transaction {
   type: string;
@@ -157,7 +159,12 @@ const WalletScreen = () => {
 
           {transactions.length === 0 ? (
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>No transactions yet</Text>
+              <LottieView
+                source={noTxAnimation}
+                autoPlay
+                loop
+                style={{ width: 200, height: 200 }}
+              />
             </View>
           ) : (
             <>

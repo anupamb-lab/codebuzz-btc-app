@@ -29,6 +29,8 @@
     "firebase-tools": "^13.35.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lottie-ios": "^4.5.1",
+    "lottie-react-native": "^7.3.4",
     "mongodb": "^6.3.0",
     "mongoose": "^8.16.1",
     "react": "19.1.0",
