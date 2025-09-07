@@ -24,6 +24,7 @@ import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get_data_uri } from '../config/api';
+import LottieView from 'lottie-react-native';
 
 interface GradientButtonProps {
   icon?: string;
@@ -74,6 +75,7 @@ const Page: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const balanceRef = useRef(btcBalance);
+  const miningAnimationRef = useRef<LottieView>(null);
 
   // -----------------------------
   // Reward Handler (Ad Watched)
@@ -158,10 +160,19 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
-    if (hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION) {
+    const isMiningActive =
+      hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
+
+    if (isMiningActive) {
       intervalRef.current = setInterval(() => {
         setBtcBalance(prev => prev + hashPower * BTC_PER_HASHPOWER_PER_SEC);
       }, 1000);
+
+      // Play animation
+      miningAnimationRef.current?.play();
+    } else {
+      // Stop animation
+      miningAnimationRef.current?.pause();
     }
 
     return () => {
@@ -261,16 +272,21 @@ const Page: React.FC = () => {
         </LinearGradient>
 
         <TouchableOpacity onPress={() => navigation.navigate('BalanceHistoryScreen')}>
-          <LinearGradient
-            colors={['#70ecffff', '#a694b8ff']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.btcBox}
-          >
-            <Icon name="bitcoin" size={28} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={styles.btcText}>{btcBalance.toFixed(12)} BTC</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <LinearGradient
+          colors={['#70ecffff', '#a694b8ff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.btcBox}
+        >
+          <LottieView
+            ref={miningAnimationRef}
+            source={{ uri: 'https://lottie.host/a1d6fca2-af68-48ed-a493-bedc08375901/x0brweNIHd.json' }}
+            loop
+            style={{ width: 60, height: 60 }}
+          />
+          <Text style={styles.btcText}>{btcBalance.toFixed(12)} BTC</Text>
+        </LinearGradient>
+      </TouchableOpacity>
 
         <View style={styles.buttonRow}>
           <GradientButton icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Claim Free Miners" />
@@ -460,7 +476,7 @@ const styles = StyleSheet.create({
   elevation: 3,
 },
   btcText: {
-    fontSize: 28,
+    fontSize: 27,
     fontWeight: 'bold',
     color: '#fff',
     fontFamily: 'Inter',
