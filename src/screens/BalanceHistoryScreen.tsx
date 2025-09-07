@@ -15,6 +15,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import { useAuth } from '../auth/AuthProvider';
 import { get_data_uri } from '../config/api';
+import LottieView from 'lottie-react-native';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'BalanceHistoryScreen'>;
 
@@ -85,7 +86,12 @@ const BalanceHistoryScreen = () => {
         <ActivityIndicator size="large" color="#53D3F6" style={{ marginTop: 40 }} />
       ) : history.length === 0 ? (
         <View style={styles.noRecordsBox}>
-          <Icon name="leaf-outline" size={50} color="#53D3F6" />
+          <LottieView
+            source={{ uri: 'https://lottie.host/014c662a-e804-42de-a029-486d14645e9c/rcfStinxUX.lottie' }}
+            autoPlay
+            loop
+            style={{ width: 200, height: 200 }}
+          />
           <Text style={styles.noRecordsText}>No records yet, Keep mining!!</Text>
         </View>
       ) : (
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
   },
   noRecordsBox: {
     alignItems: 'center',
-    marginTop: 150,
+    marginTop: 100,
   },
   noRecordsText: {
     color: '#ccc',
@@ -197,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 40,
     minHeight: 40,
-    marginTop: Platform.OS === 'ios' ? 200 : 300,
+    marginTop: Platform.OS === 'ios' ? 150 : 250,
   },
   backButtonText: {
     color: '#fff',
