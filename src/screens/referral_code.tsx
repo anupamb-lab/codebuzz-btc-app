@@ -393,16 +393,16 @@ shareTitle: {
 
 iconRow: {
   flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
   marginTop: 10,
-  paddingRight: Platform.OS === 'ios' ? 35 : 0
+  justifyContent: "center",
+  alignItems: "center",
 },
 
 shareIcon: {
   width: 40,
   height: 40,
   resizeMode: 'contain',
+  marginRight: 20
 },
 
 skipButton: {
