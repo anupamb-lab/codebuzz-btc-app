@@ -253,6 +253,17 @@ const Page: React.FC = () => {
     return () => clearInterval(syncInterval);
   }, []);
 
+  const isMiningActive =
+  hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
+
+  const buttonLabel = loading
+    ? "Loading..."
+    : adsWatched >= MAX_ADS
+      ? "Max Videos Reached"
+      : isMiningActive
+        ? `Increase ${hashPower} GH/s`
+        : "Start Mining";
+
   return (
     <View style={{ flex: 1 }}>
       <Sidebar visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
@@ -300,7 +311,7 @@ const Page: React.FC = () => {
           <GradientButton icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Claim Free Miners" />
           <GradientButton
             icon="play-circle"
-            text={loading ? "Loading..." : adsWatched >= MAX_ADS ? "Max Videos Reached" : "Increase Hash Rate"}
+            text={buttonLabel}
             onPress={show}
             disabled={loading || adsWatched >= MAX_ADS}
           />
@@ -311,7 +322,7 @@ const Page: React.FC = () => {
           <StatCard icon="currency-usd" value="$0" label="Daily Profit" />
           <StatCard 
             icon="chart-line" 
-            value={`${hashPower.toLocaleString()} TH/s`} 
+            value={`${hashPower.toLocaleString()} GH/s`} 
             label="Current Hashrate" 
           />
           <StatCard icon="speedometer" value="98%" label="Efficiency" />

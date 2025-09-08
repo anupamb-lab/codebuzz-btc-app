@@ -1,5 +1,5 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,49 +9,99 @@ import {
   StatusBar,
   ScrollView,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { RootStackParamList } from "../components/types";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import LottieView from "lottie-react-native";
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
+
+type NavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "DailyRewardsScreen"
+>;
 
 interface Reward {
-  id: number;
-  title: string;
-  amount: string;
+  _id: string;
+  rewardType: string;
+  amount: number;
+  isRecurring: boolean;
+  day?: number | null;
   claimed: boolean;
 }
 
-type NavigationProp = StackNavigationProp<RootStackParamList, "DailyRewardsScreen">;
+const API_BASE = get_data_uri("GET_REWARDS");
 
 const DailyRewardsScreen = () => {
-  const [rewards, setRewards] = useState<Reward[]>([
-    { id: 1, title: "Daily Login Bonus", amount: "+10 Coins", claimed: false },
-    { id: 2, title: "Hashrate Booster", amount: "+0.000002 BTC", claimed: false },
-    { id: 3, title: "Loyalty Reward", amount: "+5 Coins", claimed: false },
-  ]);
-
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [claimedReward, setClaimedReward] = useState<Reward | null>(null);
 
-  const handleClaim = (id: number) => {
-    const reward = rewards.find((r) => r.id === id);
-    if (!reward) return;
+  const navigation = useNavigation<NavigationProp>();
 
-    setRewards((prev) =>
-      prev.map((reward) =>
-        reward.id === id ? { ...reward, claimed: true } : reward
-      )
-    );
+  const { user } = useAuth();
 
-    setClaimedReward(reward);
-    setShowPopup(true);
+  const user_id = user?.id;
 
-    setTimeout(() => setShowPopup(false), 2500);
+  // Fetch rewards
+  useEffect(() => {
+    const fetchRewards = async () => {
+      try {
+        const res = await fetch(`${API_BASE}?userId=${user_id}`);
+        const data = await res.json();
+        if (data.success) {
+          setRewards(data.rewards);
+        }
+      } catch (err) {
+        console.error("Error fetching rewards", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRewards();
+  }, []);
+
+  const handleClaim = async (rewardId: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user_id, rewardId }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Update UI
+        setRewards((prev) =>
+          prev.map((r) =>
+            r._id === rewardId ? { ...r, claimed: true } : r
+          )
+        );
+
+        setClaimedReward(data.reward);
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 2500);
+      } else {
+        alert(data.error || "Failed to claim reward");
+      }
+    } catch (err) {
+      console.error("Error claiming reward", err);
+    }
   };
 
-  const navigation = useNavigation<NavigationProp>();
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator color="white" size="large" style={{ flex: 1 }} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,10 +118,14 @@ const DailyRewardsScreen = () => {
 
       <ScrollView contentContainerStyle={styles.scrollView}>
         {rewards.map((reward) => (
-          <View key={reward.id} style={styles.rewardCard}>
+          <View key={reward._id} style={styles.rewardCard}>
             <View style={styles.rewardInfo}>
-              <Text style={styles.rewardTitle}>{reward.title}</Text>
-              <Text style={styles.rewardAmount}>{reward.amount}</Text>
+              <Text style={styles.rewardTitle}>
+                {reward.rewardType}
+              </Text>
+              <Text style={styles.rewardAmount}>
+                + {reward.amount} GH/s
+              </Text>
             </View>
 
             {reward.claimed ? (
@@ -87,7 +141,7 @@ const DailyRewardsScreen = () => {
               >
                 <TouchableOpacity
                   style={styles.claimTouchable}
-                  onPress={() => handleClaim(reward.id)}
+                  onPress={() => handleClaim(reward._id)}
                 >
                   <Text style={styles.claimText}>Claim</Text>
                 </TouchableOpacity>
@@ -102,13 +156,17 @@ const DailyRewardsScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <LottieView
-              source={{ uri: "https://lottie.host/6c2ebe48-6e55-4edb-9c0b-6fd48360beae/AyZ7cmF141.json" }}
+              source={{
+                uri: "https://lottie.host/6c2ebe48-6e55-4edb-9c0b-6fd48360beae/AyZ7cmF141.json",
+              }}
               autoPlay
               loop={false}
               style={{ width: 250, height: 250 }}
             />
             <Text style={styles.modalText}>
-              {claimedReward ? `${claimedReward.title} Claimed!` : "Reward Claimed!"}
+              {claimedReward
+                ? `${claimedReward.rewardType} Claimed!`
+                : "Reward Claimed!"}
             </Text>
           </View>
         </View>
