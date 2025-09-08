@@ -25,6 +25,7 @@ import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get_data_uri } from '../config/api';
 import LottieView from 'lottie-react-native';
+import miningCardAnimation from '../assets/animations/mining-card.json';
 
 interface GradientButtonProps {
   icon?: string;
@@ -299,7 +300,7 @@ const Page: React.FC = () => {
         >
           <LottieView
             ref={miningAnimationRef}
-            source={{ uri: 'https://lottie.host/a1d6fca2-af68-48ed-a493-bedc08375901/x0brweNIHd.json' }}
+            source={miningCardAnimation}
             loop
             style={{ width: 60, height: 60 }}
           />
