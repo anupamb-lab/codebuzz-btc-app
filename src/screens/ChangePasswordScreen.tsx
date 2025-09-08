@@ -20,6 +20,7 @@ import { Image } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
+import LottieView from 'lottie-react-native';
 
 interface ChangePasswordScreenProps {}
 
@@ -161,15 +162,16 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
           >
             <View style={styles.content}>
             {/* Logo */}
-             <View style={styles.logoContainer}>
-                          <View style={styles.bitcoinLogo}>
-                            <Image
-                              source={require('../assets/images/icon_input_box_pass_eye.png')}
-                              style={styles.bitcoinImage}
-                              resizeMode="contain"
-                            />
-                          </View>
-                        </View>
+            <View style={styles.animationView}>
+             
+              <LottieView
+                source={{ uri: 'https://lottie.host/1b56f6ce-894f-4006-9f98-738f22a79da1/9Iz9LxZLjw.json' }}
+                autoPlay
+                loop
+                style={styles.animation}
+              />
+  
+            </View>
 
             {/* Title */}
             <View style={styles.titleContainer}>
@@ -269,7 +271,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
 
             {/* Footer */}
                         <View style={styles.footer}>
-                          <Text style={styles.footerText}>Bitcoin Mining</Text>
+                          <Text style={styles.footerText}>BitPlayPro</Text>
                         </View>
           </View>
           </ScrollView>
@@ -425,10 +427,19 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   inputIconImage: {
-  width: 20,
-  height: 20,
-  marginRight: 8,
-},
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  animationView: {
+    textAlign: "center",
+    alignItems: "center",
+    marginBottom: 30
+  },
+  animation: {
+    height: 170,
+    width: 170,
+  }
 });
 
 export default ChangePasswordScreen;

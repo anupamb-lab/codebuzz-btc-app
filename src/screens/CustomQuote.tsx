@@ -112,7 +112,7 @@ const CustomQuote: React.FC<CustomQuoteProps> = () => {
 
             {/* Footer */}
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Bitcoin Mining</Text>
+              <Text style={styles.footerText}>BitPlayPro</Text>
             </View>
           </View>
           </ScrollView>

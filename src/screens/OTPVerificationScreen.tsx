@@ -22,6 +22,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import { Image } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
+import LottieView from 'lottie-react-native';
 
 interface OTPVerificationScreenProps {}
 
@@ -142,15 +143,16 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
            >
              <View style={styles.content}>
              {/* Logo */}
-              <View style={styles.logoContainer}>
-                                       <View style={styles.bitcoinLogo}>
-                                         <Image
-                                           source={require('../assets/images/setting.png')}
-                                           style={styles.bitcoinImage}
-                                           resizeMode="contain"
-                                         />
-                                       </View>
-                                     </View>
+            <View style={styles.animationView}>
+                          
+              <LottieView
+                source={{ uri: 'https://lottie.host/e344747b-67eb-45c3-96ca-5cbc74cd0472/fwLXvu5qhc.json' }}
+                autoPlay
+                loop
+                style={styles.animation}
+              />
+  
+            </View>
  
              {/* Title */}
              <View style={styles.titleContainer}>
@@ -240,7 +242,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  </LinearGradient>
              {/* Footer */}
                         <View style={styles.footer}>
-                          <Text style={styles.footerText}>Bitcoin Mining</Text>
+                          <Text style={styles.footerText}>BitPlayPro</Text>
                         </View>
            </View>
            </ScrollView>
@@ -372,7 +374,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   resendText: {
     color: '#8a8a8a',
@@ -421,6 +423,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
   },
+  animationView: {
+    textAlign: "center",
+    alignItems: "center",
+    marginBottom: 30
+  },
+  animation: {
+    height: 170,
+    width: 170,
+  }
 });
 
 export default OTPVerificationScreen;

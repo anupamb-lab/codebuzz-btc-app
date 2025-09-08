@@ -11,7 +11,6 @@ import {
   ScrollView,
   ImageBackground,
   Alert,
-  StatusBar,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -20,6 +19,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import Icon from 'react-native-vector-icons/Ionicons';
+import LottieView from 'lottie-react-native';
 
 interface ForgotPasswordScreenProps {}
 
@@ -124,36 +124,32 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
             bounces={false}
           >
             <View style={styles.topBar}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Icon name="chevron-back" size={24} color="white" />
-                </TouchableOpacity>
-                <Text style={styles.topTitle}></Text>
-                <View style={{ width: 24 }} />
-              </View>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Icon name="chevron-back" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.content}>
             {/* icon */}
-            {/* <View style={styles.logoContainer}>
-              <View style={styles.bitcoinLogo}>
-                <Text style={styles.bitcoinSymbol}>⚒</Text>
+
+            <View style={styles.headerview}>
+
+              <View style={styles.animationView}>
+                         
+                <LottieView
+                  source={{ uri: 'https://lottie.host/1b56f6ce-894f-4006-9f98-738f22a79da1/9Iz9LxZLjw.json' }}
+                  autoPlay
+                  loop
+                  style={styles.animation}
+                />
+
               </View>
-            </View> */}
 
-            <View style={styles.logoContainer}>
-                          <View style={styles.bitcoinLogo}>
-                            <Image
-                              source={require('../assets/images/setting.png')}
-                              style={styles.bitcoinImage}
-                              resizeMode="contain"
-                            />
-                          </View>
-                        </View>
+              {/* Title */}
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{screen_heading}</Text>
+              </View>
 
-            {/* Title */}
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>{screen_heading}</Text>
-              <Text style={styles.subtitle}>
-                Enter your email address and we'll send you an OTP to reset your password
-              </Text>
             </View>
 
             {/* Gradient Form Box */}
@@ -227,8 +223,8 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
 
             {/* Footer */}
             <View style={styles.footer}>
-                         <Text style={styles.footerText}>Bitcoin Mining</Text>
-                       </View>
+              <Text style={styles.footerText}>BitPlayPro</Text>
+            </View>
           </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -241,7 +237,6 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 16,
   },
   topTitle: {
@@ -261,45 +256,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#1a1a2e',
   },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
   safeArea: {
     flex: 1,
+    paddingTop: 0
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -312,9 +271,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     justifyContent: 'center',
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 20,
+  headerview: {
+
   },
 
   bitcoinLogo: {
@@ -322,17 +280,6 @@ const styles = StyleSheet.create({
     height: 42,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  bitcoinImage: {
-    width: '100%',
-    height: '100%',
-    marginBottom: 40,
-    transform: [{ rotate: '3deg' }],
-  },
-  bitcoinSymbol: {
-    fontSize: 35,
-    color: '#8b45ff',
-    fontWeight: 'bold',
   },
   titleContainer: {
     alignItems: 'center',
@@ -410,10 +357,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  backContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
   backText: {
     color: '#8a8a8a',
     fontSize: 13,
@@ -452,7 +395,8 @@ const styles = StyleSheet.create({
     width: Platform.OS === 'ios' ? '45%' : '50%', 
     alignSelf: "center",
     marginVertical: 10,
-    marginBottom: Platform.OS === 'ios' ? '8%' : 0
+    marginBottom: Platform.OS === 'ios' ? '8%' : 0,
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
   },
 
   loginButtonGradient: {
@@ -467,6 +411,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 16,
   },
+  animationView: {
+    textAlign: "center",
+    alignItems: "center",
+    marginBottom: 30
+  },
+  animation: {
+    height: 170,
+    width: 170,
+  }
 });
 
 export default ForgotPasswordScreen;

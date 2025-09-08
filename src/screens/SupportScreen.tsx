@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
 
 const SupportScreen = () => {
   const { user } = useAuth();
@@ -124,7 +125,6 @@ const SupportScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>SUPPORT</Text>
       </View>
 
       <KeyboardAvoidingView 
@@ -133,15 +133,6 @@ const SupportScreen = () => {
       >
 
         {/* Support Icon */}
-                    <View style={styles.logoContainer}>
-                      <View style={styles.supportLogo}>
-                        <Image
-                          source={require('../assets/images/icon_support.png')}
-                          style={styles.supportImage}
-                          resizeMode="contain"
-                        />
-                      </View>
-                    </View>
 
         {/* Form */}
         <ScrollView 
@@ -149,7 +140,18 @@ const SupportScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.sectionTitle}>Get in Touch</Text>
+
+          <View style={styles.animationView}>
+
+            <LottieView
+              source={{ uri: 'https://lottie.host/5a5c5aee-fc25-43bb-96b8-5cf145f1a3d7/GsweT8o03z.json' }}
+              autoPlay
+              loop
+              style={styles.animation}
+            />
+
+          </View>
+
           <Text style={styles.subtitle}>
             Have questions or need help? Send us a message and we'll get back to you as soon as possible.
           </Text>
@@ -412,6 +414,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
   },
+  animationView: {
+    textAlign: "center",
+    alignItems: "center",
+    marginBottom: 30
+  },
+  animation: {
+    height: 170,
+    width: 170,
+  }
 
 });
 
