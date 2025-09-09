@@ -13,16 +13,17 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../components/types';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
 import noTxAnimation from '../assets/animations/no-data.json';
+import { useAuth } from '../auth/AuthProvider';
+import { get_data_uri } from '../config/api';
 
 interface Transaction {
   type: string;
   method: string;
   date: string;
-  amount: string;
+  amountNumeric?: { $numberDecimal: string };
   isPositive: boolean;
 }
 
@@ -40,6 +41,7 @@ async function getBTCPrice() {
 }
 
 const WalletScreen = () => {
+  const { user } = useAuth();
   const [btcBalance, setBtcBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showUSD, setShowUSD] = useState(false);
@@ -50,21 +52,57 @@ const WalletScreen = () => {
   type WalletNav = StackNavigationProp<RootStackParamList, 'Wallet'>;
   const navigation = useNavigation<WalletNav>();
 
-  const loadData = useCallback(async () => {
+  // Fetch BTC balance from server
+  const fetchBalance = useCallback(async () => {
     try {
-      const storedBtc = await AsyncStorage.getItem("btcBalance");
-      if (storedBtc) {
-        setBtcBalance(parseFloat(storedBtc));
+      const res = await fetch(`${get_data_uri('GET_WALLET_BALANCE')}?userId=${user.id}`);
+      const data = await res.json();
+      if (res.ok && data.balance) {
+        const btcVal = parseFloat(data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0");
+        setBtcBalance(btcVal);
       }
-
-      const storedTxns = await AsyncStorage.getItem("transactions");
-      if (storedTxns) {
-        setTransactions(JSON.parse(storedTxns));
-      }
-    } catch (e) {
-      console.error("Error loading wallet data", e);
+    } catch (err) {
+      console.error("Error fetching BTC balance:", err);
     }
-  }, []);
+  }, [user.id]);
+
+  // Fetch user transactions from server
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const res = await fetch(`${get_data_uri('CREATE_WITHDRAWAL')}/user/${user.id}`);
+      const data = await res.json();
+
+      console.log("API RESPONSE: ", data);
+
+      if (res.ok && Array.isArray(data)) {
+        const txns: Transaction[] = data.map((txn: any) => ({
+          type: txn.asset,
+          method: txn.chain,
+          date: txn.created_at,
+          amountNumeric: txn.amountNumeric,
+          isPositive: parseFloat(txn.amountNumeric?.$numberDecimal ?? '0') >= 0,
+        }));
+        setTransactions(txns);
+      } else {
+        setTransactions([]);
+      }
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+      setTransactions([]);
+    }
+  }, [user.id]);
+
+  const loadData = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchBalance();
+      await fetchTransactions();
+    } catch (err) {
+      console.error("Error loading wallet data", err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchBalance, fetchTransactions]);
 
   useEffect(() => {
     loadData();
@@ -73,21 +111,19 @@ const WalletScreen = () => {
   useEffect(() => {
     async function updateBalance() {
       if (showUSD) {
-        setBalanceLoading(true); // start loading
+        setBalanceLoading(true);
         const price = await getBTCPrice();
-        setDisplayedBalance(`$${((btcBalance / 4) * price).toFixed(4)}`);
-        setBalanceLoading(false); // done loading
+        setDisplayedBalance(`$${btcBalance * price}`);
+        setBalanceLoading(false);
       } else {
-        setDisplayedBalance(`${(btcBalance / 4).toFixed(12)} BTC`);
+        setDisplayedBalance(`${btcBalance.toFixed(12)} BTC`);
       }
     }
     updateBalance();
   }, [btcBalance, showUSD]);
 
   const onRefresh = async () => {
-    setRefreshing(true);
     await loadData();
-    setRefreshing(false);
   };
 
   const handleDeposit = () => navigation.navigate('DepositScreen');
@@ -119,11 +155,7 @@ const WalletScreen = () => {
             disabled={balanceLoading}
           >
             <Text style={styles.convertText}>
-              {balanceLoading
-                ? "Loading..."
-                : showUSD
-                ? "Show in BTC"
-                : "Convert to USD"}
+              {balanceLoading ? "Loading..." : showUSD ? "Show in BTC" : "Convert to USD"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -187,7 +219,7 @@ const WalletScreen = () => {
                       { color: txn.isPositive ? '#10B981' : '#EF4444' },
                     ]}
                   >
-                    {txn.amount}
+                    {txn["amountNumeric"]?.$numberDecimal ?? '0'}
                   </Text>
                 </View>
               ))}
@@ -205,6 +237,7 @@ const WalletScreen = () => {
 
 export default WalletScreen;
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
