@@ -28,6 +28,10 @@ type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignU
 const SignUpScreen: React.FC<SignUpScreenProps> = () => {
   const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    
+    const [referral_code, setReferral] = useState('');
+    const [referralError, setReferralError] = useState('');
+
     const [password, setPassword] = useState('');
     const [nameError, setNameError] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -93,6 +97,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
             name: name.trim(),
             email: email.toLowerCase(),
             password: password,
+            referral_code: email.trim().toLowerCase(),
           }),
         });
   
@@ -156,7 +161,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
               colors={['#1B202CAA', '#2E3646AA']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ borderRadius: 16, padding: Platform.OS === 'ios' ? 20 : 10, height: Platform.OS === 'ios' ? "58%" : "45%" }}
+              style={{ borderRadius: 16, padding: Platform.OS === 'ios' ? 20 : 10 }}
             >
               {/* Name */}
               <View style={{ marginBottom: 15 }}>
@@ -220,6 +225,26 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                 {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
               </View>
 
+              <View style={{ marginBottom: 15 }}>
+                <View style={styles.inputWrapper}>
+                  <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
+                  <TextInput
+                    style={{ ...styles.input, flex: 1 }}
+                    placeholder="REFERRAL (OPTIONAL)"
+                    placeholderTextColor="#888"
+                    value={referral_code}
+                    onChangeText={(text) => {
+                      setReferral(text);
+                      if (referralError) setReferralError('');
+                    }}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+                {referralError ? <Text style={styles.errorText}>{referralError}</Text> : null}
+              </View>
+
               {/* Signup Button */}
               <TouchableOpacity 
                 style={styles.loginButton} 
@@ -244,7 +269,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                 style={{ marginTop: 10, alignItems: 'center' }}
                 onPress={() => navigation.navigate('Login' as never)}
               >
-                <Text style={{ color: 'white', fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-10%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
+                <Text style={{ color: 'white', paddingBottom: Platform.OS === 'ios' ? 40 : 10, fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-10%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
               </TouchableOpacity>
 
             </LinearGradient>
@@ -262,11 +287,6 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
 };
 
 const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
 
   formBox: {
     width: '100%',
@@ -285,14 +305,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a2e',
   },
-  backgroundPattern: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#1a1a2e',
-  },
   safeArea: {
     flex: 1,
   },
@@ -309,7 +321,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: '15%',
   },
 
   bitcoinLogo: {
@@ -321,7 +332,6 @@ const styles = StyleSheet.create({
   bitcoinImage: {
     width: '100%',
     height: '100%',
-    transform: [{ rotate: '3deg' }],
   },
   bitcoinSymbol: {
     fontSize: 80,
@@ -388,7 +398,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-signUpButtonText: {
+  signUpButtonText: {
     color: '#ffffff',
     fontSize: 14,
     fontWeight: 'bold',
