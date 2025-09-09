@@ -272,7 +272,7 @@ const Page: React.FC = () => {
     : adsWatched >= MAX_ADS
       ? "Max Videos Reached"
       : isMiningActive
-        ? `Increase ${hashPower} GH/s`
+        ? `Increase 5 GH/s`
         : "Start Mining";
 
   return (

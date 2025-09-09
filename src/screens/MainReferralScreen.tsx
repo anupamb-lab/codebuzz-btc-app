@@ -161,32 +161,44 @@ const InternalReferralScreen: React.FC<InternalReferralScreenProps> = () => {
 
                 {/* Share From Section */}
                 <LinearGradient
-                    colors={['#1B202CAA', '#2E3646AA']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.shareBox}
+                  colors={['#1B202CAA', '#2E3646AA']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.shareBox}
                 >
-                    <Text style={styles.shareTitle}>Share from</Text>
-                    <View style={styles.iconRow}>
+                  <Text style={styles.shareTitle}>Share with friends</Text>
+                  <Text style={styles.shareSubtitle}>
+                    Invite others using your referral code
+                  </Text>
+
+                  <View style={styles.iconRow}>
                     <TouchableOpacity
-                    onPress={() => Linking.openURL(`whatsapp://send?text=Join me using my referral code: ${userReferralCode}`)}
+                      style={styles.iconButton}
+                      onPress={() =>
+                        Linking.openURL(`whatsapp://send?text=Join me using my referral code: ${userReferralCode}`)
+                      }
                     >
-                        <Image source={require('../assets/images/icon_wa.png')} style={styles.shareIcon} />
+                      <Image source={require('../assets/images/icon_wa.png')} style={styles.shareIcon} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                    onPress={() => Linking.openURL(`sms:?body=Join me using my referral code: ${userReferralCode}`)}
+                      style={styles.iconButton}
+                      onPress={() =>
+                        Linking.openURL(`sms:?body=Join me using my referral code: ${userReferralCode}`)
+                      }
                     >
-                        <Image source={require('../assets/images/icon_sms.png')} style={styles.shareIcon} />
+                      <Image source={require('../assets/images/icon_sms.png')} style={styles.shareIcon} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                    onPress={() => Linking.openURL(`tg://msg?text=Join me using my referral code: ${userReferralCode}`)}
+                      style={styles.iconButton}
+                      onPress={() =>
+                        Linking.openURL(`tg://msg?text=Join me using my referral code: ${userReferralCode}`)
+                      }
                     >
-                        <Image source={require('../assets/images/icon_tel.png')} style={styles.shareIcon} />
+                      <Image source={require('../assets/images/icon_tel.png')} style={styles.shareIcon} />
                     </TouchableOpacity>
-                    
-                    </View>
+                  </View>
                 </LinearGradient>
 
                 </View>
@@ -226,7 +238,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50,
   },
   bitcoinLogo: {
     width: 100,
@@ -318,35 +329,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 
-  shareBox: {
-    width: Platform.OS === 'ios' ? '100%' : '85%',
-    minHeight: Platform.OS === 'ios' ? 150 : 120,
-    alignSelf: 'center',
-    padding: 15,
-    marginVertical: 25,
-    borderRadius: 12,
-  },
-
-  shareTitle: {
-    color: '#fff',
-    fontSize: 12,
-    marginBottom: 10,
-  },
-
-  iconRow: {
-    flexDirection: 'row',
-    marginTop: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  shareIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
-    marginRight: 20
-  },
-
   skipButton: {
     borderRadius: 70,
     marginTop: 20,
@@ -377,6 +359,55 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#fff',
     fontWeight: '600',
+  },
+
+  shareBox: {
+    width: '90%',
+    alignSelf: 'center',
+    marginVertical: 25,
+    borderRadius: 16,
+    paddingVertical: Platform.OS === 'ios' ? 0 : 20,
+    minHeight: Platform.OS === 'ios' ? 150 : 130,
+    justifyContent: 'center',
+  },
+
+  shareTitle: {
+    color: '#4ACDFC',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+
+  shareSubtitle: {
+    color: '#FFFFFFAA',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 18,
+  },
+
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+
+  iconButton: {
+    width: 55,
+    height: 55,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    overflow: 'hidden', 
+  },
+
+  shareIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
   },
 });
 
