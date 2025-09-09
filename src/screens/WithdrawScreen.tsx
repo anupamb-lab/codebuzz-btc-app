@@ -107,7 +107,7 @@ const WithdrawScreen = ({ navigation }: any) => {
 
   // Auto-set method
   useEffect(() => {
-    if (currency.startsWith("USD")) {
+    if (currency === "USD - United States Dollar") {
       setMethod("Bank Transfer");
     } else {
       setMethod("Crypto");

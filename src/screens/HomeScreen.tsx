@@ -453,7 +453,7 @@ const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress, di
       colors={['#22D3EE', '#C084FC']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={styles.gradientButton}
+      style={[styles.gradientButton, { flexDirection: "row", alignItems: "center", justifyContent: "center" }]}
     >
       {text === "Claim Free Miners" ? (
         <LottieView
@@ -462,10 +462,10 @@ const GradientButton: React.FC<GradientButtonProps> = ({ icon, text, onPress, di
           }}
           autoPlay
           loop
-          style={styles.headerAnimation}
+          style={[styles.headerAnimation, { width: 38, height: 38, marginTop: "-5%", marginRight: "-2%" }]}
         />
       ) : (
-        icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />
+        icon && <Icon name={icon} size={18} color="#fff" style={[styles.buttonIcon]} />
       )}
       <Text style={styles.buttonText}>{text}</Text>
     </LinearGradient>

@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
+import { useAuth } from "../auth/AuthProvider";
 
 const currencies = ['USD - United States Dollar', 'BTC - Bitcoin', 'USDT - BEP20', 'USDC - BEP20'];
 const methods = ['Bank Transfer', 'Crypto', 'Payment Gateway'];
@@ -34,6 +35,9 @@ const DepositScreen = () => {
   const [methodDropdownVisible, setMethodDropdownVisible] = useState(false);
 
   const navigation = useNavigation<NavigationProp>();
+
+  const { user } = useAuth();
+  const initials = user?.name ? user.name[0].toUpperCase() : "U";
 
   const filteredMethods =
   currency.startsWith('USD - United States Dollar')
@@ -59,7 +63,7 @@ const DepositScreen = () => {
         <TouchableOpacity style={styles.profileCircle} onPress={() => {
             navigation.navigate('MyProfileScreen')
         }}>
-          <Text style={styles.profileInitial}>JD</Text>
+          <Text style={styles.profileInitial}>{initials}</Text>
         </TouchableOpacity>
       </View>
 
