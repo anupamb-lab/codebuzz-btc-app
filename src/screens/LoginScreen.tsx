@@ -227,7 +227,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
             <View style={styles.logoContainer}>
               <View style={styles.bitcoinLogo}>
                 <Image
-                  source={require('../assets/images/btc_icon.png')}
+                  source={require('../assets/images/main_app_icon.png')}
                   style={styles.bitcoinImage}
                   resizeMode="contain"
                 />
@@ -430,24 +430,22 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: Platform.OS === 'ios' ? 0 : 20,
     justifyContent: 'center',
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50,
   },
 
   bitcoinLogo: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
   bitcoinImage: {
     width: '100%',
     height: '100%',
-    transform: [{ rotate: '3deg' }],
   },
   bitcoinSymbol: {
     fontSize: 80,
