@@ -309,6 +309,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
+    marginTop: '15%',
   },
 
   bitcoinLogo: {
@@ -468,7 +469,7 @@ signUpButtonText: {
   footer: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: 30,
+    bottom: -5,
     left: 0,
     right: 0,
   },

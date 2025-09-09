@@ -213,7 +213,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboardAvoidingView}
         >
           <ScrollView
@@ -367,6 +367,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     padding: 16,
+    minHeight: Platform.OS === 'ios' ? "58%" : "45%",
   },
 
   container: {
@@ -381,43 +382,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#1a1a2e',
   },
-  geometricShape: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 69, 255, 0.3)',
-  },
-  shape1: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    top: -100,
-    right: -100,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
-  shape2: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    bottom: 100,
-    left: -75,
-    borderColor: 'rgba(139, 69, 255, 0.15)',
-  },
-  shape3: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    top: 200,
-    left: 50,
-    borderColor: 'rgba(139, 69, 255, 0.1)',
-  },
-  shape4: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    bottom: 300,
-    right: 30,
-    borderColor: 'rgba(139, 69, 255, 0.2)',
-  },
   safeArea: {
     flex: 1,
   },
@@ -425,16 +389,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1,
-    minHeight: Dimensions.get('window').height - 100,
+    flexGrow: 1, 
+    paddingHorizontal: 20, 
+    paddingVertical: 30
   },
   content: {
     flex: 1,
-    paddingHorizontal: Platform.OS === 'ios' ? 0 : 20,
-    justifyContent: 'center',
   },
   logoContainer: {
     alignItems: 'center',
+    marginTop: '15%',
   },
 
   bitcoinLogo: {
@@ -454,6 +418,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     marginBottom: 1,
+    marginTop: 30
   },
   inputContainer: {
     marginBottom: 15,
@@ -498,8 +463,9 @@ const styles = StyleSheet.create({
     width: Platform.OS === 'ios' ? '45%' : '50%', 
     alignSelf: "center",
     marginVertical: 10,
-    marginBottom: Platform.OS === 'ios' ? '8%' : "5%",
-    marginLeft: Platform.OS === 'ios' ? '-10%' : 0
+    marginBottom: Platform.OS === 'ios' ? '10%' : "5%",
+    marginLeft: Platform.OS === 'ios' ? '-10%' : 0,
+    marginTop: 30
   },
 
   loginButtonGradient: {
@@ -584,7 +550,7 @@ const styles = StyleSheet.create({
   footer: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: 30,
+    bottom: -5,
     left: 0,
     right: 0,
   },
