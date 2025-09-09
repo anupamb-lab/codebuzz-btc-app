@@ -92,6 +92,10 @@ const ReferralScreen: React.FC<ReferralScreenProps> = () => {
                 console.error('Missing token or user data');
                 Alert.alert('Error', 'Missing authentication data. Please login again.');
                 navigation.navigate('Login');
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                });
                 return;
             }
 
