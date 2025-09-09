@@ -237,7 +237,6 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                       setReferral(text);
                       if (referralError) setReferralError('');
                     }}
-                    secureTextEntry
                     autoCapitalize="none"
                     autoCorrect={false}
                   />

@@ -29,6 +29,7 @@ export const DATA_ENDPOINTS = {
   GET_REWARDS: '/api/daily-rewards',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
   CREATE_SUPPORT_TICKET: '/api/help/create',
+  REFERRALS: '/api/referrals',
 } as const;
 
 type DataEndpointKey = keyof typeof DATA_ENDPOINTS;
@@ -43,6 +44,7 @@ export const API_ENDPOINTS = {
   LOGIN: '/api/auth/login',
   LOGOUT: '/api/auth/logout',
   REGISTER: '/api/auth/register',
+  REFERRALS: '/api/referrals',
   SOCIAL_LOGIN: '/api/auth/social-login',
   ME: '/api/auth/me',
   FORGOT_PASSWORD: '/api/auth/forgotpassword',

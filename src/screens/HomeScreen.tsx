@@ -23,7 +23,7 @@ import { RootStackParamList } from '../components/types';
 import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { get_data_uri } from '../config/api';
+import { API_ENDPOINTS, get_data_uri } from '../config/api';
 import LottieView from 'lottie-react-native';
 import miningCardAnimation from '../assets/animations/mining-card.json';
 
@@ -78,6 +78,8 @@ const Page: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
+
+  const [user_referrals, setUserReferrals] = useState(0);
 
   interface Activity {
     type: string;
@@ -264,6 +266,35 @@ const Page: React.FC = () => {
     return () => clearInterval(syncInterval);
   }, []);
 
+  const get_referrals = async () => {
+    try {
+      const fetch_referrals_uri = `${get_data_uri('REFERRALS')}?code=${encodeURIComponent(
+        user.referralCode
+      )}`;
+
+      console.log("Fetch Referrals URI: ", fetch_referrals_uri);
+
+      const res = await fetch(fetch_referrals_uri, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      console.log("User Referrals: ", data);
+
+      setUserReferrals(Number(data.count) || 0);
+
+    } catch (error) {
+      console.error("Error fetching referrals:", error);
+    }
+  };
+
+  useEffect(() => {
+    get_referrals();
+  }, []);
+
   const isMiningActive =
   hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
 
@@ -349,7 +380,7 @@ const Page: React.FC = () => {
           }}
           />
 
-          <InfoCard icon="account-group" value="0" label="Total Referrals" onPress={() => {
+          <InfoCard icon="account-group" value={user_referrals.toString()} label="Total Referrals" onPress={() => {
             navigation.navigate('InternalReferral');
           }}/>
         </View>
