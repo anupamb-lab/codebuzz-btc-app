@@ -235,7 +235,7 @@ const Page: React.FC = () => {
   const syncBalance = async () => {
     try {
       
-      console.log("SET BALANCE URL: ", get_data_uri('SET_WALLET_BALANCE'));
+      console.log("SET BALANCE URL: ", get_data_uri('SET_WALLET_BALANCE'), "UserId: ", user.id);
 
       const res = await fetch(get_data_uri('SET_WALLET_BALANCE'), {
         method: 'POST',

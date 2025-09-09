@@ -97,7 +97,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
             name: name.trim(),
             email: email.toLowerCase(),
             password: password,
-            referral_code: email.trim().toLowerCase(),
+            referral_code: referral_code.trim().toLowerCase(),
           }),
         });
   
