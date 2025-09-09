@@ -146,7 +146,14 @@ const WalletScreen = () => {
         {/* Balance Box */}
         <View style={styles.balanceBox}>
           <Text style={styles.balanceLabel}>Your Current Balance</Text>
-          <Text style={styles.balanceAmount}>{displayedBalance}</Text>
+          <Text
+            style={styles.balanceAmount}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.6}
+          >
+            {displayedBalance}
+          </Text>
           <Text style={styles.balanceChange}>Mining earnings</Text>
 
           <TouchableOpacity
@@ -263,6 +270,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 28,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   balanceChange: {
     color: '#34D399',
