@@ -72,6 +72,7 @@ const Page: React.FC = () => {
   const [hashPower, setHashPower] = useState(0);
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(true);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -114,8 +115,17 @@ const Page: React.FC = () => {
   // Load State from AsyncStorage
   // -----------------------------
   useEffect(() => {
+    console.log("UseEffect #1");
     const loadData = async () => {
       try {
+
+        if (!user?.id) {
+          console.log("User not ready, skipping fetchBalance");
+          return;
+        } else {
+          console.log("User is not Null");
+        }
+
         const storedHash = await AsyncStorage.getItem('hashPower');
         const storedAds = await AsyncStorage.getItem('adsWatched');
         const storedStart = await AsyncStorage.getItem('startTime');
@@ -123,7 +133,6 @@ const Page: React.FC = () => {
 
         setHashPower(storedHash ? parseInt(storedHash) : 0);
         setAdsWatched(storedAds ? parseInt(storedAds) : 0);
-        setBtcBalance(storedBtc ? parseFloat(storedBtc) : 0);
 
         if (storedStart) {
           const start = parseInt(storedStart);
@@ -133,8 +142,11 @@ const Page: React.FC = () => {
           }
         }
 
-        // Fetch from API
+        if (storedBtc) {
+          setBtcBalance(parseFloat(storedBtc));
+        }
         await fetchBalance();
+
       } catch (e) {
         console.error('Error loading mining state', e);
       }
@@ -174,13 +186,15 @@ const Page: React.FC = () => {
 
     if (isMiningActive) {
       intervalRef.current = setInterval(() => {
-        setBtcBalance(prev => prev + hashPower * BTC_PER_HASHPOWER_PER_SEC);
+        setBtcBalance(prev => {
+          const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
+          balanceRef.current = updated;
+          return updated;
+        });
       }, 1000);
 
-      // Play animation
       miningAnimationRef.current?.play();
     } else {
-      // Stop animation
       miningAnimationRef.current?.pause();
     }
 
@@ -194,31 +208,27 @@ const Page: React.FC = () => {
   // -----------------------------
   const fetchBalance = async () => {
     try {
-
       const fetch_balance_uri = `${get_data_uri('GET_WALLET_BALANCE')}?userId=${user.id}`;
+      console.log("Fetch Balance URL: ", fetch_balance_uri);
 
-      // console.log("Fetch Balance URL: ", fetch_balance_uri)
-
-      const res = await fetch(
-        fetch_balance_uri
-      );
-
+      const res = await fetch(fetch_balance_uri);
       const data = await res.json();
 
-      // console.log("FETCH RESPONSE: ", res);
-      // console.log("FETCH DATA: ", data);
+      console.log("FETCH RES: ", res, "FETCH DATA: ", data);
 
       if (res.ok && data.balance) {
         const btcValue = parseFloat(
           data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
         );
+        const safeVal = isNaN(btcValue) ? 0 : btcValue;
 
-        console.log("Fetching Balance from DB: ", btcValue);
-
-        setBtcBalance(isNaN(btcValue) ? 0 : btcValue);
+        setBtcBalance(safeVal);
+        balanceRef.current = safeVal;
       }
     } catch (err) {
       console.error("Error fetching balance:", err);
+    } finally {
+      setLoadingBalance(false);
     }
   };
 
@@ -304,7 +314,11 @@ const Page: React.FC = () => {
             loop
             style={{ width: 60, height: 60 }}
           />
-          <Text style={styles.btcText}>{btcBalance.toFixed(12)} BTC</Text>
+          <Text style={styles.btcText}>
+            {loadingBalance 
+              ? "Loading..." 
+              : btcBalance?.toFixed(12) + " BTC"}
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
 
