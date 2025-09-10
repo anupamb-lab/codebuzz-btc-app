@@ -55,16 +55,29 @@ const WalletScreen = () => {
   // Fetch BTC balance from server
   const fetchBalance = useCallback(async () => {
     try {
-      const res = await fetch(`${get_data_uri('GET_WALLET_BALANCE')}?userId=${user.id}`);
+      if (!user?.id) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+        return;
+      }
+
+      const res = await fetch(
+        `${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`
+      );
       const data = await res.json();
+
       if (res.ok && data.balance) {
-        const btcVal = parseFloat(data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0");
+        const btcVal = parseFloat(
+          data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
+        );
         setBtcBalance(btcVal);
       }
     } catch (err) {
       console.error("Error fetching BTC balance:", err);
     }
-  }, [user.id]);
+  }, [user?.id, navigation]);
 
   // Fetch user transactions from server
   const fetchTransactions = useCallback(async () => {
