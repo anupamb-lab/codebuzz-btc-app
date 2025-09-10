@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Clipboard,
   Alert,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -106,6 +107,7 @@ const handleConfirmDeposit = async () => {
 
   return (
     <View style={styles.container}>
+
       {/* Error State */}
       {error && (
         <View style={styles.errorBox}>
@@ -126,21 +128,22 @@ const handleConfirmDeposit = async () => {
           {copied && <Text style={styles.copiedText}>Copied to clipboard!</Text>}
 
           <TouchableOpacity
-            style={styles.actionButton}
-            disabled={processing}
-            onPress={handleConfirmDeposit}
-          >
-            <LinearGradient
-              colors={['#9333EA', '#4F46E5']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.buttonGradient}
-            >
-              <Text style={styles.buttonText}>
-                {processing ? 'Processing...' : "I've Sent Deposit"}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+                  onPress={async () => {
+                    handleConfirmDeposit
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <LinearGradient
+                    colors={['#53D3F6', '#BD85FC', '#F472B6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.backButton}
+                  >
+                    <Text style={styles.backButtonText}>
+                      {processing ? 'Processing...' : "I've Sent Deposit"}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
         </View>
       )}
 
@@ -253,5 +256,28 @@ const styles = StyleSheet.create({
     color: '#F1F5F9',
     fontSize: 14,
     marginBottom: 20,
+  },
+  topBar: {
+    paddingVertical: Platform.OS === 'ios' ? 80 : 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  topBarTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  backButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
+    minHeight: 40,
+    marginTop: Platform.OS === 'ios' ? 150 : 250,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
