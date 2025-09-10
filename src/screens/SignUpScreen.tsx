@@ -154,6 +154,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                   resizeMode="contain"
                 />
               </View>
+              <Text style={styles.logoTagline}>Cloud Mining Made Simple</Text>
             </View>
 
             {/* Form Box */}
@@ -506,10 +507,19 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   inputIconImage: {
-  width: 20,
-  height: 20,
-  marginRight: 8,
-},
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  logoTagline: {
+    fontSize: 16,
+    color: '#42B0FF',
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 22,
+    letterSpacing: 0.5,
+    marginBottom: Platform.OS === 'ios' ? 10 : 30
+  }
 });
 
 export default SignUpScreen;

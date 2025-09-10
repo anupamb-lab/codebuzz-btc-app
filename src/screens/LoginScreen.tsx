@@ -232,6 +232,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
                   resizeMode="contain"
                 />
               </View>
+              <Text style={styles.logoTagline}>Cloud Mining Made Simple</Text>
             </View>
 
             <View style={styles.screenContainer}>
@@ -578,10 +579,18 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   inputIconImage: {
-  width: 20,
-  height: 20,
-  marginRight: 8,
-},
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  logoTagline: {
+    fontSize: 16,
+    color: '#42B0FF',
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 22,
+    letterSpacing: 0.5,
+  }
 });
 
 export default LoginScreen;
