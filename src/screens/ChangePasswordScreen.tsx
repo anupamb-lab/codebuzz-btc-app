@@ -102,7 +102,10 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
         Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('Main' as never),
+            onPress: () => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            }),
           },
         ]);
       } else {
@@ -125,7 +128,10 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
               Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
                 {
                   text: 'OK',
-                  onPress: () => navigation.navigate('Main' as never),
+                  onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                }),
                 },
               ]);
               return;
@@ -262,7 +268,10 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
 
               {/* Back to Login */}
               <View style={styles.backContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('Main' as never)}>
+                <TouchableOpacity onPress={() => navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                })}>
                   <Text style={styles.backText}>Back to Login</Text>
                 </TouchableOpacity>
               </View>
