@@ -18,6 +18,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import LottieView from "lottie-react-native";
 import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -66,7 +67,7 @@ const DailyRewardsScreen = () => {
     fetchRewards();
   }, []);
 
-  const handleClaim = async (rewardId: string) => {
+  const handleClaim = async (rewardId: string, reward_amount: any) => {
     try {
       const res = await fetch(`${API_BASE}/claim`, {
         method: "POST",
@@ -75,6 +76,21 @@ const DailyRewardsScreen = () => {
       });
 
       const data = await res.json();
+
+      console.log("HashLogic RewardsScreen - Claiming More HashPower");
+
+      const storedHash = await AsyncStorage.getItem('hashPower');
+      const newHashPower = parseInt(storedHash!) + parseInt(reward_amount)
+
+      console.log("HashLogic RewardsScreen - StoredHash ", storedHash, "NewHash: ", newHashPower);
+
+      await AsyncStorage.setItem('hashPower', newHashPower.toString());
+      await AsyncStorage.flushGetRequests(); 
+
+      const checkHash = await AsyncStorage.getItem('hashPower');
+      console.log("HashLogic RewardsScreen - NewStoredHash: ", checkHash);
+
+      console.log("HashLogic RewardsScreen - HashStored!!");
 
       if (data.success) {
         // Update UI
@@ -141,7 +157,7 @@ const DailyRewardsScreen = () => {
               >
                 <TouchableOpacity
                   style={styles.claimTouchable}
-                  onPress={() => handleClaim(reward._id)}
+                  onPress={() => handleClaim(reward._id, reward.amount)}
                 >
                   <Text style={styles.claimText}>Claim</Text>
                 </TouchableOpacity>

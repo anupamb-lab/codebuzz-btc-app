@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // import * as shape from 'd3-shape';
 import { useAuth } from '../auth/AuthProvider';
 import { Sidebar } from '../components/Sidebar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 
@@ -89,6 +89,26 @@ const Page: React.FC = () => {
 
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('HashLogic HomeHash - Entering!');
+
+      const set_new_hash = async () => {
+        const newstoredHash = await AsyncStorage.getItem('hashPower');
+        console.log("HashLogic HomeHash - StoredHash: ", newstoredHash);
+        setHashPower(newstoredHash ? parseInt(newstoredHash) : 0);
+
+        console.log('HashLogic HomeHash - Done Setting New Hash!');
+      };
+
+      set_new_hash();
+
+      return () => {
+        console.log('HashLogic HomeHash - Leaving Home!');
+      };
+    }, [])
+  );
+
   // -----------------------------
   // Reward Handler (Ad Watched)
   // -----------------------------
@@ -117,7 +137,7 @@ const Page: React.FC = () => {
   // Load State from AsyncStorage
   // -----------------------------
   useEffect(() => {
-    console.log("UseEffect #1");
+    console.log("Loading from AsyncStorage");
     const loadData = async () => {
       try {
 
