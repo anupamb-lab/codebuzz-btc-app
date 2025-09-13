@@ -1,31 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-  Platform
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { LineChart, Grid } from 'react-native-svg-charts';
-// import * as shape from 'd3-shape';
-import { useAuth } from '../auth/AuthProvider';
-import { Sidebar } from '../components/Sidebar';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../components/types';
+  Platform,
+} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useAuth } from "../auth/AuthProvider";
+import { Sidebar } from "../components/Sidebar";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../components/types";
 
-import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_ENDPOINTS, get_data_uri } from '../config/api';
-import LottieView from 'lottie-react-native';
-import miningCardAnimation from '../assets/animations/mining-card.json';
+import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from "../services/googleAds";
+import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { get_data_uri } from "../config/api";
+import LottieView from "lottie-react-native";
+import miningCardAnimation from "../assets/animations/mining-card.json";
+import { useHashPower } from "../stores/HashPowerStore";
+
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Page">;
+
+const MAX_ADS = 10;
+const BASE_HASHPOWER_PER_AD = 5;
+const BTC_PER_HASHPOWER_PER_SEC = 0.000000000001;
+const MAX_MINING_DURATION = 24 * 60 * 60 * 1000;
 
 interface GradientButtonProps {
   icon?: string;
@@ -55,31 +58,7 @@ interface ActionCardProps {
   onPress?: () => void;
 }
 
-const MAX_ADS = 10;
-const BASE_HASHPOWER_PER_AD = 5;
-const BTC_PER_HASHPOWER_PER_SEC = 0.000000000001;
-const MAX_MINING_DURATION = 24 * 60 * 60 * 1000;
-const now = new Date();
-const oneDay = 24 * 60 * 60 * 1000;
-
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Page'>;
-
 const Page: React.FC = () => {
-  const { user } = useAuth();
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  const [btcBalance, setBtcBalance] = useState(0);
-  const [hashPower, setHashPower] = useState(0);
-  const [adsWatched, setAdsWatched] = useState(0);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [loadingBalance, setLoadingBalance] = useState(true);
-
-  const navigation = useNavigation<HomeScreenNavigationProp>();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const balanceRef = useRef(btcBalance);
-  const miningAnimationRef = useRef<LottieView>(null);
-
-  const [user_referrals, setUserReferrals] = useState(0);
 
   interface Activity {
     type: string;
@@ -87,73 +66,58 @@ const Page: React.FC = () => {
     crypto: string;
   }
 
+  const { user } = useAuth();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const { hashPower, setHashPower, addHashPower } = useHashPower();
+
+  const [btcBalance, setBtcBalance] = useState(0);
+  const [adsWatched, setAdsWatched] = useState(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(true);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [user_referrals, setUserReferrals] = useState(0);
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('HashLogic HomeHash - Entering!');
-
-      const set_new_hash = async () => {
-        const newstoredHash = await AsyncStorage.getItem('hashPower');
-        console.log("HashLogic HomeHash - StoredHash: ", newstoredHash);
-        setHashPower(newstoredHash ? parseInt(newstoredHash) : 0);
-
-        console.log('HashLogic HomeHash - Done Setting New Hash!');
-      };
-
-      set_new_hash();
-
-      return () => {
-        console.log('HashLogic HomeHash - Leaving Home!');
-      };
-    }, [])
-  );
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const balanceRef = useRef(btcBalance);
+  const miningAnimationRef = useRef<LottieView>(null);
 
   // -----------------------------
   // Reward Handler (Ad Watched)
   // -----------------------------
-  const handleReward = async (amount: number, type: string) => {
+  const handleReward = async () => {
     if (adsWatched >= MAX_ADS) return;
 
     const newAdsCount = adsWatched + 1;
-    const newHashPower = hashPower + BASE_HASHPOWER_PER_AD;
-
     setAdsWatched(newAdsCount);
-    setHashPower(newHashPower);
+
+    // update hashPower via global store
+    addHashPower(BASE_HASHPOWER_PER_AD);
 
     if (!startTime) {
       const now = Date.now();
       setStartTime(now);
-      await AsyncStorage.setItem('startTime', now.toString());
+      await AsyncStorage.setItem("startTime", now.toString());
     }
 
-    await AsyncStorage.setItem('adsWatched', newAdsCount.toString());
-    await AsyncStorage.setItem('hashPower', newHashPower.toString());
+    await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
   };
 
-  const { show, loading, loaded } = showRewardedAd(handleReward);
+  const { show, loading } = showRewardedAd(handleReward);
 
   // -----------------------------
   // Load State from AsyncStorage
   // -----------------------------
   useEffect(() => {
-    console.log("Loading from AsyncStorage");
     const loadData = async () => {
       try {
+        if (!user?.id) return;
 
-        if (!user?.id) {
-          console.log("User not ready, skipping fetchBalance");
-          return;
-        } else {
-          console.log("User is not Null");
-        }
+        const storedAds = await AsyncStorage.getItem("adsWatched");
+        const storedStart = await AsyncStorage.getItem("startTime");
+        const storedBtc = await AsyncStorage.getItem("btcBalance");
 
-        const storedHash = await AsyncStorage.getItem('hashPower');
-        const storedAds = await AsyncStorage.getItem('adsWatched');
-        const storedStart = await AsyncStorage.getItem('startTime');
-        const storedBtc = await AsyncStorage.getItem('btcBalance');
-
-        setHashPower(storedHash ? parseInt(storedHash) : 0);
         setAdsWatched(storedAds ? parseInt(storedAds) : 0);
 
         if (storedStart) {
@@ -167,35 +131,34 @@ const Page: React.FC = () => {
         if (storedBtc) {
           setBtcBalance(parseFloat(storedBtc));
         }
-        await fetchBalance();
 
+        await fetchBalance();
       } catch (e) {
-        console.error('Error loading mining state', e);
+        console.error("Error loading mining state", e);
       }
     };
 
     loadData();
-  }, []);
+  }, [user]);
 
   // -----------------------------
-  // Save Local State
+  // Save Local State (btc + ads + startTime only)
   // -----------------------------
   useEffect(() => {
     const saveData = async () => {
       try {
-        await AsyncStorage.setItem('btcBalance', btcBalance.toString());
-        await AsyncStorage.setItem('hashPower', hashPower.toString());
-        await AsyncStorage.setItem('adsWatched', adsWatched.toString());
+        await AsyncStorage.setItem("btcBalance", btcBalance.toString());
+        await AsyncStorage.setItem("adsWatched", adsWatched.toString());
         if (startTime) {
-          await AsyncStorage.setItem('startTime', startTime.toString());
+          await AsyncStorage.setItem("startTime", startTime.toString());
         }
       } catch (e) {
-        console.error('Error saving mining state', e);
+        console.error("Error saving mining state", e);
       }
     };
 
     saveData();
-  }, [btcBalance, hashPower, adsWatched, startTime]);
+  }, [btcBalance, adsWatched, startTime]);
 
   // -----------------------------
   // Mining Logic
@@ -208,7 +171,7 @@ const Page: React.FC = () => {
 
     if (isMiningActive) {
       intervalRef.current = setInterval(() => {
-        setBtcBalance(prev => {
+        setBtcBalance((prev) => {
           const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
           balanceRef.current = updated;
           return updated;
@@ -230,13 +193,13 @@ const Page: React.FC = () => {
   // -----------------------------
   const fetchBalance = async () => {
     try {
-      const fetch_balance_uri = `${get_data_uri('GET_WALLET_BALANCE')}?userId=${user.id}`;
+      const fetch_balance_uri = `${get_data_uri(
+        "GET_WALLET_BALANCE"
+      )}?userId=${user.id}`;
       console.log("Fetch Balance URL: ", fetch_balance_uri);
 
       const res = await fetch(fetch_balance_uri);
       const data = await res.json();
-
-      console.log("FETCH RES: ", res, "FETCH DATA: ", data);
 
       if (res.ok && data.balance) {
         const btcValue = parseFloat(
@@ -256,29 +219,27 @@ const Page: React.FC = () => {
 
   const syncBalance = async () => {
     try {
-      
-      console.log("SET BALANCE URL: ", get_data_uri('SET_WALLET_BALANCE'), "UserId: ", user.id);
-
-      const res = await fetch(get_data_uri('SET_WALLET_BALANCE'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, asset: 'BTC', amount: balanceRef.current }),
+      const res = await fetch(get_data_uri("SET_WALLET_BALANCE"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          asset: "BTC",
+          amount: balanceRef.current,
+        }),
       });
 
       const data = await res.json();
-
       console.log("Setting Balance in DB: ", balanceRef.current);
       console.log("API RESPONSE: ", data);
-      
     } catch (err) {
-      console.error('Error syncing balance:', err);
+      console.error("Error syncing balance:", err);
     }
   };
 
   // Sync balance periodically (every 30s)
   useEffect(() => {
     balanceRef.current = btcBalance;
-    console.log("Updated ref:", balanceRef.current, "btcBalance:", btcBalance);
   }, [btcBalance]);
 
   useEffect(() => {
@@ -286,26 +247,22 @@ const Page: React.FC = () => {
     return () => clearInterval(syncInterval);
   }, []);
 
+  // -----------------------------
+  // Referrals
+  // -----------------------------
   const get_referrals = async () => {
     try {
-      const fetch_referrals_uri = `${get_data_uri('REFERRALS')}?code=${encodeURIComponent(
+      const fetch_referrals_uri = `${get_data_uri("REFERRALS")}?code=${encodeURIComponent(
         user.referralCode
       )}`;
 
-      console.log("Fetch Referrals URI: ", fetch_referrals_uri);
-
       const res = await fetch(fetch_referrals_uri, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await res.json();
-      console.log("User Referrals: ", data);
-
       setUserReferrals(Number(data.count) || 0);
-
     } catch (error) {
       console.error("Error fetching referrals:", error);
     }
@@ -315,16 +272,19 @@ const Page: React.FC = () => {
     get_referrals();
   }, []);
 
+  // -----------------------------
+  // UI helpers
+  // -----------------------------
   const isMiningActive =
-  hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
+    hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
 
   const buttonLabel = loading
     ? "Loading..."
     : adsWatched >= MAX_ADS
-      ? "Max Videos Reached"
-      : isMiningActive
-        ? `Increase 5 GH/s`
-        : "Start Mining";
+    ? "Max Videos Reached"
+    : isMiningActive
+    ? `Increase 5 GH/s`
+    : "Start Mining";
 
   return (
     <View style={{ flex: 1 }}>

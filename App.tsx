@@ -39,6 +39,8 @@ import DailyRewardsScreen from './src/screens/DailyRewardsScreen';
 import CryptoDepositScreen from './src/screens/CryptoDepositScreen';
 import BalanceHistoryScreen from './src/screens/BalanceHistoryScreen';
 
+import { HashPowerProvider } from "./src/stores/HashPowerStore";
+
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
@@ -104,10 +106,12 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <NavigationContainer>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <AppNavigator />
-      </NavigationContainer>
+      <HashPowerProvider>
+        <NavigationContainer>
+          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+          <AppNavigator />
+        </NavigationContainer>
+      </HashPowerProvider>
     </AuthProvider>
   );
 };
