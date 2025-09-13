@@ -1,5 +1,5 @@
 {
-  "name": "BitcoinMining",
+  "name": "BitPlayPro",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -47,7 +47,9 @@
     "react-native-svg": "^15.12.1",
     "react-native-vector-icons": "^10.3.0",
     "react-native-video": "^6.16.1",
-    "vercel": "^44.2.11"
+    "vercel": "^44.2.11",
+    "@react-native-firebase/app": "^19.0.0",
+    "@react-native-firebase/auth": "^19.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
