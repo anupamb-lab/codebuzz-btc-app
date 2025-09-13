@@ -1913,6 +1913,11 @@
   dependencies:
     plist "^3.1.0"
 
+"@react-native-firebase/messaging@^19.0.0":
+  version "19.3.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-19.3.0.tgz"
+  integrity sha512-5nxX2jzRVMG/LwHQygQhl0X/j23FYY8Hn6T8xV3VnYk/O6PXbiQZVpbN5dM7F21aVf4wCFXJnn3jkHIbMP/MYw==
+
 "@react-native-picker/picker@^2.11.1":
   version "2.11.1"
   resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.11.1.tgz"

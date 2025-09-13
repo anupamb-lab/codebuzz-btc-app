@@ -38,8 +38,9 @@ import NotificationPreferencesScreen from './src/screens/NotificationPreferences
 import DailyRewardsScreen from './src/screens/DailyRewardsScreen';
 import CryptoDepositScreen from './src/screens/CryptoDepositScreen';
 import BalanceHistoryScreen from './src/screens/BalanceHistoryScreen';
-
 import { HashPowerProvider } from "./src/stores/HashPowerStore";
+
+import messaging from '@react-native-firebase/messaging';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -99,9 +100,25 @@ const AppNavigator = () => {
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
+  messaging().setBackgroundMessageHandler(async remoteMessage => {
+    console.log('Background message handled:', remoteMessage);
+  });
+
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Firebase Authorization status:', authStatus);
+    }
+  }
+
   useEffect(() => {
     // Initialize social SDKs
     initializeGoogleAds();
+    requestUserPermission();
   }, []);
 
   return (

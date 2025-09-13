@@ -49,7 +49,8 @@
     "react-native-video": "^6.16.1",
     "vercel": "^44.2.11",
     "@react-native-firebase/app": "^19.0.0",
-    "@react-native-firebase/auth": "^19.0.0"
+    "@react-native-firebase/auth": "^19.0.0",
+    "@react-native-firebase/messaging": "^19.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
