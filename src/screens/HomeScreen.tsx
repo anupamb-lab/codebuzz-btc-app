@@ -86,7 +86,11 @@ const Page: React.FC = () => {
 
   async function saveFcmTokenToBackend(id: any, token: string) {
     try {
-      const response = await fetch(get_data_uri('CREATE_FCM'), {
+      const fcm_uri = get_data_uri('CREATE_FCM');
+
+      console.log("FCMHome - URL: ", fcm_uri);
+
+      const response = await fetch(fcm_uri, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
