@@ -19,6 +19,7 @@ import LottieView from "lottie-react-native";
 import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useHashPower } from "../stores/HashPowerStore";
 
 type NavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -43,6 +44,8 @@ const DailyRewardsScreen = () => {
   const [claimedReward, setClaimedReward] = useState<Reward | null>(null);
 
   const navigation = useNavigation<NavigationProp>();
+
+  const { hashPower, setHashPower, addHashPower } = useHashPower();
 
   const { user } = useAuth();
 
@@ -77,20 +80,7 @@ const DailyRewardsScreen = () => {
 
       const data = await res.json();
 
-      console.log("HashLogic RewardsScreen - Claiming More HashPower");
-
-      const storedHash = await AsyncStorage.getItem('hashPower');
-      const newHashPower = parseInt(storedHash!) + parseInt(reward_amount)
-
-      console.log("HashLogic RewardsScreen - StoredHash ", storedHash, "NewHash: ", newHashPower);
-
-      await AsyncStorage.setItem('hashPower', newHashPower.toString());
-      await AsyncStorage.flushGetRequests(); 
-
-      const checkHash = await AsyncStorage.getItem('hashPower');
-      console.log("HashLogic RewardsScreen - NewStoredHash: ", checkHash);
-
-      console.log("HashLogic RewardsScreen - HashStored!!");
+      addHashPower(parseInt(reward_amount));
 
       if (data.success) {
         // Update UI
