@@ -24,7 +24,6 @@ target 'BitPlayPro' do
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386'
     end
   require 'xcodeproj'
-
   # Use the project object CocoaPods already created
   pods_project = installer.pods_project
 
