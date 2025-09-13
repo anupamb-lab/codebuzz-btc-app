@@ -44,6 +44,10 @@ import messaging from '@react-native-firebase/messaging';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('FirebaseLG - Message handled in the background:', remoteMessage);
+});
+
 const AppNavigator = () => {
   const { authenticated, loading } = useAuth();
 
@@ -100,10 +104,6 @@ const AppNavigator = () => {
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Background message handled:', remoteMessage);
-  });
-
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -119,6 +119,29 @@ const App = () => {
     // Initialize social SDKs
     initializeGoogleAds();
     requestUserPermission();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('FirebaseLG - Foreground message received:', remoteMessage);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const getToken = async () => {
+      const token = await messaging().getToken();
+      console.log('FirebaseLG - FCM Token:', token);
+    };
+
+    getToken();
+  }, []);
+
+  useEffect(() => {
+    return messaging().onTokenRefresh(token => {
+      console.log('FirebaseLG - New FCM Token:', token);
+    });
   }, []);
 
   return (
