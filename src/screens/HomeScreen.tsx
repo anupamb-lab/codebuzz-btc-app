@@ -99,8 +99,8 @@ const Page: React.FC = () => {
         }),
       });
 
-      console.log("FCMHome - API Response: ", response);
-      console.log("FCMHome - API Response JSON : ", response.json());
+      // console.log("FCMHome - API Response: ", response);
+      // console.log("FCMHome - API Response JSON : ", response.json());
 
       const contentType = response.headers.get('content-type');
       let data;

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StatusBar, useColorScheme } from 'react-native';
+import { Alert, StatusBar, useColorScheme } from 'react-native';
 
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { initializeGoogleAds } from './src/services/googleAds';
@@ -43,10 +43,6 @@ import { HashPowerProvider } from "./src/stores/HashPowerStore";
 import messaging from '@react-native-firebase/messaging';
 
 const RootStack = createStackNavigator<RootStackParamList>();
-
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('FirebaseLG - Message handled in the background:', remoteMessage);
-});
 
 const AppNavigator = () => {
   const { authenticated, loading } = useAuth();
@@ -104,6 +100,16 @@ const AppNavigator = () => {
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
+  useEffect(() => {
+    // Foreground listener
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('FCM message received in foreground:', remoteMessage);
+      Alert.alert(remoteMessage.notification?.title!, remoteMessage.notification?.body);
+    });
+    
+    return unsubscribe; // cleanup foreground listener
+  }, []);
+
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -119,14 +125,6 @@ const App = () => {
     // Initialize social SDKs
     initializeGoogleAds();
     requestUserPermission();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('FirebaseLG - Foreground message received:', remoteMessage);
-    });
-
-    return unsubscribe;
   }, []);
 
   return (
