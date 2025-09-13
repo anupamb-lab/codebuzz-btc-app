@@ -129,21 +129,6 @@ const App = () => {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    const getToken = async () => {
-      const token = await messaging().getToken();
-      console.log('FirebaseLG - FCM Token:', token);
-    };
-
-    getToken();
-  }, []);
-
-  useEffect(() => {
-    return messaging().onTokenRefresh(token => {
-      console.log('FirebaseLG - New FCM Token:', token);
-    });
-  }, []);
-
   return (
     <AuthProvider>
       <HashPowerProvider>

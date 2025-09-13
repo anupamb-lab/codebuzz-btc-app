@@ -22,6 +22,7 @@ import { get_data_uri } from "../config/api";
 import LottieView from "lottie-react-native";
 import miningCardAnimation from "../assets/animations/mining-card.json";
 import { useHashPower } from "../stores/HashPowerStore";
+import messaging from '@react-native-firebase/messaging';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Page">;
 
@@ -82,6 +83,56 @@ const Page: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
+
+  async function saveFcmTokenToBackend(id: any, token: string) {
+    try {
+      const response = await fetch(get_data_uri('CREATE_FCM'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: id,
+          token: token
+        }),
+      });
+
+      console.log("FCMHome - API Response: ", response);
+      console.log("FCMHome - API Response JSON : ", response.json());
+
+      const contentType = response.headers.get('content-type');
+      let data;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("FCMHome - Non-JSON response:", text);
+        throw new Error("FCMHome - Invalid response from server");
+      }
+
+    } catch (error) {
+      console.log("FCMHome - Error: ", error);
+    }
+  }
+
+  useEffect(() => {
+    if (!user) return;
+
+    const getToken = async () => {
+      const token = await messaging().getToken();
+      console.log("FirebaseLG - FCM Token:", token);
+
+      await saveFcmTokenToBackend(user.id, token);
+    };
+
+    getToken();
+
+    const unsubscribe = messaging().onTokenRefresh(async (token) => {
+      console.log("FirebaseLG - New FCM Token:", token);
+      await saveFcmTokenToBackend(user.id, token);
+    });
+
+    return unsubscribe;
+  }, [user]);
 
   // -----------------------------
   // Reward Handler (Ad Watched)
