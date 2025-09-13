@@ -47,8 +47,14 @@ const BalanceHistoryScreen = () => {
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${get_data_uri('GET_BALANCE_HISTORY')}?userId=${user_id}`);
+      const history_url = `${get_data_uri('GET_BALANCE_HISTORY')}?userId=${user_id}`;
+
+      // console.log("Balance History URL: ", history_url);
+
+      const res = await fetch(history_url);
       const data = await res.json();
+
+      // console.log("Balance History Response: ", data);
 
       if (res.ok && data.success) {
         setHistory(data.balances || []);
