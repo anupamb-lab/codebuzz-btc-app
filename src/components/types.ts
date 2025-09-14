@@ -29,13 +29,7 @@ export type RootStackParamList = {
   FAQScreen: undefined;
   SupportScreen: undefined;
   Store: undefined;
-  MakePaymentScreen: {
-    package_name: any,
-    package_hashrate: any,
-    package_id: any,
-    package_cost: any,
-    package_maintenance: any
-  };
+  MakePaymentScreen: {package_id: any; };
   CustomQuote: undefined;
   DeleteAccount: undefined;
   NotificationScreen: undefined;

@@ -70,14 +70,8 @@ const StoreScreen = () => {
     
     const navigation = useNavigation<LoginScreenNavigationProp>();
 
-    const handlePurchase = (plan: SubscriptionItem) => {
-      navigation.navigate('MakePaymentScreen', { 
-        package_name: plan.name,
-        package_hashrate: plan.hashrate,
-        package_id: plan._id, 
-        package_cost: plan.plan_cost, 
-        package_maintenance: plan.maintenance_cost
-      });
+    const handlePurchase = (plan) => {
+      navigation.navigate('MakePaymentScreen', { package_id: plan.id });
     };
 
     const getRandomColor = (): string => {

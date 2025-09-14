@@ -13,11 +13,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
-import { get_data_uri } from '../config/api';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../components/types';
-import { useNavigation } from '@react-navigation/native';
 
 const paymentMethods = [
   { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
@@ -28,12 +23,8 @@ const paymentMethods = [
 const coinOptions = ['BTC', 'USDT', 'USDC'];
 const chainOptions = ['BTC', 'BEP20'];
 
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MakePaymentScreen'>;
-    
-const navigation = useNavigation<LoginScreenNavigationProp>();
-
-const MakePaymentScreen = ({route}) => {
-  const { package_name, package_hashrate, package_id, package_cost, package_maintenance } = route.params;
+const MakePaymentScreen = ({ navigation, route }) => {
+  const { package_id } = route.params;
   const [selectedMethod, setSelectedMethod] = useState('crypto');
   const [btcAddress, setBtcAddress] = useState('1A1zP1eP5QGefi2DMPtFtL5SLmv7DivfNa');
   const [amountBTC, setAmountBTC] = useState('0.0015');
@@ -41,28 +32,14 @@ const MakePaymentScreen = ({route}) => {
   const [coin, setCoin] = useState('USDT');
   const [chain, setChain] = useState('BEP20');
 
-  const total_plan_cost = parseFloat(package_cost) + parseFloat(package_maintenance);
-
   useEffect(() => {
     fetchLiveBTCPrice();
   }, [amountBTC]);
 
-  async function getBTCPrice() {
-    try {
-      const res = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price",
-        { params: { ids: "bitcoin", vs_currencies: "usd" } }
-      );
-      return res.data.bitcoin.usd;
-    } catch (err) {
-      console.error("Error fetching BTC price:", err.message);
-      return 0;
-    }
-  }
-
   const fetchLiveBTCPrice = async () => {
     try {
-      const btcPrice = await getBTCPrice();
+      // Placeholder value (replace with real API integration)
+      const btcPrice = 66500;
       const usdEquivalent = (parseFloat(amountBTC) * btcPrice).toFixed(2);
       setBtcUSDValue(usdEquivalent);
     } catch (err) {
@@ -175,12 +152,12 @@ const MakePaymentScreen = ({route}) => {
           <View style={styles.orderSummaryContent}>
             <Text style={styles.sectionTitle}>Order Summary</Text>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryText}>{package_name} ${package_hashrate}</Text>
-              <Text style={styles.summaryText}>${package_cost}</Text>
+              <Text style={styles.summaryText}>Starter Miner Pack (10 TH/s)</Text>
+              <Text style={styles.summaryText}>$99.00</Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryText}>Service Fee</Text>
-              <Text style={styles.summaryText}>${package_maintenance}</Text>
+              <Text style={styles.summaryText}>$1.00</Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.summaryRow}>
@@ -193,7 +170,7 @@ const MakePaymentScreen = ({route}) => {
                   { fontWeight: '600', color: '#22D3EE' },
                 ]}
               >
-                ${total_plan_cost}
+                $100.00
               </Text>
             </View>
           </View>
@@ -380,11 +357,3 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-function setError(arg0: string) {
-  throw new Error('Function not implemented.');
-}
-
-function setLoading(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-
