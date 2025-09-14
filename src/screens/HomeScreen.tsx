@@ -12,7 +12,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon5 from 'react-native-vector-icons/FontAwesome5';
 import { useAuth } from '../auth/AuthProvider';
-import { Sidebar } from '../components/Sidebar';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
@@ -199,26 +198,27 @@ const Page: React.FC = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     const isMiningActive =
-    hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
+      isMiningEnabled && hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
 
     if (isMiningActive) {
-    intervalRef.current = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setBtcBalance((prev) => {
-        const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
-        balanceRef.current = updated;
-        return updated;
+          const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
+          balanceRef.current = updated;
+          return updated;
         });
-    }, 1000);
+      }, 1000);
 
-    miningAnimationRef.current?.play();
+      miningAnimationRef.current?.play();
     } else {
-    miningAnimationRef.current?.pause();
+      miningAnimationRef.current?.pause();
     }
 
     return () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-}, [hashPower, startTime]);
+  }, [hashPower, startTime, isMiningEnabled]);
+
 
   // -----------------------------
   // API Calls
@@ -319,7 +319,6 @@ const Page: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Sidebar visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
 
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* Header Section */}
@@ -329,73 +328,74 @@ const Page: React.FC = () => {
               <Text style={styles.welcomeText}>Welcome back, {user?.name}!</Text>
               <Text style={styles.subWelcomeText}>Your mining dashboard</Text>
             </View>
-            <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
-              <Icon name="menu" size={24} color="#fff" />
-            </TouchableOpacity>
           </View>
         </View>
 
         {/* Main Balance Card */}
-        <TouchableOpacity onPress={() => navigation.navigate('BalanceHistoryScreen')} style={styles.balanceCard}>
-          <LinearGradient
-            colors={['#667eea', '#764ba2']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.balanceGradient}
+        <View style={styles.shadowWrapper}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('BalanceHistoryScreen')} 
+            style={styles.balanceCard}
           >
-            <View style={styles.balanceContent}>
-              <View style={styles.balanceLeft}>
-                <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
-                <View style={styles.balanceTextContainer}>
-                  {/* <Text style={styles.balanceLabel}>Total Balance</Text> */}
-                  <Text style={styles.balanceAmount}>
-                    {loadingBalance ? "Loading..." : btcBalance?.toFixed(8) + " BTC"}
-                  </Text>
+            <LinearGradient
+              colors={['#667eea', '#764ba2']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.balanceGradient}
+            >
+              <View style={styles.balanceContent}>
+                <View style={styles.balanceLeft}>
+                  <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
+                  <View style={styles.balanceTextContainer}>
+                    <Text style={styles.balanceAmount}>
+                      {loadingBalance ? "Loading..." : btcBalance?.toFixed(12) + " BTC"}
+                    </Text>
+                  </View>
                 </View>
+                <Icon name="chevron-right" size={24} color="#fff" />
               </View>
-              <Icon name="chevron-right" size={24} color="#fff" />
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
 {/* Notification Banner (like circled section) */}
-<View style={styles.notificationBanner}>
-  <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
-  <Text style={styles.notificationText} numberOfLines={1}>
-    *****2826 purchased 200 Gh/s power
-  </Text>
-</View>
+        <View style={styles.notificationBanner}>
+          <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
+          <Text style={styles.notificationText} numberOfLines={1}>
+            *****2826 purchased 200 Gh/s power
+          </Text>
+        </View>
 
-        {/* Mining Power Section */}
-        <View style={styles.miningSection}>
-  {/* Header Row */}
-  <View style={styles.miningHeader}>
-    <View style={styles.miningTitleContainer}>
-      <Icon name="pickaxe" size={20} color="#22D3EE" />
-      <Text style={styles.miningTitle}>Mining Power</Text>
-    </View>
+                {/* Mining Power Section */}
+                <View style={styles.miningSection}>
+          {/* Header Row */}
+          <View style={styles.miningHeader}>
+            <View style={styles.miningTitleContainer}>
+              <Icon name="pickaxe" size={20} color="#22D3EE" />
+              <Text style={styles.miningTitle}>Mining Power</Text>
+            </View>
 
-    {/* Toggle */}
-    <View style={styles.toggleContainer}>
-      <Text style={styles.toggleLabel}>
-        {isMiningEnabled ? 'Activated' : 'Activate'}
-      </Text>
-      <Switch
-        value={isMiningEnabled}
-        onValueChange={setIsMiningEnabled}
-        trackColor={{ false: '#374151', true: '#22D3EE' }}
-        thumbColor={isMiningEnabled ? '#fff' : '#9CA3AF'}
-      />
-    </View>
-  </View>
+            {/* Toggle */}
+            <View style={styles.toggleContainer}>
+              <Text style={styles.toggleLabel}>
+                {isMiningEnabled ? 'Activated' : 'Activate'}
+              </Text>
+              <Switch
+                value={isMiningEnabled}
+                onValueChange={setIsMiningEnabled}
+                trackColor={{ false: '#374151', true: '#22D3EE' }}
+                thumbColor={isMiningEnabled ? '#fff' : '#9CA3AF'}
+              />
+            </View>
+          </View>
 
-  {/* Mining Power + Hashrate in one line */}
-  <View style={styles.hashrateRow}>
-    {/* <Text style={styles.hashrateLabel}>Total Mining Power</Text> */}
-    <Text style={styles.hashrateValue}>
-      {hashPower.toLocaleString()} GH/s
-    </Text>
-  </View>
-</View>
+          {/* Mining Power + Hashrate in one line */}
+          <View style={styles.hashrateRow}>
+            {/* <Text style={styles.hashrateLabel}>Total Mining Power</Text> */}
+            <Text style={styles.hashrateValue}>
+              {hashPower.toLocaleString()} GH/s
+            </Text>
+          </View>
+        </View>
 
 
         {/* Quick Stats Cards */}
@@ -463,7 +463,7 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('DepositScreen')}
           >
-            <Icon name="plus-circle" size={28} color="#10B981" />
+            <Icon name="plus-circle" size={28} color="white" />
             <Text style={styles.quickActionText}>Deposit</Text>
           </TouchableOpacity>
           
@@ -471,7 +471,7 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('WithdrawScreen')}
           >
-            <Icon name="minus-circle" size={28} color="#EF4444" />
+            <Icon name="minus-circle" size={28} color="white" />
             <Text style={styles.quickActionText}>Withdraw</Text>
           </TouchableOpacity>
           
@@ -479,7 +479,7 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('Wallet')}
           >
-            <Icon name="credit-card-multiple" size={28} color="#3B82F6" />
+            <Icon name="credit-card-multiple" size={28} color="white" />
             <Text style={styles.quickActionText}>Wallet</Text>
           </TouchableOpacity>
         </View>
@@ -555,6 +555,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#111827',
+    paddingTop: Platform.OS === 'ios' ? 20 : 5
   },
   scrollContainer: {
     flex: 1,
@@ -587,23 +588,32 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#1E293B',
   },
-  balanceCard: {
-    marginBottom: 20,
-    borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  balanceGradient: {
-    padding: 20,
-  },
   balanceContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingTop: Platform.OS === 'ios' ? 15 : 0,
+    paddingLeft: Platform.OS === 'ios' ? 20 : 0,
+    paddingRight: Platform.OS === 'ios' ? 20 : 0
+  },
+  shadowWrapper: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    borderRadius: 20,
+  },
+
+  balanceCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    paddingBottom: Platform.OS === 'ios' ? 10: 20
+  },
+
+  balanceGradient: {
+    padding: Platform.OS === 'ios' ? 5 : 20,
+    minHeight: 80,
+    borderRadius: 20,
   },
   balanceLeft: {
     flexDirection: 'row',
@@ -620,7 +630,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceAmount: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -716,8 +726,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
     gap: 8,
     minHeight: Platform.OS === 'ios' ? 45 : 55,
   },
@@ -799,7 +807,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   quickActionText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#fff',
     marginTop: 8,
     fontWeight: 'bold',
