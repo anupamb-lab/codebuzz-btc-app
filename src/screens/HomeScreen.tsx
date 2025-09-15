@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   Switch,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -34,6 +35,32 @@ const oneDay = 24 * 60 * 60 * 1000;
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Page'>;
 
+interface GradientButtonProps {
+  icon?: string;
+  text: string;
+  fullWidth?: boolean;
+  onPress?: () => void;
+  disabled?: boolean; 
+}
+
+const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress }) => (
+  <TouchableOpacity 
+    style={{ flex: 1, borderRadius: 40, overflow: "hidden" }}
+    activeOpacity={0.8}
+    onPress={onPress}
+  >
+    <LinearGradient
+      colors={['#22D3EE', '#C084FC']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={styles.gradientButton}
+    >
+      {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
+      <Text style={styles.buttonText}>{text}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
+);
+
 const Page: React.FC = () => {
   const { user } = useAuth();
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -43,7 +70,7 @@ const Page: React.FC = () => {
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [loadingBalance, setLoadingBalance] = useState(true);
-  const [isMiningEnabled, setIsMiningEnabled] = useState(true);
+  const [isMiningEnabled, setIsMiningEnabled] = useState(false);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -118,6 +145,8 @@ const Page: React.FC = () => {
   // Reward Handler (Ad Watched)
   // -----------------------------
   const handleReward = async () => {
+    setIsMiningEnabled(true);
+
     if (adsWatched >= MAX_ADS) return;
 
     const newAdsCount = adsWatched + 1;
@@ -313,9 +342,7 @@ const Page: React.FC = () => {
     ? "Loading..."
     : adsWatched >= MAX_ADS
       ? "Max Videos Reached"
-      : isMiningActive
-        ? `Increase 5 GH/s`
-        : "Start Mining";
+      : `Increase 5 GH/s`
 
   return (
     <View style={styles.container}>
@@ -381,10 +408,40 @@ const Page: React.FC = () => {
               </Text>
               <Switch
                 value={isMiningEnabled}
-                onValueChange={setIsMiningEnabled}
-                trackColor={{ false: '#374151', true: '#22D3EE' }}
-                thumbColor={isMiningEnabled ? '#fff' : '#9CA3AF'}
+                onValueChange={(newValue) => {
+                  if (newValue) {
+                    Alert.alert(
+                      "Mining Enabled",
+                      "Watch an ad to start mining.",
+                      [
+                        {
+                          text: "Cancel",
+                          style: "cancel",
+                          onPress: () => {
+                            setIsMiningEnabled(false);
+                          },
+                        },
+                        {
+                          text: "OK",
+                          onPress: () => {
+                            show();
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  } else {
+                    // Turning OFF mining
+                    setIsMiningEnabled(false);
+                    if (intervalRef.current) clearInterval(intervalRef.current);
+                    miningAnimationRef.current?.pause();
+                    Alert.alert("Mining Disabled", "Mining has been turned off.");
+                  }
+                }}
+                trackColor={{ false: "#374151", true: "#22D3EE" }}
+                thumbColor={isMiningEnabled ? "#fff" : "#9CA3AF"}
               />
+
             </View>
           </View>
 
@@ -443,6 +500,9 @@ const Page: React.FC = () => {
               <Text style={styles.actionButtonText}>Premium Miners</Text>
             </LinearGradient>
           </TouchableOpacity>
+        </View>
+        <View style={styles.gradientButtonContainer}>
+          <GradientButtonB icon="play-circle" onPress={() => show()} text={buttonLabel} fullWidth />
         </View>
 
         {/* Portfolio Performance */}
@@ -536,6 +596,10 @@ export default Page;
 
 // Styles
 const styles = StyleSheet.create({
+  gradientButtonContainer: {
+    marginBottom: 15
+
+  },
   notificationBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -879,5 +943,20 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    alignSelf: "center",
+  },
+  gradientButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 40,
+    minHeight: Platform.OS === 'ios' ? 45 : 55,
   },
 });
