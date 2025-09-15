@@ -8,6 +8,7 @@ import {
   Platform,
   Switch,
   Alert,
+  Animated,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,6 +26,7 @@ import LottieView from 'lottie-react-native';
 import miningCardAnimation from '../assets/animations/mining-card.json';
 import { useHashPower } from "../stores/HashPowerStore";
 import messaging from '@react-native-firebase/messaging';
+import { Image } from 'react-native';
 
 const MAX_ADS = 10;
 const BASE_HASHPOWER_PER_AD = 5;
@@ -278,6 +280,30 @@ const Page: React.FC = () => {
     }
 };
 
+    const blinkAnim = useRef(new Animated.Value(0)).current;
+
+    const backgroundColor = blinkAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["#111827", "#22D3EE"], // dark -> cyan blink
+    });
+
+
+    useEffect(() => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(blinkAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: false,
+          }),
+          Animated.timing(blinkAnim, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: false,
+          }),
+        ])
+      ).start();
+    });
   
   
     const syncBalance = async () => {
@@ -406,41 +432,42 @@ const Page: React.FC = () => {
               <Text style={styles.toggleLabel}>
                 {isMiningEnabled ? 'Activated' : 'Activate'}
               </Text>
-              <Switch
-                value={isMiningEnabled}
-                onValueChange={(newValue) => {
-                  if (newValue) {
-                    Alert.alert(
-                      "Mining Enabled",
-                      "Watch an ad to start mining.",
-                      [
-                        {
-                          text: "Cancel",
-                          style: "cancel",
-                          onPress: () => {
-                            setIsMiningEnabled(false);
+              
+              <Animated.View style={[styles.switchWrapper, { backgroundColor }]}>
+                <Switch
+                  value={isMiningEnabled}
+                  onValueChange={(newValue) => {
+                    if (newValue) {
+                      Alert.alert(
+                        "Mining Enabled",
+                        "Watch an ad to start mining.",
+                        [
+                          {
+                            text: "Cancel",
+                            style: "cancel",
+                            onPress: () => {
+                              setIsMiningEnabled(false);
+                            },
                           },
-                        },
-                        {
-                          text: "OK",
-                          onPress: () => {
-                            show();
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              setIsMiningEnabled(true);
+                              show();
+                            },
                           },
-                        },
-                      ],
-                      { cancelable: false }
-                    );
-                  } else {
-                    // Turning OFF mining
-                    setIsMiningEnabled(false);
-                    if (intervalRef.current) clearInterval(intervalRef.current);
-                    miningAnimationRef.current?.pause();
-                    Alert.alert("Mining Disabled", "Mining has been turned off.");
-                  }
-                }}
-                trackColor={{ false: "#374151", true: "#22D3EE" }}
-                thumbColor={isMiningEnabled ? "#fff" : "#9CA3AF"}
-              />
+                        ],
+                        { cancelable: false }
+                      );
+                    } else {
+                      setIsMiningEnabled(false);
+                      Alert.alert("Mining Disabled", "Mining has been turned off.");
+                    }
+                  }}
+                  trackColor={{ false: "#374151", true: "#22D3EE" }}
+                  thumbColor={isMiningEnabled ? "#fff" : "#9CA3AF"}
+                />
+              </Animated.View>
 
             </View>
           </View>
@@ -530,7 +557,13 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('DepositScreen')}
           >
-            <Icon name="plus-circle" size={28} color="white" />
+            <View style={styles.iconBox}>
+              <Image
+                source={require('../assets/images/home_deposit.png')}
+                style={styles.iconImage}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.quickActionText}>Deposit</Text>
           </TouchableOpacity>
           
@@ -538,7 +571,13 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('WithdrawScreen')}
           >
-            <Icon name="minus-circle" size={28} color="white" />
+            <View style={styles.iconBox}>
+              <Image
+                source={require('../assets/images/home_withdrawal.png')}
+                style={styles.iconImage}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.quickActionText}>Withdraw</Text>
           </TouchableOpacity>
           
@@ -546,7 +585,13 @@ const Page: React.FC = () => {
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('Wallet')}
           >
-            <Icon name="credit-card-multiple" size={28} color="white" />
+            <View style={styles.iconBox}>
+              <Image
+                source={require('../assets/images/home_wallet.png')}
+                style={styles.iconImage}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.quickActionText}>Wallet</Text>
           </TouchableOpacity>
         </View>
@@ -603,6 +648,23 @@ export default Page;
 
 // Styles
 const styles = StyleSheet.create({
+  iconBox: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 25,
+    height: 28,
+    paddingBottom: 5
+  },
+  iconImage: {
+    width: 35,
+    height: 35,
+  },
+  switchWrapper: {
+    borderRadius: 16,
+    alignSelf: "flex-start",
+  },
   gradientButtonContainer: {
     marginBottom: 15
 
@@ -878,7 +940,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   quickActionText: {
-    fontSize: 15,
+    fontSize: 13,
     color: '#fff',
     marginTop: 8,
     fontWeight: 'bold',
