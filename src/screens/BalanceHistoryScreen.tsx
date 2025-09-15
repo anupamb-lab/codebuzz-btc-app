@@ -24,10 +24,6 @@ interface BalanceDecimal {
 }
 interface BalanceObject {
   BTC: number | BalanceDecimal;
-  USDT: number | BalanceDecimal;
-  USDC: number | BalanceDecimal;
-  BNB: number | BalanceDecimal;
-  LTC: number | BalanceDecimal;
 }
 interface BalanceHistory {
   _id: string;
@@ -49,12 +45,8 @@ const BalanceHistoryScreen = () => {
       setLoading(true);
       const history_url = `${get_data_uri('GET_BALANCE_HISTORY')}?userId=${user_id}`;
 
-      // console.log("Balance History URL: ", history_url);
-
       const res = await fetch(history_url);
       const data = await res.json();
-
-      // console.log("Balance History Response: ", data);
 
       if (res.ok && data.success) {
         setHistory(data.balances || []);
@@ -70,11 +62,16 @@ const BalanceHistoryScreen = () => {
     fetchHistory();
   }, []);
 
-  const formatBalance = (val: number | BalanceDecimal, decimals = 6) => {
+  const formatBalance = (val: number | BalanceDecimal, decimals = 8) => {
     if (typeof val === 'object' && '$numberDecimal' in val) {
       return parseFloat(val.$numberDecimal || '0').toFixed(decimals);
     }
     return typeof val === 'number' ? val.toFixed(decimals) : '0.00';
+  };
+
+  const formatDate = (dateStr: string) => {
+    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    return new Date(dateStr).toLocaleDateString('en-GB', options); // e.g., 15 Sep 2025
   };
 
   return (
@@ -102,41 +99,18 @@ const BalanceHistoryScreen = () => {
         </View>
       ) : (
         history.map((item) => {
-          const { BTC, USDT, USDC, BNB, LTC } = item.balances;
-          const dateStr = new Date(item.date).toLocaleDateString();
-
+          const { BTC } = item.balances;
           return (
-            <View key={item._id} style={styles.historyBox}>
-              <Text style={styles.dateText}>{dateStr}</Text>
-              <View style={styles.balanceRow}>
-                <Text style={styles.label}>BTC</Text>
-                <Text style={styles.value}>{formatBalance(BTC, 8)}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.label}>USDT</Text>
-                <Text style={styles.value}>{formatBalance(USDT, 2)}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.label}>USDC</Text>
-                <Text style={styles.value}>{formatBalance(USDC, 2)}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.label}>BNB</Text>
-                <Text style={styles.value}>{formatBalance(BNB, 6)}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.label}>LTC</Text>
-                <Text style={styles.value}>{formatBalance(LTC, 6)}</Text>
-              </View>
+            <View key={item._id} style={styles.historyRow}>
+              <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+              <Text style={styles.value}>{formatBalance(BTC, 12)} BTC</Text>
             </View>
           );
         })
       )}
 
       <TouchableOpacity
-        onPress={async () => {
-          navigation.goBack()
-        }}
+        onPress={() => navigation.goBack()}
         activeOpacity={0.8}
       >
         <LinearGradient
@@ -169,30 +143,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  historyBox: {
+  historyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: '#1F2937',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
   },
   dateText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
-  },
-  balanceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  label: {
-    color: '#ccc',
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '500',
   },
   value: {
     color: '#53D3F6',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   noRecordsBox: {
