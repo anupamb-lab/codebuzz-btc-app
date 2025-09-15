@@ -457,16 +457,23 @@ const Page: React.FC = () => {
 
         {/* Quick Stats Cards */}
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => navigation.navigate("Wallet")}
+          >
             <Icon name="credit-card-multiple" size={26} color="#FFFFFF" />
             <Text style={styles.statValue}>$0.00</Text>
             <Text style={styles.statLabel}>Wallet Balance</Text>
-          </View>
-          <View style={styles.statCard}>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => navigation.navigate("InternalReferral")}
+          >
             <Icon name="account-heart" size={26} color="#FFFFFF" />
             <Text style={styles.statValue}>{user_referrals}</Text>
             <Text style={styles.statLabel}>Referrals</Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Action Buttons */}
