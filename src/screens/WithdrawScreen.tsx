@@ -367,7 +367,11 @@ const styles = StyleSheet.create({
 
 async function handle_speed_wallet(amountUSD: any, userId: any) {
   try {
-    const response = await fetch(get_data_uri("CREATE_SPEED_TRANSACTION"), {
+    const speed_wallet_uri = get_data_uri("CREATE_SPEED_TRANSACTION");
+
+    console.log("SpeedWallet - URI: ", speed_wallet_uri);
+
+    const response = await fetch(speed_wallet_uri, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -381,7 +385,11 @@ async function handle_speed_wallet(amountUSD: any, userId: any) {
       }),
     });
 
+    console.log("SpeedWallet - RESPONSE: ", response);
+
     const data = await response.json();
+
+    console.log("SpeedWallet - RESPONSE-DATA: ", response);
 
     if (!data || !data.payment_method_options?.lightning?.payment_request) {
       Alert.alert('Error', 'Unable to create Speed payment.');
@@ -390,6 +398,9 @@ async function handle_speed_wallet(amountUSD: any, userId: any) {
 
     const paymentRequest = data.payment_method_options.lightning.payment_request;
     const deepLink = `speed://pay?invoice=${encodeURIComponent(paymentRequest)}`;
+
+    console.log("SpeedWallet - PAYMENT-REQ: ", paymentRequest);
+    console.log("SpeedWallet - DEEPLINK: ", deepLink);
 
     const supported = await Linking.canOpenURL(deepLink);
     if (supported) {
