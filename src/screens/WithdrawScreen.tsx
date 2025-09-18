@@ -10,6 +10,8 @@ import {
   Modal,
   RefreshControl,
   Platform,
+  Alert,
+  Linking,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -19,10 +21,13 @@ import { useAuth } from "../auth/AuthProvider";
 import { get_data_uri } from "../config/api";
 
 const currencies = [
-  "USD - United States Dollar",
-  "BTC - Bitcoin",
-  "USDT - BEP20",
-  "USDC - BEP20",
+  { code: "USD", label: "United States Dollar", method: "Bank Transfer", redirect: "BankTransferPage" },
+  { code: "BTC", label: "Bitcoin", method: "Crypto", redirect: "BitcoinPage" },
+  { code: "BTC", label: "SpeedWallet", method: "Crypto", redirect: "SpeedWalletPage" },
+  { code: "BTC", label: "ZDB-Wallet", method: "Crypto", redirect: "ZdbWalletPage" },
+  { code: "BTC", label: "MUUN", method: "Crypto", redirect: "MuunWalletPage" },
+  { code: "USDT", label: "BEP20", method: "Crypto", redirect: "UsdtPage" },
+  { code: "USDC", label: "BEP20", method: "Crypto", redirect: "UsdcPage" },
 ];
 
 const WithdrawScreen = ({ navigation }: any) => {
@@ -96,7 +101,11 @@ const WithdrawScreen = ({ navigation }: any) => {
       );
       setBtcPrice(res.data.bitcoin.usd);
     } catch (err) {
-      console.error("Error fetching BTC price:", err.message);
+      if (err instanceof Error) {
+        console.error("Error fetching BTC price:", err.message);
+      } else {
+        console.error("Unknown error fetching BTC price:", err);
+      }
     }
   };
 
@@ -107,11 +116,7 @@ const WithdrawScreen = ({ navigation }: any) => {
 
   // Auto-set method
   useEffect(() => {
-    if (currency === "USD - United States Dollar") {
-      setMethod("Bank Transfer");
-    } else {
-      setMethod("Crypto");
-    }
+    setMethod(currency.method);
   }, [currency]);
 
   // Handle Withdraw
@@ -131,15 +136,29 @@ const WithdrawScreen = ({ navigation }: any) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
-          asset: currency.split(" - ")[0],
-          chain: method === "Crypto" ? currency.split(" - ")[0] : "BANK",
+          asset: currency.code,
+          chain: method === "Crypto" ? currency.code : "BANK",
           toAddress: notes,
           amountNumeric: amountNum,
         }),
       });
 
       if (res.ok) {
-        alert("Withdrawal request created successfully!");
+
+        if (currency.redirect) {
+          if (currency.label === 'SpeedWallet') {
+            handle_speed_wallet(amountNum, user.id);
+          } else {
+            alert("Please Use SpeedWallet, rest under development!");
+          }
+
+          // navigation.navigate(currency.redirect);
+          alert("Withdrawal request created successfully!");
+
+        } else {
+          navigation.goBack(); // fallback
+        }
+
         navigation.goBack();
       } else {
         const err = await res.json();
@@ -208,7 +227,7 @@ const WithdrawScreen = ({ navigation }: any) => {
             style={styles.dropdownTrigger}
             onPress={() => setCurrencyDropdownVisible(true)}
           >
-            <Text style={styles.dropdownText}>{currency}</Text>
+            <Text style={styles.dropdownText}>{`${currency.code} - ${currency.label}`}</Text>
             <Icon name="arrow-drop-down" size={24} color="#94A3B8" />
           </TouchableOpacity>
 
@@ -262,13 +281,13 @@ const WithdrawScreen = ({ navigation }: any) => {
           <View style={styles.modalDropdown}>
             {currencies.map((item) => (
               <TouchableOpacity
-                key={item}
+                key={`${item.code}-${item.label}`}
                 onPress={() => {
                   setCurrency(item);
                   setCurrencyDropdownVisible(false);
                 }}
               >
-                <Text style={styles.dropdownOption}>{item}</Text>
+                <Text style={styles.dropdownOption}>{`${item.code} - ${item.label}`}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -345,3 +364,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+async function handle_speed_wallet(amountUSD: any, userId: any) {
+  try {
+    const response = await fetch(get_data_uri("CREATE_SPEED_TRANSACTION"), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: amountUSD,
+        currency: 'USD',
+        target_currency: 'SATS',
+        payment_methods: ['lightning'],
+        metadata: { user_id: userId }
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data || !data.payment_method_options?.lightning?.payment_request) {
+      Alert.alert('Error', 'Unable to create Speed payment.');
+      return;
+    }
+
+    const paymentRequest = data.payment_method_options.lightning.payment_request;
+    const deepLink = `speed://pay?invoice=${encodeURIComponent(paymentRequest)}`;
+
+    const supported = await Linking.canOpenURL(deepLink);
+    if (supported) {
+      await Linking.openURL(deepLink);
+    } else {
+      Alert.alert(
+        'Speed Wallet Not Installed',
+        'Please install Speed Wallet to complete the withdrawal.'
+      );
+    }
+
+  } catch (error) {
+    console.error('Speed Wallet error:', error);
+    Alert.alert('Error', 'Something went wrong while initiating Speed Wallet.');
+  }
+}
+

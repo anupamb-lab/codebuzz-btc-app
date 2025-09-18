@@ -26,6 +26,7 @@ export const DATA_ENDPOINTS = {
   GET_WALLET_BALANCE: '/api/wallet/balance',
   GET_DEPOSIT_ADDRESS: '/api/deposit-address',
   GET_FAQS: '/api/faqs',
+  CREATE_SPEED_TRANSACTION: '/api/withdrawals/create-speed-payment',
   GET_REWARDS: '/api/daily-rewards',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
   CREATE_SUPPORT_TICKET: '/api/help/create',
