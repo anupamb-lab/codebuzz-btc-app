@@ -33,10 +33,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('bitcoinmining-release-key.keystore')
-            storePassword 'mining123'
-            keyAlias 'bitcoinmining-key-alias'
-            keyPassword 'mining123'
+            storeFile file(System.getenv("RELEASE_STORE_FILE_BITPLAY"))
+            storePassword System.getenv("RELEASE_STORE_PASSWORD_BITPLAY")
+            keyAlias System.getenv("RELEASE_KEY_ALIAS_BITPLAY")
+            keyPassword System.getenv("RELEASE_KEY_PASSWORD_BITPLAY")
         }
     }
     buildTypes {
