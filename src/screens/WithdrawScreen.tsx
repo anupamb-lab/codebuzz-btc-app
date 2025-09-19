@@ -121,14 +121,14 @@ const WithdrawScreen = ({ navigation }: any) => {
 
   // Handle Withdraw
   const handleWithdraw = async () => {
-    if (exceedsBalance) {
-      alert("Insufficient balance.");
-      return;
-    }
-    if (belowMin) {
-      alert("Minimum withdrawal is $10.");
-      return;
-    }
+    // if (exceedsBalance) {
+    //   alert("Insufficient balance.");
+    //   return;
+    // }
+    // if (belowMin) {
+    //   alert("Minimum withdrawal is $10.");
+    //   return;
+    // }
 
     try {
       const res = await fetch(get_data_uri("CREATE_WITHDRAWAL"), {
@@ -365,6 +365,34 @@ const styles = StyleSheet.create({
   },
 });
 
+async function handle_speed_withdraw(inv_id: any) {
+  try {
+    const speed_payment_uri = get_data_uri("PROCESS_SPEED_TRANSACTION");
+
+    console.log("SpeedWallet - PaymentURI: ", speed_payment_uri);
+
+    const response = await fetch(speed_payment_uri, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        invoice: inv_id,
+      }),
+    });
+
+    console.log("SpeedWallet - PaymentRESPONSE: ", response);
+
+    const data = await response.json();
+
+    console.log("SpeedWallet - PaymentRESPONSE-DATA: ", data);
+
+  } catch (error) {
+    console.error('Speed Wallet error:', error);
+    Alert.alert('Error', 'Something went wrong while initiating Speed Wallet.');
+  }
+}
+
 async function handle_speed_wallet(amountUSD: any, userId: any) {
   try {
     const speed_wallet_uri = get_data_uri("CREATE_SPEED_TRANSACTION");
@@ -402,15 +430,17 @@ async function handle_speed_wallet(amountUSD: any, userId: any) {
     console.log("SpeedWallet - PAYMENT-REQ: ", paymentRequest);
     console.log("SpeedWallet - DEEPLINK: ", deepLink);
 
-    const supported = await Linking.canOpenURL(deepLink);
-    if (supported) {
-      await Linking.openURL(deepLink);
-    } else {
-      Alert.alert(
-        'Speed Wallet Not Installed',
-        'Please install Speed Wallet to complete the withdrawal.'
-      );
-    }
+    handle_speed_withdraw(paymentRequest);
+
+    // const supported = await Linking.canOpenURL(deepLink);
+    // if (supported) {
+    //   await Linking.openURL(deepLink);
+    // } else {
+    //   Alert.alert(
+    //     'Speed Wallet Not Installed',
+    //     'Please install Speed Wallet to complete the withdrawal.'
+    //   );
+    // }
 
   } catch (error) {
     console.error('Speed Wallet error:', error);
