@@ -512,8 +512,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   logoTagline: {
-    fontSize: 16,
-    color: '#42B0FF',
+    fontSize: 20,
+    color: '#ffffffe5',
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 22,

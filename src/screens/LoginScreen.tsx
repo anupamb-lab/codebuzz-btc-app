@@ -399,7 +399,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: '15%',
+    marginTop: '1%',
+    marginBottom: '10%'
   },
 
   bitcoinLogo: {
@@ -584,8 +585,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   logoTagline: {
-    fontSize: 16,
-    color: '#42B0FF',
+    fontSize: 20,
+    color: '#ffffffe5',
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 22,

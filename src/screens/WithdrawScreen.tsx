@@ -434,20 +434,20 @@ async function handle_speed_wallet(amountUSD: any, userId: any, speed_wallet_add
 
     const data = await response.json();
 
-    console.log("SpeedWallet - RESPONSE-DATA: ", response);
+    console.log("SpeedWallet - RESPONSE-DATA: ", data);
 
-    if (!data || !data.payment_method_options?.lightning?.payment_request) {
-      Alert.alert('Error', 'Unable to create Speed payment.');
-      return;
-    }
+    // if (!data || !data.payment_method_options?.lightning?.payment_request) {
+    //   Alert.alert('Error', 'Unable to create Speed payment.');
+    //   return;
+    // }
 
-    const paymentRequest = data.payment_method_options.lightning.payment_request;
-    const deepLink = `speed://pay?invoice=${encodeURIComponent(paymentRequest)}`;
+    // const paymentRequest = data.payment_method_options.lightning.payment_request;
+    // const deepLink = `speed://pay?invoice=${encodeURIComponent(paymentRequest)}`;
 
-    console.log("SpeedWallet - PAYMENT-REQ: ", paymentRequest);
-    console.log("SpeedWallet - DEEPLINK: ", deepLink);
+    // console.log("SpeedWallet - PAYMENT-REQ: ", paymentRequest);
+    // console.log("SpeedWallet - DEEPLINK: ", deepLink);
 
-    handle_speed_withdraw(paymentRequest);
+    // handle_speed_withdraw(paymentRequest);
 
     // const supported = await Linking.canOpenURL(deepLink);
     // if (supported) {

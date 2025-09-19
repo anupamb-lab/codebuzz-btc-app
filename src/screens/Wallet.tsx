@@ -126,7 +126,8 @@ const WalletScreen = () => {
       if (showUSD) {
         setBalanceLoading(true);
         const price = await getBTCPrice();
-        setDisplayedBalance(`$${btcBalance * price}`);
+        const dollar_balance = btcBalance * price
+        setDisplayedBalance(`$${dollar_balance.toFixed(2)}`);
         setBalanceLoading(false);
       } else {
         setDisplayedBalance(`${btcBalance.toFixed(12)} BTC`);
