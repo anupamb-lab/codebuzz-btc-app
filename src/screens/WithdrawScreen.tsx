@@ -147,7 +147,7 @@ const WithdrawScreen = ({ navigation }: any) => {
 
         if (currency.redirect) {
           if (currency.label === 'SpeedWallet') {
-            handle_speed_wallet(amountNum, user.id);
+            handle_speed_wallet(amountNum, user.id, notes);
           } else {
             alert("Please Use SpeedWallet, rest under development!");
           }
@@ -393,11 +393,27 @@ async function handle_speed_withdraw(inv_id: any) {
   }
 }
 
-async function handle_speed_wallet(amountUSD: any, userId: any) {
+function isValidSpeedLN(address: string) {
+  const regex = /^[a-zA-Z0-9_-]+@speed\.app$/;
+  return regex.test(address);
+}
+
+async function handle_speed_wallet(amountUSD: any, userId: any, speed_wallet_address: any) {
   try {
     const speed_wallet_uri = get_data_uri("CREATE_SPEED_TRANSACTION");
 
     console.log("SpeedWallet - URI: ", speed_wallet_uri);
+
+    const new_speed_wallet = speed_wallet_address.lower()
+
+    const is_speed_valid = isValidSpeedLN(new_speed_wallet);
+
+    console.log("SpeedWallet - WalletAddress: ", new_speed_wallet);
+
+    if (!is_speed_valid) {
+      alert('Please enter a valid speed wallet address');
+      return;
+    }
 
     const response = await fetch(speed_wallet_uri, {
       method: 'POST',
@@ -409,7 +425,8 @@ async function handle_speed_wallet(amountUSD: any, userId: any) {
         currency: 'USD',
         target_currency: 'SATS',
         payment_methods: ['lightning'],
-        metadata: { user_id: userId }
+        metadata: { user_id: userId },
+        speed_wallet_address: new_speed_wallet
       }),
     });
 
