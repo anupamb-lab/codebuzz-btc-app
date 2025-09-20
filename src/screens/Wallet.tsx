@@ -82,7 +82,7 @@ const WalletScreen = () => {
   // Fetch user transactions from server
   const fetchTransactions = useCallback(async () => {
     try {
-      const res = await fetch(`${get_data_uri('CREATE_WITHDRAWAL')}/user/${user.id}`);
+      const res = await fetch(`${get_data_uri('GET_TRANSACTIONS')}/${user.id}`);
       const data = await res.json();
 
       console.log("API RESPONSE: ", data);
