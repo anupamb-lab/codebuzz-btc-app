@@ -85,16 +85,20 @@ const WalletScreen = () => {
       const res = await fetch(`${get_data_uri('GET_TRANSACTIONS')}/${user.id}`);
       const data = await res.json();
 
-      console.log("API RESPONSE: ", data);
+      // console.log("API RESPONSE RAW: ", res);
+      // console.log("API RESPONSE: ", data);
 
-      if (res.ok && Array.isArray(data)) {
-        const txns: Transaction[] = data.map((txn: any) => ({
-          type: txn.asset,
-          method: txn.chain,
-          date: txn.created_at,
+      if (res.ok && Array.isArray(data.transactions)) {
+        const txns: Transaction[] = data.transactions.map((txn: any) => ({
+          type: txn.type,
+          method: txn.method,
+          date: txn.date,
           amountNumeric: txn.amountNumeric,
           isPositive: parseFloat(txn.amountNumeric?.$numberDecimal ?? '0') >= 0,
         }));
+
+        // console.log("TXNs: ", txns);
+
         setTransactions(txns);
       } else {
         setTransactions([]);

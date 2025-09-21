@@ -68,7 +68,7 @@ const Page: React.FC = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [btcBalance, setBtcBalance] = useState(0);
-  const { hashPower, setHashPower, addHashPower } = useHashPower();
+  const { hashPower, setHashPower, addHashPower, resetHashPower } = useHashPower();
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [loadingBalance, setLoadingBalance] = useState(true);
@@ -243,6 +243,7 @@ const Page: React.FC = () => {
       miningAnimationRef.current?.play();
     } else {
       miningAnimationRef.current?.pause();
+      resetHashPower();
     }
 
     return () => {
@@ -263,6 +264,9 @@ const Page: React.FC = () => {
 
     const res = await fetch(fetch_balance_uri);
     const data = await res.json();
+
+    console.log("USER-BALANCE-RESPOSNE: ", res);
+    console.log("USER-BALANCE-DATA: ", data);
 
     if (res.ok && data.balance) {
         const btcValue = parseFloat(

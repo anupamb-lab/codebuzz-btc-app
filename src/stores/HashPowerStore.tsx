@@ -5,6 +5,7 @@ type HashPowerContextType = {
   hashPower: number;
   setHashPower: (val: number) => void;
   addHashPower: (val: number) => void;
+  resetHashPower: () => void;
 };
 
 const HashPowerContext = createContext<HashPowerContextType | undefined>(undefined);
@@ -21,7 +22,6 @@ export const HashPowerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     load();
   }, []);
 
-  // Save whenever hashPower changes
   useEffect(() => {
     AsyncStorage.setItem("hashPower", hashPower.toString());
   }, [hashPower]);
@@ -29,8 +29,13 @@ export const HashPowerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const setHashPower = (val: number) => setHashPowerState(val);
   const addHashPower = (val: number) => setHashPowerState((prev) => prev + val);
 
+  const resetHashPower = () => {
+    setHashPowerState(0);
+    AsyncStorage.removeItem("hashPower");
+  };
+
   return (
-    <HashPowerContext.Provider value={{ hashPower, setHashPower, addHashPower }}>
+    <HashPowerContext.Provider value={{ hashPower, setHashPower, addHashPower, resetHashPower }}>
       {children}
     </HashPowerContext.Provider>
   );
