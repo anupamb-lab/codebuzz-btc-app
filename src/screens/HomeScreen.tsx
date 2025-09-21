@@ -285,12 +285,16 @@ const Page: React.FC = () => {
       const btcValue = parseFloat(
       data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
       );
+
+      const btcValueDeposited = parseFloat(
+        data.balance.BTC_DEPOSIT?.$numberDecimal ?? data.balance.BTC ?? "0"
+      );
       
       const safeVal = isNaN(btcValue) ? 0 : btcValue;
 
       const price = await getBTCPrice();
 
-      const dollar_balance = parseFloat((btcBalance * price).toFixed(2))
+      const dollar_balance = parseFloat((btcValueDeposited * price).toFixed(2))
 
       setUserWalletBalance(dollar_balance);
 

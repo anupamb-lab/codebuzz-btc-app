@@ -72,7 +72,14 @@ const WalletScreen = () => {
         const btcVal = parseFloat(
           data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
         );
-        setBtcBalance(btcVal);
+
+        const btcValueDeposited = parseFloat(
+          data.balance.BTC_DEPOSIT?.$numberDecimal ?? data.balance.BTC ?? "0"
+        );
+
+        const final_btc_value = btcVal + btcValueDeposited;
+
+        setBtcBalance(final_btc_value);
       }
     } catch (err) {
       console.error("Error fetching BTC balance:", err);
