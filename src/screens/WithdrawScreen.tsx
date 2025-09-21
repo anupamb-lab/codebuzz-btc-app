@@ -88,7 +88,10 @@ const WithdrawScreen = ({ navigation }: any) => {
 
         usdValue += isNaN(usdtVal) ? 0 : usdtVal;
         usdValue += isNaN(usdcVal) ? 0 : usdcVal;
-        usdValue += isNaN(btcDepVal) ? 0 : btcDepVal;
+
+        if (!isNaN(btcDepVal)) {
+          usdValue += btcDepVal * btcPrice;
+        }
 
         setBalanceUSD(usdValue);
       }
