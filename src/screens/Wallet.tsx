@@ -107,7 +107,7 @@ const WalletScreen = () => {
       console.error("Error fetching transactions:", err);
       setTransactions([]);
     }
-  }, [user.id]);
+  }, [user?.id]);
 
   const loadData = useCallback(async () => {
     setRefreshing(true);
