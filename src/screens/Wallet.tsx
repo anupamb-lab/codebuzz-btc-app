@@ -34,7 +34,7 @@ async function getBTCPrice() {
       { params: { ids: "bitcoin", vs_currencies: "usd" } }
     );
     return res.data.bitcoin.usd;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching BTC price:", err.message);
     return 0;
   }

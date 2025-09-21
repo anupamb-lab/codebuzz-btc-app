@@ -27,13 +27,13 @@ import miningCardAnimation from '../assets/animations/mining-card.json';
 import { useHashPower } from "../stores/HashPowerStore";
 import messaging from '@react-native-firebase/messaging';
 import { Image } from 'react-native';
+import axios from 'axios';
 
 const MAX_ADS = 10;
 const BASE_HASHPOWER_PER_AD = 5;
 const BTC_PER_HASHPOWER_PER_SEC = 0.000000000001;
 const MAX_MINING_DURATION = 24 * 60 * 60 * 1000;
-const now = new Date();
-const oneDay = 24 * 60 * 60 * 1000;
+// const MAX_MINING_DURATION = 60 * 1000;
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Page'>;
 
@@ -68,6 +68,7 @@ const Page: React.FC = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [btcBalance, setBtcBalance] = useState(0);
+  const [userBalance, setUserWalletBalance] = useState(0);
   const { hashPower, setHashPower, addHashPower, resetHashPower } = useHashPower();
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -251,6 +252,18 @@ const Page: React.FC = () => {
     };
   }, [hashPower, startTime, isMiningEnabled]);
 
+  async function getBTCPrice() {
+    try {
+      const res = await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price",
+        { params: { ids: "bitcoin", vs_currencies: "usd" } }
+      );
+      return res.data.bitcoin.usd;
+    } catch (err: any) {
+      console.error("Error fetching BTC price:", err.message);
+      return 0;
+    }
+  }
 
   // -----------------------------
   // API Calls
@@ -269,13 +282,20 @@ const Page: React.FC = () => {
     console.log("USER-BALANCE-DATA: ", data);
 
     if (res.ok && data.balance) {
-        const btcValue = parseFloat(
-        data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
-        );
-        const safeVal = isNaN(btcValue) ? 0 : btcValue;
+      const btcValue = parseFloat(
+      data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
+      );
+      
+      const safeVal = isNaN(btcValue) ? 0 : btcValue;
 
-        setBtcBalance(safeVal);
-        balanceRef.current = safeVal;
+      const price = await getBTCPrice();
+
+      const dollar_balance = parseFloat((btcBalance * price).toFixed(2))
+
+      setUserWalletBalance(dollar_balance);
+
+      setBtcBalance(safeVal);
+      balanceRef.current = safeVal;
     }
     } catch (err) {
     console.error("Error fetching balance:", err);
@@ -364,9 +384,6 @@ const Page: React.FC = () => {
     useEffect(() => {
       get_referrals();
     }, []);
-
-  const isMiningActive =
-  hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
 
   const buttonLabel = loading
     ? "Loading..."
@@ -490,7 +507,7 @@ const Page: React.FC = () => {
             onPress={() => navigation.navigate("Wallet")}
           >
             <Icon name="credit-card-multiple" size={26} color="#FFFFFF" />
-            <Text style={styles.statValue}>$0.00</Text>
+            <Text style={styles.statValue}>${userBalance}</Text>
             <Text style={styles.statLabel}>Wallet Balance</Text>
           </TouchableOpacity>
 
