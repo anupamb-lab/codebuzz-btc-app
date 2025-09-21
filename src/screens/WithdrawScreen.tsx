@@ -82,9 +82,13 @@ const WithdrawScreen = ({ navigation }: any) => {
         const usdcVal = parseFloat(
           data.balance.USDC?.$numberDecimal ?? data.balance.USDC ?? "0"
         );
+        const btcDepVal = parseFloat(
+          data.balance.BTC_DEPOSIT?.$numberDecimal ?? data.balance.BTC_DEPOSIT ?? "0"
+        );
 
         usdValue += isNaN(usdtVal) ? 0 : usdtVal;
         usdValue += isNaN(usdcVal) ? 0 : usdcVal;
+        usdValue += isNaN(btcDepVal) ? 0 : btcDepVal;
 
         setBalanceUSD(usdValue);
       }
