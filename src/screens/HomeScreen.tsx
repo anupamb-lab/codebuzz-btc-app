@@ -418,8 +418,8 @@ const Page: React.FC = () => {
           </Text>
         </View>
 
-                {/* Mining Power Section */}
-                <View style={styles.miningSection}>
+        {/* Mining Power Section */}
+        <View style={styles.miningSection}>
           {/* Header Row */}
           <View style={styles.miningHeader}>
             <View style={styles.miningTitleContainer}>
@@ -427,59 +427,56 @@ const Page: React.FC = () => {
               <Text style={styles.miningTitle}>Mining Power</Text>
             </View>
 
-            {/* Toggle */}
-            <View style={styles.toggleContainer}>
-              <Text style={styles.toggleLabel}>
-                {isMiningEnabled ? 'Activated' : 'Activate'}
-              </Text>
-              
-              <Animated.View style={[styles.switchWrapper, { backgroundColor }]}>
-                <Switch
-                  value={isMiningEnabled}
-                  onValueChange={(newValue) => {
-                    if (newValue) {
-                      Alert.alert(
-                        "Mining Enabled",
-                        "Watch an ad to start mining.",
-                        [
-                          {
-                            text: "Cancel",
-                            style: "cancel",
-                            onPress: () => {
-                              setIsMiningEnabled(false);
-                            },
-                          },
-                          {
-                            text: "OK",
-                            onPress: () => {
-                              setIsMiningEnabled(true);
-                              show();
-                            },
-                          },
-                        ],
-                        { cancelable: false }
-                      );
-                    } else {
-                      setIsMiningEnabled(false);
-                      Alert.alert("Mining Disabled", "Mining has been turned off.");
-                    }
-                  }}
-                  trackColor={{ false: "#374151", true: "#22D3EE" }}
-                  thumbColor={isMiningEnabled ? "#fff" : "#9CA3AF"}
-                />
-              </Animated.View>
-
-            </View>
+            {/* Activate text */}
+            <Text style={styles.toggleLabel}>
+              {isMiningEnabled ? 'Activated' : 'Activate'}
+            </Text>
           </View>
 
-          {/* Mining Power + Hashrate in one line */}
+          {/* Mining Power + Toggle inline */}
           <View style={styles.hashrateRow}>
-            {/* <Text style={styles.hashrateLabel}>Total Mining Power</Text> */}
             <Text style={styles.hashrateValue}>
               {hashPower.toLocaleString()} GH/s
             </Text>
+
+            {/* Smaller toggle aligned right */}
+            <Animated.View style={[styles.switchWrapperSmall, { backgroundColor }]}>
+              <Switch
+                style={styles.toggleSwitchSmall}
+                value={isMiningEnabled}
+                onValueChange={(newValue) => {
+                  if (newValue) {
+                    Alert.alert(
+                      "Mining Enabled",
+                      "Watch an ad to start mining.",
+                      [
+                        {
+                          text: "Cancel",
+                          style: "cancel",
+                          onPress: () => setIsMiningEnabled(false),
+                        },
+                        {
+                          text: "OK",
+                          onPress: () => {
+                            setIsMiningEnabled(true);
+                            show();
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  } else {
+                    setIsMiningEnabled(false);
+                    Alert.alert("Mining Disabled", "Mining has been turned off.");
+                  }
+                }}
+                trackColor={{ false: "#374151", true: "#22D3EE" }}
+                thumbColor={isMiningEnabled ? "#fff" : "#9CA3AF"}
+              />
+            </Animated.View>
           </View>
         </View>
+
 
 
         {/* Quick Stats Cards */}
@@ -648,6 +645,9 @@ export default Page;
 
 // Styles
 const styles = StyleSheet.create({
+  toggle_switch: {
+    transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }]
+  },
   iconBox: {
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -773,55 +773,51 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 24,
   },
-  
+
   miningHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
-  
+
   miningTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   miningTitle: {
     marginLeft: 8,
     fontSize: 18,
     fontWeight: '600',
     color: '#fff',
   },
-  
-  toggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  
+
   toggleLabel: {
-    marginRight: 8,
     fontSize: 14,
     color: '#22D3EE',
     fontWeight: '500',
   },
-  
+
   hashrateRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  
-  hashrateLabel: {
-    fontSize: 14,
-    color: '#94A3B8',
-  },
-  
+
   hashrateValue: {
-    fontSize: 32,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#22D3EE',
-    marginBottom: 4,
   },
-  hashrateDisplay: {
-    alignItems: 'center',
+
+  switchWrapperSmall: {
+    borderRadius: 16,
+    transform: [{ scale: 0.8 }],
+  },
+
+  toggleSwitchSmall: {
+    transform: [{ scale: 0.8 }],
   },
   statsRow: {
     flexDirection: 'row',
