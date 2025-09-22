@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
+import axios from 'axios';
 
 const paymentMethods = [
   { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
@@ -28,13 +29,20 @@ const chainOptions = ['BTC', 'BEP20'];
 const MakePaymentScreen = ({ navigation, route }: any) => {
   const { plan } = route.params;
   const [selectedMethod, setSelectedMethod] = useState('crypto');
-  const [amountBTC, setAmountBTC] = useState('0.0015');
+  const [planAmount, setPlanAmount] = useState('0.0015');
   const [btcUSDValue, setBtcUSDValue] = useState('');
   const [coin, setCoin] = useState('USDT');
   const [chain, setChain] = useState('BEP20');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const PlanPrice = parseFloat(plan.plan_cost) + parseFloat(plan.maintenance_cost);
+
+  const [planUSD, setPlanUSD] = useState(PlanPrice);
+  const [planBTC, setPlanBTC] = useState<string>("");
+  const [btcValue, setBtcValue] = useState<number>(0);
+
+  // User Wallet Addresses
   const [coinAddress, setcoinAddress] = useState('');
   const [btcAddress, setBtcAddress] = useState('');
   const [bnbAddress, setBnbAddress] = useState('');
@@ -50,6 +58,8 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
       console.log("User Addresses - No User");
       return;
     }
+
+    setPlanAmount(PlanPrice.toString());
 
     const final_url = `${get_data_uri('GET_DEPOSIT_ADDRESSES')}/${user_id}`;
 
@@ -87,15 +97,44 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
     fetchAddress();
   }, [user_id]);
 
+  async function getBTCPrice() {
+    try {
+      // CoinGecko first
+      const res = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
+        params: { ids: "bitcoin", vs_currencies: "usd" },
+      });
+      return res.data.bitcoin.usd;
+    } catch (err: any) {
+      if (err.response && err.response.status === 429) {
+        console.warn("CoinGecko rate-limited, falling back to Binance...");
+
+        try {
+          // Binance fallback
+          const res = await axios.get("https://api.binance.com/api/v3/ticker/price", {
+            params: { symbol: "BTCUSDT" },
+          });
+          return parseFloat(res.data.price);
+        } catch (binanceErr: any) {
+          console.error("Error fetching BTC price from Binance:", binanceErr.message);
+          return 0;
+        }
+      }
+
+      console.error("Error fetching BTC price:", err.message);
+      return 0;
+    }
+  }
+
   useEffect(() => {
     fetchLiveBTCPrice();
-  }, [amountBTC]);
+  }, [planAmount]);
 
   const fetchLiveBTCPrice = async () => {
     try {
-      const btcPrice = 66500;
-      const usdEquivalent = (parseFloat(amountBTC) * btcPrice).toFixed(2);
-      setBtcUSDValue(usdEquivalent);
+      const btcPrice = await getBTCPrice();
+
+      setBtcValue(btcPrice);
+      
     } catch (err) {
       console.log(err);
     }
@@ -106,8 +145,18 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
 
     if (coin === "BTC") {
       setChain("BTC");
+
+      if (btcValue > 0) {
+        const plan_value_btc = (planUSD / btcValue).toFixed(8);
+        console.log("Plan BTC Value:", plan_value_btc);
+        setPlanBTC(plan_value_btc);
+
+        setPlanAmount(plan_value_btc);
+      }
     } else {
       setChain("BEP20");
+      setPlanBTC("");
+      setPlanAmount(planUSD.toString());
     }
 
     if (coin === "BTC") setcoinAddress(btcAddress);
@@ -156,8 +205,8 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
       <Text style={styles.inputLabel}>Amount ({coin}):</Text>
       <TextInput
         style={styles.textInput}
-        value={amountBTC}
-        onChangeText={setAmountBTC}
+        value={planAmount}
+        onChangeText={setPlanAmount}
         keyboardType="decimal-pad"
       />
 
