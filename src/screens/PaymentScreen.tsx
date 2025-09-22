@@ -24,7 +24,7 @@ const coinOptions = ['BTC', 'USDT', 'USDC'];
 const chainOptions = ['BTC', 'BEP20'];
 
 const MakePaymentScreen = ({ navigation, route }) => {
-  const { package_id } = route.params;
+  const { plan } = route.params;
   const [selectedMethod, setSelectedMethod] = useState('crypto');
   const [btcAddress, setBtcAddress] = useState('1A1zP1eP5QGefi2DMPtFtL5SLmv7DivfNa');
   const [amountBTC, setAmountBTC] = useState('0.0015');
@@ -47,6 +47,16 @@ const MakePaymentScreen = ({ navigation, route }) => {
     }
   };
 
+  function setcoinandchain(coin: string) {
+    setCoin(coin);
+
+    if (coin === "BTC") {
+      setChain("BTC");
+    } else {
+      setChain("BEP20");
+    }
+  }
+
   const renderCryptoForm = () => (
     <View style={styles.formBox}>
       <Text style={styles.formTitle}>Pay with {coin} ({chain})</Text>
@@ -54,7 +64,7 @@ const MakePaymentScreen = ({ navigation, route }) => {
 
       <Text style={styles.inputLabel}>Coin Type</Text>
       <View style={styles.dropdownContainer}>
-        <Picker selectedValue={coin} onValueChange={setCoin} style={styles.picker}>
+        <Picker selectedValue={coin} onValueChange={setcoinandchain} style={styles.picker}>
           {coinOptions.map((c) => (
             <Picker.Item label={c} value={c} key={c} />
           ))}
@@ -78,19 +88,13 @@ const MakePaymentScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.inputLabel}>Amount (BTC):</Text>
+      <Text style={styles.inputLabel}>Amount ({coin}):</Text>
       <TextInput
         style={styles.textInput}
         value={amountBTC}
         onChangeText={setAmountBTC}
         keyboardType="decimal-pad"
       />
-      <Text style={styles.formSub}>Equivalent to ${btcUSDValue} USD (rate may vary)</Text>
-
-      <TouchableOpacity style={styles.qrBox}>
-        <Text style={styles.qrText}>QR Code</Text>
-        <Text style={styles.qrSub}>Scan QR code to pay</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity activeOpacity={0.8}>
         <LinearGradient
@@ -152,12 +156,12 @@ const MakePaymentScreen = ({ navigation, route }) => {
           <View style={styles.orderSummaryContent}>
             <Text style={styles.sectionTitle}>Order Summary</Text>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryText}>Starter Miner Pack (10 TH/s)</Text>
-              <Text style={styles.summaryText}>$99.00</Text>
+              <Text style={styles.summaryText}>{plan.name} ({plan.hashrate} TH/s)</Text>
+              <Text style={styles.summaryText}>${plan.plan_cost}</Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryText}>Service Fee</Text>
-              <Text style={styles.summaryText}>$1.00</Text>
+              <Text style={styles.summaryText}>${plan.maintenance_cost}</Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.summaryRow}>
@@ -170,7 +174,7 @@ const MakePaymentScreen = ({ navigation, route }) => {
                   { fontWeight: '600', color: '#22D3EE' },
                 ]}
               >
-                $100.00
+                ${plan.plan_cost + plan.maintenance_cost}
               </Text>
             </View>
           </View>
