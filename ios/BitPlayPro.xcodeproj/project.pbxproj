@@ -299,6 +299,7 @@
 				DEVELOPMENT_TEAM = L99G6M8D7G;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BitPlayPro/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BitPlayPro;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -332,6 +333,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L99G6M8D7G;
 				INFOPLIST_FILE = BitPlayPro/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BitPlayPro;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -13,6 +13,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
 
 const paymentMethods = [
   { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
@@ -23,14 +25,67 @@ const paymentMethods = [
 const coinOptions = ['BTC', 'USDT', 'USDC'];
 const chainOptions = ['BTC', 'BEP20'];
 
-const MakePaymentScreen = ({ navigation, route }) => {
+const MakePaymentScreen = ({ navigation, route }: any) => {
   const { plan } = route.params;
   const [selectedMethod, setSelectedMethod] = useState('crypto');
-  const [btcAddress, setBtcAddress] = useState('1A1zP1eP5QGefi2DMPtFtL5SLmv7DivfNa');
   const [amountBTC, setAmountBTC] = useState('0.0015');
   const [btcUSDValue, setBtcUSDValue] = useState('');
   const [coin, setCoin] = useState('USDT');
   const [chain, setChain] = useState('BEP20');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [coinAddress, setcoinAddress] = useState('');
+  const [btcAddress, setBtcAddress] = useState('');
+  const [bnbAddress, setBnbAddress] = useState('');
+  const [usdtAddress, setUsdtAddress] = useState('');
+  const [usdcAddress, setUsdcAddress] = useState('');
+
+  const { user } = useAuth();
+  
+  const user_id = user?.id;
+
+  useEffect(() => {
+    if (!user_id) {
+      console.log("User Addresses - No User");
+      return;
+    }
+
+    const final_url = `${get_data_uri('GET_DEPOSIT_ADDRESSES')}/${user_id}`;
+
+    const fetchAddress = async () => {
+      try {
+        console.log("User Addresses - Fetching from: ", final_url);
+
+        const res = await fetch(final_url, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const data = await res.json();
+        console.log("User Addresses - Data: ", data);
+
+        if (res.ok) {
+          // console.log("User Addresses ResponseData: ", data);
+
+          if (data.BTC) setBtcAddress(data.BTC);
+          if (data.USDT) setUsdtAddress(data.USDT);
+          if (data.USDC) setUsdcAddress(data.USDC);
+          if (data.BNB) setBnbAddress(data.BNB);
+          
+        } else {
+          setError(data?.message || 'Failed to fetch wallet address.');
+        }
+      } catch (err) {
+        console.error("Fetch Error: ", err);
+        setError('Network error. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAddress();
+  }, [user_id]);
 
   useEffect(() => {
     fetchLiveBTCPrice();
@@ -38,7 +93,6 @@ const MakePaymentScreen = ({ navigation, route }) => {
 
   const fetchLiveBTCPrice = async () => {
     try {
-      // Placeholder value (replace with real API integration)
       const btcPrice = 66500;
       const usdEquivalent = (parseFloat(amountBTC) * btcPrice).toFixed(2);
       setBtcUSDValue(usdEquivalent);
@@ -55,6 +109,11 @@ const MakePaymentScreen = ({ navigation, route }) => {
     } else {
       setChain("BEP20");
     }
+
+    if (coin === "BTC") setcoinAddress(btcAddress);
+    if (coin === "BNB") setcoinAddress(bnbAddress);
+    if (coin === "USDT") setcoinAddress(usdtAddress);
+    if (coin === "USDC") setcoinAddress(usdcAddress);
   }
 
   const renderCryptoForm = () => (
@@ -80,11 +139,17 @@ const MakePaymentScreen = ({ navigation, route }) => {
         </Picker>
       </View>
 
-      <Text style={styles.inputLabel}>BTC Address</Text>
+      <Text style={styles.inputLabel}>{coin} Address</Text>
       <View style={styles.inputRow}>
-        <TextInput value={btcAddress} style={styles.textInput} editable={false} />
-        <TouchableOpacity onPress={() => Clipboard.setString(btcAddress)}>
-          <Icon name="copy-outline" size={20} color="#22D3EE" style={{ marginLeft: 8 }} />
+        <Text
+          style={styles.CointextInput}
+          numberOfLines={1}
+          ellipsizeMode="middle"
+        >
+          {coinAddress}
+        </Text>
+        <TouchableOpacity onPress={() => Clipboard.setString(coinAddress)}>
+          <Icon name="copy-outline" size={17} color="#22D3EE" style={{ marginLeft: 6 }} />
         </TouchableOpacity>
       </View>
 
@@ -310,6 +375,15 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 10,
     borderRadius: 8,
+  },
+  CointextInput: {
+    flex: 1,
+    backgroundColor: '#1E293B',
+    color: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 0,
+    borderRadius: 8,
+    fontSize: 12,
   },
   inputRow: {
     flexDirection: 'row',
