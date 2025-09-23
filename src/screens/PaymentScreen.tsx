@@ -9,6 +9,7 @@ import {
   Clipboard,
   Platform,
   FlatList,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -41,6 +42,9 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
   const [planUSD, setPlanUSD] = useState(PlanPrice);
   const [planBTC, setPlanBTC] = useState<string>("");
   const [btcValue, setBtcValue] = useState<number>(0);
+
+  const [PlanId, setPlanId] = useState<string | null>(plan.id);
+  const [payment_method, SetPaymentMethod] = useState('Crypto');
 
   // User Wallet Addresses
   const [coinAddress, setcoinAddress] = useState('');
@@ -165,6 +169,77 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
     if (coin === "USDC") setcoinAddress(usdcAddress);
   }
 
+  type PaymentMethod = "Crypto" | "Bank" | "Gateway";
+
+  interface CreateUserPlanParams {
+    user: string;         
+    plan_id: string;       
+    crypto: "BTC" | "ETH" | "USDT" | "USDC";
+    chain: "BTC" | "BNB";
+    paymentMethod: PaymentMethod;
+  }
+
+  async function createOrUpdateUserPlan(params: CreateUserPlanParams) {
+    try {
+      const res = await axios.post(get_data_uri('BUY_SUBSCRIPTION'), params, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log("User plan response:", res.data);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      if (err.response) {
+        console.error("API Error:", err.response.data);
+        return { success: false, error: err.response.data.error };
+      }
+      console.error("Network Error:", err.message);
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
+
+  async function CreateUserSub() {
+    const payload = {
+      user: user?.id,
+      plan_id: PlanId!,
+      crypto: coin as "BTC" | "ETH" | "USDT" | "USDC",
+      chain: chain as "BTC" | "BNB",
+      paymentMethod: payment_method as "Crypto" | "Bank" | "Gateway",
+    };
+
+    const result = await createOrUpdateUserPlan(payload);
+
+    if (result.success) {
+      Alert.alert(
+        "Payment Confirmation",
+        "Please wait until we confirm your payment!!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Main" }],
+              });
+            },
+          },
+        ]
+      );
+      console.log("Plan:", result.data.userPlan);
+    } else {
+      alert(`Error: ${result.error}`);
+    }
+  }
+
+  useEffect(() => {
+    if (selectedMethod === "crypto") {
+      SetPaymentMethod("Crypto");
+    } else if (selectedMethod === "card") {
+      SetPaymentMethod("Gateway");
+    } else if (selectedMethod === "bank") {
+      SetPaymentMethod("Bank");
+    }
+  }, [selectedMethod]);
+
   const renderCryptoForm = () => (
     <View style={styles.formBox}>
       <Text style={styles.formTitle}>Pay with {coin} ({chain})</Text>
@@ -210,7 +285,7 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
         keyboardType="decimal-pad"
       />
 
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity activeOpacity={0.8} onPress={CreateUserSub}>
         <LinearGradient
           colors={["#22D3EE", "#C084FC"]}
           start={{ x: 0, y: 0 }}

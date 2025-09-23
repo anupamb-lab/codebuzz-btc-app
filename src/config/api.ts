@@ -31,6 +31,7 @@ export const DATA_ENDPOINTS = {
   CREATE_SPEED_TRANSACTION: '/api/withdrawals/create-speed-payment',
   GET_REWARDS: '/api/daily-rewards',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
+  BUY_SUBSCRIPTION: '/api/subscriptionplans/create_user_sub',
   CREATE_SUPPORT_TICKET: '/api/help/create',
   REFERRALS: '/api/referrals',
   CREATE_FCM: '/api/firebase_tokens/create',
