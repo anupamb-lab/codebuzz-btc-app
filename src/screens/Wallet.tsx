@@ -92,8 +92,8 @@ const WalletScreen = () => {
       const res = await fetch(`${get_data_uri('GET_TRANSACTIONS')}/${user.id}`);
       const data = await res.json();
 
-      // console.log("API RESPONSE RAW: ", res);
-      // console.log("API RESPONSE: ", data);
+      console.log("Transactions - RAW: ", res);
+      console.log("Transactions - RESPONSE: ", data);
 
       if (res.ok && Array.isArray(data.transactions)) {
         const txns: Transaction[] = data.transactions.map((txn: any) => ({

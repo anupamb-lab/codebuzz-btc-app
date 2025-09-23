@@ -32,6 +32,7 @@ export const DATA_ENDPOINTS = {
   GET_REWARDS: '/api/daily-rewards',
   GET_SUBSCRIPTIONS: '/api/subscriptionplans',
   BUY_SUBSCRIPTION: '/api/subscriptionplans/create_user_sub',
+  GET_USER_HASHPOWER: '/api/subscriptionplans/hashpower',
   CREATE_SUPPORT_TICKET: '/api/help/create',
   REFERRALS: '/api/referrals',
   CREATE_FCM: '/api/firebase_tokens/create',
