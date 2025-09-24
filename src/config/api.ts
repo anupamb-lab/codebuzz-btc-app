@@ -36,7 +36,9 @@ export const DATA_ENDPOINTS = {
   CREATE_SUPPORT_TICKET: '/api/help/create',
   REFERRALS: '/api/referrals',
   CREATE_FCM: '/api/firebase_tokens/create',
-  PROCESS_SPEED_TRANSACTION: '/api/lightning-handles/pay-invoice'
+  PROCESS_SPEED_TRANSACTION: '/api/lightning-handles/pay-invoice',
+
+  NOTIFICATION_PREFS: '/api/notification-preferences',
 } as const;
 
 type DataEndpointKey = keyof typeof DATA_ENDPOINTS;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,31 +11,65 @@ import {
   ImageBackground,
   ScrollView
 } from 'react-native';
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
+import axios from 'axios';
 
 export default function NotificationPreferencesScreen({ navigation }: any) {
   const [emailNotif, setEmailNotif] = useState(true);
   const [pushNotif, setPushNotif] = useState(false);
   const [smsNotif, setSmsNotif] = useState(false);
 
+  const { user } = useAuth();
+
+  const user_id = user?.id;
+
+  useEffect(() => {
+    const FetchNottificationPrefs = async () => {
+      if (!user_id) {
+        return;
+      }
+
+      try {
+        const user_pref_uri = get_data_uri("NOTIFICATION_PREFS");
+        console.log("UserNotificationPref - URI: ", user_pref_uri);
+        
+        const res = await axios.get(`${user_pref_uri}/${user_id}`);
+        console.log("UserNotificationPref - Response: ", res.data);
+        
+        setEmailNotif(res.data.user_preferences.email || false);
+        setPushNotif(res.data.user_preferences.push || false);
+        setSmsNotif(res.data.user_preferences.sms || false);
+      } catch (err: any) {
+        console.error("Error fetching User Preference:", err.message);
+      }
+    };
+
+    FetchNottificationPrefs();
+  }, [user_id]);
+
   const handleSave = async () => {
     try {
-    //   const res = await fetch('https://example.com/api/notifications/preferences', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       email: emailNotif,
-    //       push: pushNotif,
-    //       sms: smsNotif,
-    //     }),
-    //   });
+      const notification_pref_uri = `${get_data_uri("NOTIFICATION_PREFS")}/${user_id}`;
+      const res = await fetch(notification_pref_uri, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: emailNotif,
+          push: pushNotif,
+          sms: smsNotif,
+        }),
+      });
 
-    //   const data = await res.json();
+      const data = await res.json();
 
-      if (true) {
+      console.log("UpdatingNotificationPref - Response Data: ", data);
+
+      if (res.ok) {
         Alert.alert('Success', 'Notification preferences updated successfully.');
         navigation.goBack();
       } else {
-        Alert.alert('Error', 'Hoi');
+        Alert.alert('Error', data.message || 'Something went wrong.');
       }
     } catch (err) {
       console.error(err);
