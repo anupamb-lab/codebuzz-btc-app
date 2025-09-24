@@ -164,113 +164,117 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 16, padding: Platform.OS === 'ios' ? 20 : 10 }}
             >
-              {/* Name */}
-              <View style={{ marginBottom: 15 }}>
-                <View style={styles.inputWrapper}>
-                  <Image source={require('../assets/images/icon_input_box_user.png')} style={styles.inputIconImage} />
-                  <TextInput
-                    style={{ ...styles.input, flex: 1 }}
-                    placeholder="NAME"
-                    placeholderTextColor="#888"
-                    value={name}
-                    onChangeText={(text) => {
-                      setName(text);
-                      if (nameError) setNameError('');
-                    }}
-                    autoCapitalize="words"
-                    autoCorrect={false}
-                  />
-                </View>
-                {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
-              </View>
+              <View style={styles.signup_input}>
 
-              {/* Email */}
-              <View style={{ marginBottom: 15 }}>
-                <View style={styles.inputWrapper}>
-                  <Image source={require('../assets/images/icon_input_box_email.png')} style={styles.inputIconImage} />
-                  <TextInput
-                    style={{ ...styles.input, flex: 1 }}
-                    placeholder="EMAIL"
-                    placeholderTextColor="#888"
-                    value={email}
-                    onChangeText={(text) => {
-                      setEmail(text);
-                      if (emailError) setEmailError('');
-                    }}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                {/* Name */}
+                <View style={{ marginBottom: 15 }}>
+                  <View style={styles.inputWrapper}>
+                    <Image source={require('../assets/images/icon_input_box_user.png')} style={styles.inputIconImage} />
+                    <TextInput
+                      style={{ ...styles.input, flex: 1 }}
+                      placeholder="NAME"
+                      placeholderTextColor="#888"
+                      value={name}
+                      onChangeText={(text) => {
+                        setName(text);
+                        if (nameError) setNameError('');
+                      }}
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                    />
+                  </View>
+                  {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
                 </View>
-                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-              </View>
 
-              {/* Password */}
-              <View style={{ marginBottom: 15 }}>
-                <View style={styles.inputWrapper}>
-                  <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
-                  <TextInput
-                    style={{ ...styles.input, flex: 1 }}
-                    placeholder="PASSWORD"
-                    placeholderTextColor="#888"
-                    value={password}
-                    onChangeText={(text) => {
-                      setPassword(text);
-                      if (passwordError) setPasswordError('');
-                    }}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                {/* Email */}
+                <View style={{ marginBottom: 15 }}>
+                  <View style={styles.inputWrapper}>
+                    <Image source={require('../assets/images/icon_input_box_email.png')} style={styles.inputIconImage} />
+                    <TextInput
+                      style={{ ...styles.input, flex: 1 }}
+                      placeholder="EMAIL"
+                      placeholderTextColor="#888"
+                      value={email}
+                      onChangeText={(text) => {
+                        setEmail(text);
+                        if (emailError) setEmailError('');
+                      }}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+                  {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
                 </View>
-                {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-              </View>
 
-              <View style={{ marginBottom: 15 }}>
-                <View style={styles.inputWrapper}>
-                  <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
-                  <TextInput
-                    style={{ ...styles.input, flex: 1 }}
-                    placeholder="REFERRAL (OPTIONAL)"
-                    placeholderTextColor="#888"
-                    value={referral_code}
-                    onChangeText={(text) => {
-                      setReferral(text);
-                      if (referralError) setReferralError('');
-                    }}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                {/* Password */}
+                <View style={{ marginBottom: 15 }}>
+                  <View style={styles.inputWrapper}>
+                    <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
+                    <TextInput
+                      style={{ ...styles.input, flex: 1 }}
+                      placeholder="PASSWORD"
+                      placeholderTextColor="#888"
+                      value={password}
+                      onChangeText={(text) => {
+                        setPassword(text);
+                        if (passwordError) setPasswordError('');
+                      }}
+                      secureTextEntry
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+                  {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
                 </View>
-                {referralError ? <Text style={styles.errorText}>{referralError}</Text> : null}
-              </View>
 
-              {/* Signup Button */}
-              <TouchableOpacity 
-                style={styles.loginButton} 
-                onPress={handleSignUp} 
-                disabled={isLoading}
-                activeOpacity={0.8}
-              >
-                <LinearGradient
-                  colors={['#2ACFEF', '#BD85FC']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.loginButtonGradient}
+                <View style={{ marginBottom: 15 }}>
+                  <View style={styles.inputWrapper}>
+                    <Image source={require('../assets/images/icon_input_box_pass.png')} style={styles.inputIconImage} />
+                    <TextInput
+                      style={{ ...styles.input, flex: 1 }}
+                      placeholder="REFERRAL (OPTIONAL)"
+                      placeholderTextColor="#888"
+                      value={referral_code}
+                      onChangeText={(text) => {
+                        setReferral(text);
+                        if (referralError) setReferralError('');
+                      }}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+                  {referralError ? <Text style={styles.errorText}>{referralError}</Text> : null}
+                </View>
+
+                {/* Signup Button */}
+                <TouchableOpacity 
+                  style={styles.loginButton} 
+                  onPress={handleSignUp} 
+                  disabled={isLoading}
+                  activeOpacity={0.8}
                 >
-                  <Text style={styles.loginButtonText}>
-                    {isLoading ? 'SIGNING IN...' : 'SIGNUP'}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                  <LinearGradient
+                    colors={['#2ACFEF', '#BD85FC']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.loginButtonGradient}
+                  >
+                    <Text style={styles.loginButtonText}>
+                      {isLoading ? 'SIGNING IN...' : 'SIGNUP'}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
 
-              {/* Already a user */}
-              <TouchableOpacity
-                style={{ marginTop: 10, alignItems: 'center' }}
-                onPress={() => navigation.navigate('Login' as never)}
-              >
-                <Text style={{ color: 'white', paddingBottom: Platform.OS === 'ios' ? 40 : 10, fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-10%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
-              </TouchableOpacity>
+                {/* Already a user */}
+                <TouchableOpacity
+                  style={{ marginTop: 10, alignItems: 'center' }}
+                  onPress={() => navigation.navigate('Login' as never)}
+                >
+                  <Text style={{ color: 'white', paddingBottom: Platform.OS === 'ios' ? 40 : 10, fontWeight: '600', marginLeft: Platform.OS === 'ios' ? '-10%' : 0 }}>Already a user? <Text style={styles.signUpLink}>Sign In</Text></Text>
+                </TouchableOpacity>
+
+              </View>
 
             </LinearGradient>
 
@@ -292,6 +296,17 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     padding: 16,
+  },
+
+  signup_input: {
+    ...(Platform.OS === "ios" && Platform.isPad
+      ? {
+          width: 500,
+          alignSelf: "center",
+          justifyContent: "center",
+          alignItems: "center",
+        }
+      : {}),
   },
 
   loginButtonGradient: {
