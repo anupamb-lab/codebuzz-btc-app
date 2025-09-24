@@ -15,7 +15,7 @@ echo "Removed old build files."
 echo "Installing dependencies..."
 npm install --legacy-peer-deps
 
-# 4. Clean Gradle
+# 3. Clean Gradle
 echo "Cleaning Gradle..."
 cd android
 ./gradlew clean

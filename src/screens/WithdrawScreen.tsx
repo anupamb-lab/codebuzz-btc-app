@@ -53,16 +53,18 @@ const WithdrawScreen = ({ navigation }: any) => {
 
   const refreshData = async () => {
     setRefreshing(true);
-    await getBTCPrice();
-    await fetchBalance();
+    const btc_price = await getBTCPrice();
+    await fetchBalance(btc_price);
     setRefreshing(false);
   };
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (btc_price: any) => {
     try {
       const url = `${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`;
       const res = await fetch(url);
       const data = await res.json();
+
+      console.log("User Balance: ", data);
 
       if (res.ok && data.balance) {
         let usdValue = parseFloat(data.balance.USD ?? "0");
@@ -72,7 +74,7 @@ const WithdrawScreen = ({ navigation }: any) => {
           data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
         );
         if (!isNaN(btcVal)) {
-          usdValue += btcVal * btcPrice;
+          usdValue += btcVal * btc_price;
         }
 
         // Convert USDT/USDC → USD
@@ -90,8 +92,10 @@ const WithdrawScreen = ({ navigation }: any) => {
         usdValue += isNaN(usdcVal) ? 0 : usdcVal;
 
         if (!isNaN(btcDepVal)) {
-          usdValue += btcDepVal * btcPrice;
+          usdValue += btcDepVal * btc_price;
         }
+
+        console.log("User Balance - USDValue: ", usdValue);
 
         setBalanceUSD(usdValue);
       }
@@ -107,6 +111,7 @@ const WithdrawScreen = ({ navigation }: any) => {
         { params: { ids: "bitcoin", vs_currencies: "usd" } }
       );
       setBtcPrice(res.data.bitcoin.usd);
+      return res.data.bitcoin.usd;
     } catch (err) {
       if (err instanceof Error) {
         console.error("Error fetching BTC price:", err.message);
