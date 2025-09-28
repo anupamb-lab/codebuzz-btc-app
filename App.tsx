@@ -42,6 +42,7 @@ import { HashPowerProvider } from "./src/stores/HashPowerStore";
 
 import messaging from '@react-native-firebase/messaging';
 import UpdateEmailScreen from './src/screens/UpdateEmailScreen';
+import { AdConfigProvider } from './src/providers/AdConfigProvider';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -132,10 +133,12 @@ const App = () => {
   return (
     <AuthProvider>
       <HashPowerProvider>
-        <NavigationContainer>
-          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-          <AppNavigator />
-        </NavigationContainer>
+        <AdConfigProvider>
+            <NavigationContainer>
+              <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+              <AppNavigator />
+          </NavigationContainer>
+        </AdConfigProvider>
       </HashPowerProvider>
     </AuthProvider>
   );
