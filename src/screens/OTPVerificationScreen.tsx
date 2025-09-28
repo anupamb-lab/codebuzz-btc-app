@@ -36,7 +36,6 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
    const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
    const route = useRoute<OTPVerificationScreenRouteProp>();
    const { email, type, user, token, fromLogin } = route.params;
-  const { login } = useAuth();
  
    const handleVerifyOTP = async () => {
      // Reset errors
@@ -48,9 +47,8 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
        return;
      }
 
-     // TEMPORARY: Accept 4-digit OTP for development
-     if (otp.length < 4) {
-       setOtpError(type === 'email_verification' ? 'Please enter a valid 4-digit OTP (Development Mode)' : 'Please enter a valid reset token');
+     if (otp.length < 6) {
+       setOtpError(type === 'email_verification' ? 'Please enter a valid 6-digit OTP' : 'Please enter a valid reset token');
        return;
      }
 
@@ -157,11 +155,11 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
              {/* Title */}
              <View style={styles.titleContainer}>
                <Text style={styles.title}>
-                 {type === 'email_verification' ? 'VERIFY EMAIL (DEV MODE)' : 'VERIFY OTP'}
+                 {type === 'email_verification' ? 'VERIFY EMAIL' : 'VERIFY OTP'}
                </Text>
                <Text style={styles.subtitle}>
                  {type === 'email_verification'
-                   ? `Enter any 4-digit number (Development Mode)`
+                   ? `Enter the 6-digit OTP`
                    : `Check your email (${email}) for the reset password otp`
                  }
                </Text>
@@ -192,7 +190,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
                                          />
                    <TextInput
                      style={styles.input}
-                     placeholder={type === 'email_verification' ? '4-Digit OTP (Dev Mode)' : 'OTP'}
+                     placeholder={type === 'email_verification' ? '6-Digit OTP' : 'OTP'}
                      placeholderTextColor="#8a8a8a"
                      value={otp}
                      onChangeText={(text) => {
