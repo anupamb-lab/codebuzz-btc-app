@@ -21,6 +21,7 @@ import BackgroundWrapper from '../components/BackgroundWrapper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import LottieView from 'lottie-react-native';
+import { useAuth } from '../auth/AuthProvider';
 
 interface ChangePasswordScreenProps {}
 
@@ -34,6 +35,8 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
   const [isLoading, setIsLoading] = useState(false);
   const route = useRoute();
   const { email, resetToken } = route.params as { email: string; resetToken: string };
+
+  const { user, logout } = useAuth();
 
   const navigation = useNavigation<ChangePasswordNavigationProp>();
 
@@ -74,20 +77,10 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
       // In production, this would come from the email link
       let actualResetToken = resetToken;
 
-      // If user entered a simple code like "1234", we'll use a mock token for testing
-      if (resetToken === 'demo' || resetToken === '1234' || resetToken.length < 10) {
-        // Generate a mock reset token for testing
-        actualResetToken = 'mock_reset_token_for_testing_' + Date.now();
-        console.log('Using mock reset token for testing:', actualResetToken);
-      }
-
-      console.log('Making password reset API call...');
-      console.log('Reset token:', actualResetToken);
-      console.log('New password:', password);
-      console.log('API URL:', `${API_BASE_URL}/api/auth/resetpassword/${actualResetToken}`);
+      console.log('API URL:', `${API_BASE_URL}/api/auth/resetpassword/${email}`);
 
       // Make actual API call to reset password
-      const response = await fetch(`${API_BASE_URL}/api/auth/resetpassword/${actualResetToken}`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resetpassword/${email}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,47 +92,24 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = () => {
       console.log('API Response:', data);
 
       if (response.ok && data.success) {
-        Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
-          {
-            text: 'OK',
-            onPress: () => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            }),
-          },
-        ]);
-      } else {
-        // For testing purposes, if the mock token fails, let's try a direct database update approach
-        if (actualResetToken.includes('mock_reset_token')) {
-          console.log('Mock token failed, trying alternative approach...');
 
-          // Try to update password directly using email
-          const directUpdateResponse = await fetch(`${API_BASE_URL}/api/auth/update-password-direct`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+        Alert.alert(
+          'Success',
+          'Password changed successfully! You can now login with your new password.',
+          [
+            {
+              text: 'OK',
+              onPress: async () => {
+                await logout();
+
+                navigation.replace('Login')
+              },
             },
-            body: JSON.stringify({ email, password }),
-          });
+          ]
+        );
+      } else {
 
-          if (directUpdateResponse.ok) {
-            const directData = await directUpdateResponse.json();
-            if (directData.success) {
-              Alert.alert('Success', 'Password changed successfully! You can now login with your new password.', [
-                {
-                  text: 'OK',
-                  onPress: () => navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Login' }],
-                }),
-                },
-              ]);
-              return;
-            }
-          }
-        }
-
-        Alert.alert('Error', data.message || 'Failed to reset password. Please try the forgot password flow again.');
+        Alert.alert('Error', data.message);
       }
     } catch (error: any) {
       console.error('Reset password error:', error);

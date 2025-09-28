@@ -54,53 +54,42 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
 
      setIsLoading(true);
 
-     try {
-       if (type === 'email_verification') {
-         // Email verification flow - actual API call
-         try {
-           const data = await apiRequest(`${API_ENDPOINTS.VERIFY_EMAIL_OTP}/${otp}/${encodeURIComponent(email)}`, {
-             method: 'GET',
-           });
+    try {
+      const data = await apiRequest(`${API_ENDPOINTS.VERIFY_EMAIL_OTP}/${otp}/${encodeURIComponent(email)}`, {
+        method: 'GET',
+      });
 
-           if (data.success) {
-             Alert.alert('Email Verified', 'Your email has been verified successfully!', [
-               {
-                 text: 'OK',
-                 onPress: () => {
-                   console.log('Email verification success, navigating to ReferralScreen');
-                   console.log('User data:', user || data.user);
-                   console.log('Token:', token);
-                   console.log('FromLogin:', fromLogin);
+      if (data.success) {
 
-                   // Always redirect to ReferralScreen for both login and signup
-                   navigation.replace('ReferralScreen', {
-                     user: user || data.user,
-                     token: token || data.token || '',
-                     fromLogin: fromLogin || false
-                   });
-                 },
-               },
-             ]);
-           } else {
-             setOtpError(data.message || 'Invalid verification code');
-           }
-         } catch (error: any) {
-           setOtpError(error.message || 'Verification failed. Please try again.');
-         }
-       } else {
-         // Forgot password flow
-         await new Promise(resolve => setTimeout(resolve, 1000));
+        Alert.alert('Email Verified', 'Your email has been verified successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              console.log('Email verification success, navigating to ReferralScreen');
+              console.log('User data:', user || data.user);
+              console.log('Token:', token);
+              console.log('FromLogin:', fromLogin);
 
-         Alert.alert('Token Verified', 'Reset token verified successfully', [
-           {
-             text: 'OK',
-             onPress: () => navigation.navigate('ChangePassword', { email, resetToken: otp }),
-           },
-         ]);
-       }
-     } catch (error) {
-       Alert.alert('Error', 'Network error. Please try again.');
-     } finally {
+              if (type === 'email_verification') {
+              navigation.replace('ReferralScreen', {
+                user: user || data.user,
+                token: token || data.token || '',
+                fromLogin: fromLogin || false
+              });
+              } else {
+              navigation.replace('ChangePassword', { email, resetToken: otp });
+              }
+              
+            },
+          },
+        ]);
+      } else {
+        setOtpError(data.message || 'Invalid verification code');
+      }
+    } catch (error: any) {
+      setOtpError(error.message || 'Verification failed. Please try again.');
+    }
+      finally {
        setIsLoading(false);
      }
    };
@@ -160,7 +149,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
                <Text style={styles.subtitle}>
                  {type === 'email_verification'
                    ? `Enter the 6-digit OTP`
-                   : `Check your email (${email}) for the reset password otp`
+                   : `Check your email for the reset password otp`
                  }
                </Text>
              </View>
@@ -232,7 +221,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
  
                {/* Back to Login */}
                <View style={styles.backContainer}>
-                 <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
+                 <TouchableOpacity onPress={() => navigation.replace('Login')}>
                    <Text style={styles.backText}>Back to Login</Text>
                  </TouchableOpacity>
                </View>

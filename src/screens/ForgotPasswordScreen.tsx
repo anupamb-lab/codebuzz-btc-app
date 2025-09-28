@@ -57,50 +57,33 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
     setIsLoading(true);
 
     try {
-      // Skip actual email API call for demo purposes since email is not configured
-      // In production, this would make the actual API call to send reset email
-      console.log('Skipping email API call for demo purposes');
       console.log('Email:', email);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Always show success for demo purposes
-      Alert.alert(
-        'Reset Code Sent',
-        'For demo purposes, you can use any 4+ digit code (like "1234") in the next screen to proceed with password reset.',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('OTPVerification', { email, type: 'forgot_password' }),
-          },
-        ]
-      );
-
-      // Optional: Try to make API call in background without waiting for response
-      // This won't block the UI but will still attempt to send email if server is configured
-      apiRequest(API_ENDPOINTS.FORGOT_PASSWORD, {
+      const data = await apiRequest(API_ENDPOINTS.FORGOT_PASSWORD, {
         method: 'POST',
         body: JSON.stringify({ email }),
-      }).then(data => {
-        console.log('Background email API response:', data);
-      }).catch(error => {
-        console.log('Background email API error (ignored):', error.message);
       });
 
-    } catch (error: any) {
-      // Even if there's an error, proceed to OTP screen for demo purposes
-      console.log('Error in forgot password flow (proceeding anyway):', error);
-      Alert.alert(
-        'Proceeding with Demo',
-        'For demo purposes, you can use any 4+ digit code (like "1234") in the next screen.',
-        [
+      setIsLoading(false);
+
+      if (data.success) {
+        Alert.alert('Success', 'Account created successfully! Please verify your email.', [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('OTPVerification', { email, type: 'forgot_password' }),
+            onPress: () => navigation.replace('OTPVerification', {
+              email: email.toLowerCase(),
+              type: 'forgot_password',
+              user: data.user,
+              token: data.token
+            }),
           },
-        ]
-      );
+        ]);
+      } else {
+        Alert.alert('Error', data.message || 'Reset Password failed');
+      }
+
+    } catch (error: any) {
+      console.log('Error in forgot password flow (proceeding anyway):', error);
     } finally {
       setIsLoading(false);
     }
@@ -211,12 +194,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
                 </LinearGradient>
               </TouchableOpacity>
 
-              {/* Back to Login */}
-              {/* <View style={styles.backContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Text style={styles.backText}>Back to Login</Text>
-                </TouchableOpacity>
-              </View> */}
             </View>
 
               </LinearGradient>
