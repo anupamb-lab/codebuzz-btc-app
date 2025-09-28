@@ -77,8 +77,7 @@ const MyProfileScreen = () => {
         <TouchableOpacity
           style={styles.row}
           onPress={() => {
-            // TODO: Implement UpdateEmail screen
-            console.log('Update Email clicked');
+            navigation.navigate('UpdateEmail');
           }}
         >
           <View style={styles.rowLine} />

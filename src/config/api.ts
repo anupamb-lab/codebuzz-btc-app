@@ -62,6 +62,8 @@ export const API_ENDPOINTS = {
   VERIFY_EMAIL: '/api/auth/verify-email', // GET /api/auth/verify-email/:token
   VERIFY_EMAIL_OTP: '/api/auth/verify-email-otp', // GET /api/auth/verify-email-otp/:otp
   RESEND_VERIFICATION: '/api/auth/resend-verification',
+  UPDATE_EMAIL_OTP: '/api/auth/update-email-otp',
+  UPDATE_EMAIL: '/api/auth/update-email',
   
   // Health Check
   HEALTH: '/api/health',

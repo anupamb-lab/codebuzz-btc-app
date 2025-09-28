@@ -18,7 +18,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
-import { useAuth } from '../auth/AuthProvider';
 import { apiRequest, API_ENDPOINTS } from '../config/api';
 import { Image } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
@@ -38,6 +37,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
    const { email, type, user, token, fromLogin } = route.params;
  
    const handleVerifyOTP = async () => {
+
      // Reset errors
      setOtpError('');
 
@@ -55,6 +55,32 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
      setIsLoading(true);
 
     try {
+
+      if (type === 'update_email') {
+        const data = await apiRequest(`${API_ENDPOINTS.UPDATE_EMAIL}`, {
+          method: 'POST',
+          body: JSON.stringify({ 
+            email: user?.email ?? "", 
+            new_email: email,
+            otp: otp
+          }),
+        });
+
+        if (data.success) {
+
+          Alert.alert('Email Changed', 'Your email has been changed successfully!', [{
+            text: 'OK',
+            onPress: () => {
+
+              navigation.replace('Main');
+              
+            },
+          },]);
+        }
+
+        return;
+      }
+
       const data = await apiRequest(`${API_ENDPOINTS.VERIFY_EMAIL_OTP}/${otp}/${encodeURIComponent(email)}`, {
         method: 'GET',
       });
@@ -71,13 +97,14 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = () => {
               console.log('FromLogin:', fromLogin);
 
               if (type === 'email_verification') {
-              navigation.replace('ReferralScreen', {
-                user: user || data.user,
-                token: token || data.token || '',
-                fromLogin: fromLogin || false
-              });
-              } else {
-              navigation.replace('ChangePassword', { email, resetToken: otp });
+                navigation.replace('ReferralScreen', {
+                  user: user || data.user,
+                  token: token || data.token || '',
+                  fromLogin: fromLogin || false
+                });
+              } 
+                else {
+                navigation.replace('ChangePassword', { email, resetToken: otp });
               }
               
             },

@@ -5,7 +5,7 @@ export type RootStackParamList = {
   ForgotPassword: {screen_heading: string};
   OTPVerification: {
     email: string;
-    type: 'forgot_password' | 'email_verification';
+    type: 'forgot_password' | 'email_verification' | 'update_email';
     user?: any;
     token?: string;
     fromLogin?: boolean;

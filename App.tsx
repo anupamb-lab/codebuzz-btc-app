@@ -41,6 +41,7 @@ import BalanceHistoryScreen from './src/screens/BalanceHistoryScreen';
 import { HashPowerProvider } from "./src/stores/HashPowerStore";
 
 import messaging from '@react-native-firebase/messaging';
+import UpdateEmailScreen from './src/screens/UpdateEmailScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -79,6 +80,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <RootStack.Screen name="OTPVerification" component={OTPVerificationScreen} />
         <RootStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+        <RootStack.Screen name="UpdateEmail" component={UpdateEmailScreen} />
         <RootStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <RootStack.Screen name="ReferralScreen" component={ReferralScreen} />
         </>
