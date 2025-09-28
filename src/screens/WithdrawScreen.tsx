@@ -64,7 +64,7 @@ const WithdrawScreen = ({ navigation }: any) => {
       const res = await fetch(url);
       const data = await res.json();
 
-      console.log("User Balance: ", data);
+      // console.log("User Balance: ", data);
 
       if (res.ok && data.balance) {
         let usdValue = parseFloat(data.balance.USD ?? "0");
@@ -95,7 +95,7 @@ const WithdrawScreen = ({ navigation }: any) => {
           usdValue += btcDepVal * btc_price;
         }
 
-        console.log("User Balance - USDValue: ", usdValue);
+        // console.log("User Balance - USDValue: ", usdValue);
 
         setBalanceUSD(usdValue);
       }

@@ -990,7 +990,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   activitySection: {
-    marginBottom: Platform.OS === 'ios' ? 65 : 50,
+    marginBottom: Platform.OS === 'ios' ? 65 : 110,
   },
   emptyActivity: {
     backgroundColor: '#1F2937',
