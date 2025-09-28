@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -84,8 +84,12 @@ const Page: React.FC = () => {
 
   interface Activity {
     type: string;
-    amount: number;
+    method: string;
+    amount: string;
+    amountNumeric?: { $numberDecimal: string };
     crypto: string;
+    date: string;
+    isPositive: boolean;
   }
 
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
@@ -196,6 +200,7 @@ const Page: React.FC = () => {
         }
 
         await fetchBalance();
+        await fetchTransactions();
       } catch (e) {
         console.error("Error loading mining state", e);
       }
@@ -291,6 +296,37 @@ const Page: React.FC = () => {
   // -----------------------------
   // API Calls
   // -----------------------------
+
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const res = await fetch(`${get_data_uri('GET_RECENT_TRANSACTIONS')}/${user.id}`);
+      const data = await res.json();
+
+      console.log("RecentTransactions - RAW: ", res);
+      console.log("RecentTransactions - RESPONSE: ", data);
+
+      if (res.ok && Array.isArray(data.transactions)) {
+        const txns: Activity[] = data.transactions.map((txn: any) => ({
+          type: txn.type,
+          method: txn.method,
+          date: txn.date,
+          amount: txn.amount,
+          amountNumeric: txn.amountNumeric,
+          isPositive: parseFloat(txn.amountNumeric?.$numberDecimal ?? '0') >= 0,
+        }));
+
+        // console.log("TXNs: ", txns);
+
+        setRecentActivityList(txns);
+      } else {
+        setRecentActivityList([]);
+      }
+    } catch (err) {
+      console.error("Error fetching RecentTransactions:", err);
+      setRecentActivityList([]);
+    }
+  }, [user?.id]);
+
   const fetchBalance = async () => {
     try {
     const fetch_balance_uri = `${get_data_uri(
@@ -329,7 +365,7 @@ const Page: React.FC = () => {
     } finally {
     setLoadingBalance(false);
     }
-};
+  };
 
     const blinkAnim = useRef(new Animated.Value(0)).current;
 
@@ -659,14 +695,13 @@ const Page: React.FC = () => {
             <View style={styles.activityList}>
               {recent_activity_list.map((activity, index) => (
                 <View key={index} style={styles.activityItem}>
-                  <View style={styles.activityIcon}>
-                    <Icon name="bitcoin" size={20} color="#F59E0B" />
-                  </View>
                   <View style={styles.activityDetails}>
                     <Text style={styles.activityType}>{activity.type}</Text>
-                    <Text style={styles.activityCrypto}>{activity.crypto}</Text>
+                    <Text style={styles.activityCrypto}>{activity.method} - {activity.amount}</Text>
                   </View>
-                  <Text style={styles.activityAmount}>+${activity.amount.toFixed(2)}</Text>
+                  <Text style={styles.activityAmount}>
+                    {activity.isPositive ? "+" : "-"}${parseFloat(activity.amountNumeric?.$numberDecimal ?? "0").toFixed(2)}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -1041,7 +1076,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   activityCrypto: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#94A3B8',
   },
   activityAmount: {

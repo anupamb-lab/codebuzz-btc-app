@@ -22,6 +22,7 @@ export const API_BASE_URL = PRODUCTION_API_URL;
 export const DATA_ENDPOINTS = {
   CREATE_WITHDRAWAL: "/api/withdrawals",
   GET_TRANSACTIONS: "/api/transactions/all",
+  GET_RECENT_TRANSACTIONS: "/api/transactions/last7days",
   GET_BALANCE_HISTORY: "/api/wallet/history",
   SET_WALLET_BALANCE: '/api/wallet/balance',
   GET_WALLET_BALANCE: '/api/wallet/balance',

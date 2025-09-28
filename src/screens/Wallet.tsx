@@ -23,6 +23,7 @@ interface Transaction {
   type: string;
   method: string;
   date: string;
+  amount: string;
   amountNumeric?: { $numberDecimal: string };
   isPositive: boolean;
 }
