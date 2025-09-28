@@ -18,13 +18,13 @@ import { Platform } from 'react-native';
 // Testing purpose
 
 const AD_UNIT_ID = Platform.select({
-  ios: 'ca-app-pub-3940256099942544/1712485313',
-  android: 'ca-app-pub-3940256099942544/5224354917',
+  ios: 'ca-app-pub-9138199693214957/9133232797',
+  android: 'ca-app-pub-9138199693214957/5211655924',
 });
 
 const HOMEBANNER_AD_UNIT_ID = Platform.select({
-  ios: 'ca-app-pub-3940256099942544/2934735716',
-  android: 'ca-app-pub-3940256099942544/6300978111',
+  ios: 'ca-app-pub-9138199693214957/1972928079',
+  android: 'ca-app-pub-9138199693214957/6069958941',
 });
 
 type Props = { onReward?: (amount: number, type: string) => void };

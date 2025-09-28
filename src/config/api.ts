@@ -38,6 +38,7 @@ export const DATA_ENDPOINTS = {
   REFERRALS: '/api/referrals',
   CREATE_FCM: '/api/firebase_tokens/create',
   PROCESS_SPEED_TRANSACTION: '/api/lightning-handles/pay-invoice',
+  GOOGLE_ADS_IDS: '/api/google-ads/ids',
 
   NOTIFICATION_PREFS: '/api/notification-preferences',
 } as const;
