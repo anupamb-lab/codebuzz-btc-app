@@ -17,29 +17,70 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
-import { apiRequest, API_ENDPOINTS } from '../config/api';
+import { apiRequest, API_ENDPOINTS, get_data_uri } from '../config/api';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LottieView from 'lottie-react-native';
+import { useAuth } from '../auth/AuthProvider';
 
-interface ForgotPasswordScreenProps {}
+interface TwoFactorLoginScreenProps {}
 
-type ForgotPasswordScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ForgotPassword'>;
+type TwoFactorLoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'TwoFactorLoginScreen'>;
 
-const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
+const TwoFactorLoginScreen: React.FC<TwoFactorLoginScreenProps> = () => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
-
+  const navigation = useNavigation<TwoFactorLoginScreenNavigationProp>();
+  
   const route = useRoute();
-  const { screen_heading } = route.params as { screen_heading: string; };
+
+    const routeParams = route.params as { token?: string; user?: any; fromLogin?: boolean } | undefined;
+    const { token = '', user = null, fromLogin = false } = routeParams || {};
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleSendCode = async () => {
+    async function SendTwoFaOTP() {
+        try {
+
+        console.log("Handling TwoFactorAuth - USER: ", user);
+
+        const response = await fetch(API_ENDPOINTS.TWOFACTOROTP, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            user_id: user?.id
+            }),
+        });
+
+        console.log("Handling TwoFactorAuth - Response: ", response);
+
+        const data = await response.json();
+
+        console.log("Handling TwoFactorAuth - ResponseData: ", data);
+
+        if (!response.ok) {
+            Alert.alert("Error", data.message || "Unable to send OTP.");
+            return;
+        }
+
+        Alert.alert("Success", data.message || "Please Check Your Email for OTP.");
+
+        return data;
+        } catch (error: any) {
+        console.error("Delete error:", error);
+        Alert.alert("Error", error.message || "Something went wrong while deleting.");
+        }
+    }
+
+  const handleTwoFaOTP = async () => {
+
+    await SendTwoFaOTP();
+
     // Reset errors
     setEmailError('');
 
@@ -57,33 +98,32 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
     setIsLoading(true);
 
     try {
-      console.log('Email:', email);
+        console.log("Handling TwoFactorAuth - OTP: ", email);
 
-      const data = await apiRequest(API_ENDPOINTS.FORGOT_PASSWORD, {
+      const data = await apiRequest(API_ENDPOINTS.VERIFYTWOFACTOROTP, {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ otp: email }),
       });
+
+      console.log("Handling TwoFactorAuth - VerifyTwoFAOTP Response: ", data);
 
       setIsLoading(false);
 
+      console.log("Handling TwoFactorAuth - token: ", token);
+      console.log("Handling TwoFactorAuth - USER (again): ", user);
+
       if (data.success) {
-        Alert.alert('Success', 'Please verify your email to change password.', [
-          {
-            text: 'OK',
-            onPress: () => navigation.replace('OTPVerification', {
-              email: email.toLowerCase(),
-              type: 'forgot_password',
-              user: data.user,
-              token: data.token
-            }),
-          },
-        ]);
+        navigation.replace('ReferralScreen', {
+            token: token,
+            user: user,
+            fromLogin: false
+        });
       } else {
-        Alert.alert('Error', data.message || 'Reset Password failed');
+        Alert.alert('Error', data.message || 'Two Factor Auth Failed');
       }
 
     } catch (error: any) {
-      console.log('Error in forgot password flow (proceeding anyway):', error);
+      console.log('Error in two factor flow:', error);
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +170,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
 
               {/* Title */}
               <View style={styles.titleContainer}>
-                <Text style={styles.title}>{screen_heading}</Text>
+                <Text style={styles.title}>Two Factor Authentication</Text>
               </View>
 
             </View>
@@ -157,7 +197,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
                       />
                       <TextInput
                         style={styles.input}
-                        placeholder="EMAIL"
+                        placeholder="EMAIL OTP"
                         placeholderTextColor="#aaaaaa"
                         value={email}
                         onChangeText={(text) => {
@@ -178,7 +218,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = () => {
 
               <TouchableOpacity 
                 style={styles.loginButton} 
-                onPress={handleSendCode} 
+                onPress={handleTwoFaOTP} 
                 disabled={isLoading}
                 activeOpacity={0.8}
               >
@@ -399,4 +439,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ForgotPasswordScreen;
+export default TwoFactorLoginScreen;

@@ -41,4 +41,5 @@ export type RootStackParamList = {
   DailyRewardsScreen: undefined;
   CryptoDepositScreen: {amount: any, currency: string, notes: string};
   BalanceHistoryScreen: undefined;
+  TwoFactorLoginScreen: {token: string;user: any; fromLogin?: boolean; };
 };

@@ -68,6 +68,8 @@ export const API_ENDPOINTS = {
   RESEND_VERIFICATION: '/api/auth/resend-verification',
   UPDATE_EMAIL_OTP: '/api/auth/update-email-otp',
   UPDATE_EMAIL: '/api/auth/update-email',
+  TWOFACTOROTP: '/api/auth/two-factor-otp',
+  VERIFYTWOFACTOROTP: '/api/auth/verify-twofactorotp',
   
   // Health Check
   HEALTH: '/api/health',

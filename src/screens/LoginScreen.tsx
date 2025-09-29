@@ -97,8 +97,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
         console.log("Login Success Data: ", data);
 
         // Check if user's email is verified
-        if (data.user && data.user.emailVerified) {
-          // Email verified - authenticate user and go to referral screen
+        if (data.user && data.user.emailVerified && !data.user.twofactor) {
           await login(data.token, data.user);
           navigation.replace('ReferralScreen', {
                 token: data?.token,
@@ -106,8 +105,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
                 fromLogin: false
               });
         } else {
-          // Email not verified - go to TwofactorOTP (or dashboard based on your preference)
-          navigation.replace('TwofactorOTP', {
+          navigation.replace('TwoFactorLoginScreen', {
             token: data.token,
             user: data.user,
           });
