@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,9 @@ import { RootStackParamList } from '../components/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
+import axios from 'axios';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'TwoFactorScreen'>;
 
@@ -21,17 +24,65 @@ const TwoFactorScreen = () => {
  const navigation = useNavigation<NavigationProp>();
 
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleToggle2FA = () => {
-    const newStatus = !is2FAEnabled;
-    setIs2FAEnabled(newStatus);
-    Alert.alert(
-      'Two-Factor Authentication',
-      newStatus ? '2FA has been enabled.' : '2FA has been disabled.'
-    );
+  const { user } = useAuth();
 
-    navigation.goBack();
-  };
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchTwoFaStatus = async () => {
+      try {
+        const response = await axios.get(
+          `${get_data_uri('TWOFACTORSTATUS')}/${user.id}`
+        );
+
+        console.log("User2FA - Response: ", response);
+        console.log("User2FA - ResponseData: ", response.data);
+
+        setIs2FAEnabled(response.data.twoFactorStatus);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load 2FA data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTwoFaStatus();
+  }, [user]);
+
+  async function handleToggle2FA() {
+    if (!user?.id) return;
+
+    try {
+      const switch_twofa_uri = get_data_uri("CHANGETWOFACTORSTATUS");
+
+      const response = await fetch(switch_twofa_uri, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIs2FAEnabled(data.twoFactorStatus);
+        Alert.alert('Two-Factor Authentication', '2FA status has been changed.');
+      } else {
+        Alert.alert('Error', data?.message || 'Failed to change 2FA status.');
+      }
+
+    } catch (error: any) {
+      console.error("Toggle 2FA error:", error);
+      Alert.alert("Error", error.message || "Something went wrong while changing 2FA.");
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
