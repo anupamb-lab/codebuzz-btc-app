@@ -31,23 +31,34 @@ const TwoFactorLoginScreen: React.FC<TwoFactorLoginScreenProps> = () => {
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<TwoFactorLoginScreenNavigationProp>();
+  const { login } = useAuth();
   
   const route = useRoute();
 
     const routeParams = route.params as { token?: string; user?: any; fromLogin?: boolean } | undefined;
     const { token = '', user = null, fromLogin = false } = routeParams || {};
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+    React.useEffect(() => {
+
+
+        async function SendOTP() {
+            await SendTwoFaOTP();
+        }
+  
+        SendOTP();
+
+    }, [user]);
 
     async function SendTwoFaOTP() {
         try {
 
-        console.log("Handling TwoFactorAuth - USER: ", user);
+        // console.log("Handling TwoFactorAuth - USER: ", user);
 
-        const response = await fetch(API_ENDPOINTS.TWOFACTOROTP, {
+        const final_uri = `https://dashboard.bitplaypro.com/mobile_api${API_ENDPOINTS.TWOFACTOROTP}`
+
+        // console.log("Handling TwoFactorAuth - URI: ", final_uri);
+
+        const response = await fetch(final_uri, {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
@@ -57,11 +68,9 @@ const TwoFactorLoginScreen: React.FC<TwoFactorLoginScreenProps> = () => {
             }),
         });
 
-        console.log("Handling TwoFactorAuth - Response: ", response);
-
         const data = await response.json();
 
-        console.log("Handling TwoFactorAuth - ResponseData: ", data);
+        // console.log("Handling TwoFactorAuth - ResponseData: ", data);
 
         if (!response.ok) {
             Alert.alert("Error", data.message || "Unable to send OTP.");
@@ -79,8 +88,6 @@ const TwoFactorLoginScreen: React.FC<TwoFactorLoginScreenProps> = () => {
 
   const handleTwoFaOTP = async () => {
 
-    await SendTwoFaOTP();
-
     // Reset errors
     setEmailError('');
 
@@ -90,29 +97,38 @@ const TwoFactorLoginScreen: React.FC<TwoFactorLoginScreenProps> = () => {
       return;
     }
 
-    if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-        console.log("Handling TwoFactorAuth - OTP: ", email);
+        // console.log("Handling TwoFactorAuth - OTP: ", email);
 
-      const data = await apiRequest(API_ENDPOINTS.VERIFYTWOFACTOROTP, {
-        method: 'POST',
-        body: JSON.stringify({ otp: email }),
-      });
+        const final_verify_uri = `https://dashboard.bitplaypro.com/mobile_api${API_ENDPOINTS.VERIFYTWOFACTOROTP}`
 
-      console.log("Handling TwoFactorAuth - VerifyTwoFAOTP Response: ", data);
+        console.log("Handling TwoFactorAuth - VerifyTwoFAOTP URI: ", final_verify_uri);
+
+        const response = await fetch(final_verify_uri, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            otp: email
+            }),
+        });
+
+    //   console.log("Handling TwoFactorAuth - VerifyTwoFAOTP Response: ", response);
+
+      const data = await response.json();
+
+    //   console.log("Handling TwoFactorAuth - VerifyTwoFAOTP Response DATA: ", data);
 
       setIsLoading(false);
 
-      console.log("Handling TwoFactorAuth - token: ", token);
-      console.log("Handling TwoFactorAuth - USER (again): ", user);
+    //   console.log("Handling TwoFactorAuth - token: ", token);
+    //   console.log("Handling TwoFactorAuth - USER (again): ", user);
 
       if (data.success) {
+        await login(token, user);
         navigation.replace('ReferralScreen', {
             token: token,
             user: user,
