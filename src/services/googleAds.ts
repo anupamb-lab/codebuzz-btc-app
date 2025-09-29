@@ -1,14 +1,11 @@
 import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
-import { Alert, Button } from 'react-native';
+import { Alert, Button, Platform } from 'react-native';
 import {
   RewardedAd,
   RewardedAdEventType,
   AdEventType,
-  TestIds,
 } from 'react-native-google-mobile-ads';
 import { useEffect, useState, useCallback } from 'react';
-import { Platform } from 'react-native';
-import { useAdConfig } from '../providers/AdConfigProvider';
 
 // Real ones
 
@@ -17,10 +14,16 @@ import { useAdConfig } from '../providers/AdConfigProvider';
 // const HOMEBANNER_AD_UNIT_ID = 'ca-app-pub-9138199693214957/6069958941';
 
 // Testing purpose
-const { ads } = useAdConfig();
 
-const AD_UNIT_ID = ads.rewardedVideoId;
-const HOMEBANNER_AD_UNIT_ID = ads.homeBannerId;
+const AD_UNIT_ID = Platform.select({
+  ios: 'ca-app-pub-3940256099942544/1712485313',
+  android: 'ca-app-pub-3940256099942544/5224354917',
+});
+
+const HOMEBANNER_AD_UNIT_ID = Platform.select({
+  ios: 'ca-app-pub-3940256099942544/2934735716',
+  android: 'ca-app-pub-3940256099942544/6300978111',
+});
 
 
 type Props = { onReward?: (amount: number, type: string) => void };

@@ -1680,7 +1680,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-mmkv (3.3.1):
+  - react-native-mmkv (3.3.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2405,6 +2405,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNDeviceInfo (14.1.1):
+    - React-Core
   - RNFBApp (19.3.0):
     - Firebase/CoreOnly (= 10.24.0)
     - React-Core
@@ -2848,6 +2850,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
@@ -3037,6 +3040,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCPicker:
     :path: "../node_modules/@react-native-picker/picker"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -3116,7 +3121,7 @@ SPEC CHECKSUMS:
   React-logger: dce52a571ba0e0149c3f0fcc6866cbc0c8552c5e
   React-Mapbuffer: 76072e5b6c9a87feb966d10541ea93128a687426
   React-microtasksnativemodule: 8a618d00d17b33616f57255ce85af4e5342ecef9
-  react-native-mmkv: 520b5f2d9b840709f48ef50ffef58953b7a22e5b
+  react-native-mmkv: 7b65e528e3dfb2625f48ed572869d47d3bbed9d7
   react-native-safe-area-context: 8fc7b585e3c4cd71d05afe8c4014bb9ab8509c2c
   react-native-video: 662b09864f57c6419bed4fb65009399934ba8a2c
   React-NativeModulesApple: 75a0b85e1c8b73bf5b1bddf9b2f818fadeb64f3a
@@ -3153,6 +3158,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: bc0bcc5d55f2553c7c3fab5175dea5031ea30c0a
   RNCClipboard: b7818eb063eae5e67f1010fa6704d95d61fd9939
   RNCPicker: cddf7a7d94a116dad081e45a40d8f9a3a9125cc6
+  RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
   RNFBApp: 4097f75673f8b42a7cd1ba17e6ea85a94b45e4d1
   RNFBAuth: f125fbb39e9e8781478f1e19602bf428b2928a19
   RNFBMessaging: 92325b0d5619ac90ef023a23cfd16fd3b91d0a88

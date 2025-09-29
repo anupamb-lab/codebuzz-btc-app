@@ -9,10 +9,13 @@ import {
   Dimensions,
   ImageBackground,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { get_data_uri } from '../config/api';
+import { useAuth } from '../auth/AuthProvider';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +32,43 @@ const reasons = [
 const DeleteAccountScreen = () => {
   const navigation = useNavigation();
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  
+  async function handleDelete() {
+    try {
+      const delete_req_uri = get_data_uri("DELETE_REQ");
+
+      const response = await fetch(delete_req_uri, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          reason: selectedReason
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Error", data.message || "Delete request failed.");
+        return;
+      }
+
+      if (data.message?.toLowerCase().includes("already exists")) {
+        Alert.alert("Notice", data.message);
+      } else {
+        Alert.alert("Success", data.message || "Delete request created successfully.");
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error("Delete error:", error);
+      Alert.alert("Error", error.message || "Something went wrong while deleting.");
+    }
+  }
 
   return (
     <ImageBackground
@@ -77,6 +117,7 @@ const DeleteAccountScreen = () => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={{ borderRadius: 12, overflow: "hidden", marginTop: 20 }}
+                onPress={handleDelete}
               >
                 <LinearGradient
                   colors={['#EE5F22', '#D20BBE']}

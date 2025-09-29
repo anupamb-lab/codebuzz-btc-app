@@ -39,6 +39,7 @@ export const DATA_ENDPOINTS = {
   CREATE_FCM: '/api/firebase_tokens/create',
   PROCESS_SPEED_TRANSACTION: '/api/lightning-handles/pay-invoice',
   GOOGLE_ADS_IDS: '/api/google-ads/ids',
+  DELETE_REQ: '/api/delete-handles/create',
 
   NOTIFICATION_PREFS: '/api/notification-preferences',
 } as const;
