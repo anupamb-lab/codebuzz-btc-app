@@ -96,6 +96,11 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
       if (data.success) {
         console.log("Login Success Data: ", data);
 
+        if (!data.user.isActive) {
+          Alert.alert('Error', 'Your account is not active, please contact the admin');
+          return;
+        }
+
         // Check if user's email is verified
         if (data.user && data.user.emailVerified && !data.user.twofactor) {
           await login(data.token, data.user);
@@ -115,14 +120,14 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
         // Check if email verification is required (status 403)
         if (data.emailVerified === false && data.user) {
+          Alert.alert('Error', 'User Email Not Verified');
           console.log("Redirecting to email verification screen");
-          // Direct redirect to email verification screen without alert
-          navigation.replace('OTPVerification', {
-            email: email.toLowerCase(),
-            type: 'email_verification',
-            user: data.user,
-            fromLogin: true
-          });
+          // navigation.replace('OTPVerification', {
+          //   email: email.toLowerCase(),
+          //   type: 'email_verification',
+          //   user: data.user,
+          //   fromLogin: true
+          // });
         } else {
           Alert.alert('Error', data.message || 'Login failed');
         }
