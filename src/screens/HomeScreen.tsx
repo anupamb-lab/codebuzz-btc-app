@@ -160,9 +160,10 @@ const Page: React.FC = () => {
     setAdsWatched(newAdsCount);
 
     // update hashPower via global store
+    const updatedHashPower = hashPower + BASE_HASHPOWER_PER_AD;
     addHashPower(BASE_HASHPOWER_PER_AD);
 
-    await syncUserData();
+    await syncUserData(updatedHashPower, newAdsCount);
 
     if (!startTime) {
     const now = Date.now();
@@ -455,15 +456,18 @@ const Page: React.FC = () => {
       }
     };
 
-    const syncUserData = async () => {
+    const syncUserData = async (
+      hp?: number,
+      ads?: number
+    ) => {
       try {
         const user_mining_data = {
           user_id: user.id,
-          hashpower: hashPower,
+          hashpower: hp ?? hashPower,              
           mining_isactive: isMiningEnabled,
-          rewarded_ads_watched: adsWatched,
+          rewarded_ads_watched: ads ?? adsWatched, 
           random_ads_watched: 0
-        }
+        };
 
         const set_user_data_uri = get_data_uri("USERMININGDETAILS");
 
@@ -638,8 +642,6 @@ const Page: React.FC = () => {
             </Animated.View>
           </View>
         </View>
-
-
 
         {/* Quick Stats Cards */}
         <View style={styles.statsRow}>
