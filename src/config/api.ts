@@ -42,6 +42,7 @@ export const DATA_ENDPOINTS = {
   DELETE_REQ: '/api/delete-handles/create',
   TWOFACTORSTATUS: '/api/security/2fa-status',
   CHANGETWOFACTORSTATUS: '/api/security/switch',
+  USERMININGDETAILS: '/api/user_mining',
 
   NOTIFICATION_PREFS: '/api/notification-preferences',
 } as const;

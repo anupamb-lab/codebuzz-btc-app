@@ -201,6 +201,7 @@ const Page: React.FC = () => {
 
         await fetchBalance();
         await fetchTransactions();
+        await fetchUserDetails();
       } catch (e) {
         console.error("Error loading mining state", e);
       }
@@ -369,6 +370,45 @@ const Page: React.FC = () => {
 
     const blinkAnim = useRef(new Animated.Value(0)).current;
 
+    const fetchUserDetails = async () => {
+      try {
+      const fetch_user_details_uri = `${get_data_uri(
+          "USERMININGDETAILS"
+      )}/${user.id}`;
+
+      console.log("Fetch UserData URL: ", fetch_user_details_uri);
+
+      const res = await fetch(fetch_user_details_uri);
+      const data = await res.json();
+
+      console.log("UserData - RESPOSNE: ", res);
+      console.log("UserData - DATA: ", data);
+
+      if (res.ok) {
+        const HashPowerValue = parseFloat(
+          data.mining_details.hashpower ?? 0
+        );
+
+        const ReawrdedAdsWatched = parseFloat(
+          data.mining_details.rewarded_ads_watched ?? 0
+        );
+
+        const LastMiningState = data.mining_details.mining_isactive ?? false;
+        
+        const HashsafeVal = isNaN(HashPowerValue) ? 0 : HashPowerValue;
+        const ReawrdedAdsWatchedsafeVal = isNaN(ReawrdedAdsWatched) ? 0 : ReawrdedAdsWatched;
+        const LastMiningStatesafeVal = isNaN(LastMiningState) ? false : LastMiningState;
+
+        setHashPower(HashsafeVal);
+        setAdsWatched(ReawrdedAdsWatchedsafeVal);
+        setIsMiningEnabled(LastMiningStatesafeVal);
+      }
+      } catch (err) {
+      console.error("UserData - Error fetching UserData:", err);
+      } finally {
+      }
+    };
+
     const backgroundColor = blinkAnim.interpolate({
       inputRange: [0, 1],
       outputRange: ["#111827", "#22D3EE"], // dark -> cyan blink
@@ -412,6 +452,36 @@ const Page: React.FC = () => {
         console.error("Error syncing balance:", err);
       }
     };
+
+    const syncUserData = async () => {
+      try {
+        const user_mining_data = {
+          user_id: user.id,
+          hashpower: hashPower,
+          mining_isactive: isMiningEnabled,
+          rewarded_ads_watched: adsWatched,
+          random_ads_watched: 0
+        }
+
+        const set_user_data_uri = get_data_uri("USERMININGDETAILS");
+
+        console.log("UserData - Setting UserData: ", user_mining_data);
+
+        console.log("UserData - Setting UserData URI: ", user_mining_data);
+
+        const res = await fetch(set_user_data_uri, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(user_mining_data),
+        });
+  
+        const data = await res.json();
+        console.log("User Details - Setting Data in DB: ", balanceRef.current);
+        console.log("User Details - API RESPONSE: ", data);
+      } catch (err) {
+        console.error("Error syncing user details:", err);
+      }
+    };
   
     // Sync balance periodically (every 30s)
     useEffect(() => {
@@ -420,6 +490,11 @@ const Page: React.FC = () => {
   
     useEffect(() => {
       const syncInterval = setInterval(syncBalance, 30000);
+      return () => clearInterval(syncInterval);
+    }, []);
+
+    useEffect(() => {
+      const syncInterval = setInterval(syncUserData, 30000);
       return () => clearInterval(syncInterval);
     }, []);
   
