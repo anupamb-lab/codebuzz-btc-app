@@ -162,6 +162,8 @@ const Page: React.FC = () => {
     // update hashPower via global store
     addHashPower(BASE_HASHPOWER_PER_AD);
 
+    await syncUserData();
+
     if (!startTime) {
     const now = Date.now();
     setStartTime(now);
@@ -625,6 +627,7 @@ const Page: React.FC = () => {
                       { cancelable: false }
                     );
                   } else {
+                    syncUserData();
                     setIsMiningEnabled(false);
                     Alert.alert("Mining Disabled", "Mining has been turned off.");
                   }
