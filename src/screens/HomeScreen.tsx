@@ -163,8 +163,6 @@ const Page: React.FC = () => {
     const updatedHashPower = hashPower + BASE_HASHPOWER_PER_AD;
     addHashPower(BASE_HASHPOWER_PER_AD);
 
-    await syncUserData(updatedHashPower, newAdsCount);
-
     if (!startTime) {
     const now = Date.now();
     setStartTime(now);
@@ -172,6 +170,8 @@ const Page: React.FC = () => {
     }
 
     await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
+
+    await syncUserData(updatedHashPower, newAdsCount);
 };
 
   const { show, loading, loaded } = showRewardedAd(handleReward);
@@ -499,10 +499,10 @@ const Page: React.FC = () => {
       return () => clearInterval(syncInterval);
     }, []);
 
-    useEffect(() => {
-      const syncInterval = setInterval(syncUserData, 30000);
-      return () => clearInterval(syncInterval);
-    }, []);
+    // useEffect(() => {
+    //   const syncInterval = setInterval(syncUserData, 30000);
+    //   return () => clearInterval(syncInterval);
+    // }, []);
   
     // -----------------------------
     // Referrals

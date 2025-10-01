@@ -45,7 +45,7 @@ const DailyRewardsScreen = () => {
 
   const navigation = useNavigation<NavigationProp>();
 
-  const { hashPower, setHashPower, addHashPower } = useHashPower();
+  const { hashPower, addHashPower } = useHashPower();
 
   const { user } = useAuth();
 
@@ -70,6 +70,37 @@ const DailyRewardsScreen = () => {
     fetchRewards();
   }, []);
 
+  const syncUserData = async (
+    hp?: number,
+  ) => {
+    try {
+      const user_mining_data = {
+        user_id: user.id,
+        hashpower: hp ?? hashPower,              
+        mining_isactive: null,
+        rewarded_ads_watched: null, 
+        random_ads_watched: 0
+      };
+
+      const set_user_data_uri = get_data_uri("USERMININGDETAILS");
+
+      console.log("UserData - Setting UserData: ", user_mining_data);
+
+      console.log("UserData - Setting UserData URI: ", set_user_data_uri);
+
+      const res = await fetch(set_user_data_uri, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user_mining_data),
+      });
+
+      const data = await res.json();
+      console.log("User Details - API RESPONSE: ", data);
+    } catch (err) {
+      console.error("Error syncing user details:", err);
+    }
+  };
+
   const handleClaim = async (rewardId: string, reward_amount: any) => {
     try {
       const res = await fetch(`${API_BASE}/claim`, {
@@ -80,7 +111,11 @@ const DailyRewardsScreen = () => {
 
       const data = await res.json();
 
-      addHashPower(parseInt(reward_amount));
+      const parsed_hashpower = parseInt(reward_amount)
+
+      addHashPower(parsed_hashpower);
+
+      const updatedHashPower = hashPower + parsed_hashpower;
 
       if (data.success) {
         // Update UI
@@ -93,6 +128,7 @@ const DailyRewardsScreen = () => {
         setClaimedReward(data.reward);
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2500);
+        await syncUserData(updatedHashPower);
       } else {
         alert(data.error || "Failed to claim reward");
       }
