@@ -44,6 +44,7 @@ import messaging from '@react-native-firebase/messaging';
 import UpdateEmailScreen from './src/screens/UpdateEmailScreen';
 import { AdConfigProvider } from './src/providers/AdConfigProvider';
 import TwoFactorLoginScreen from './src/screens/TwoFactorLoginScreen';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -130,6 +131,12 @@ const App = () => {
     // Initialize social SDKs
     initializeGoogleAds();
     requestUserPermission();
+  }, []);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '1063839909090-eq6h8v5p2h8o9bj4omdj7hm0m7le0e3h.apps.googleusercontent.com',
+    });
   }, []);
 
   return (
