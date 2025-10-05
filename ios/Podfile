@@ -14,9 +14,12 @@ target 'BitPlayPro' do
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => false,
+    :fabric_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  
+  $RN_DISABLE_NEW_ARCHITECTURE = true
 
   post_install do |installer|
     react_native_post_install(installer)

@@ -33,7 +33,7 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, loginWithApple, loginWithGoogle } = useAuth();
 
   type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -348,6 +348,45 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
 
             </View>
 
+            <View style={styles.socialLoginContainer}>
+              {/* Divider */}
+              <View style={styles.dividerContainer}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or continue with</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Google Button */}
+              <TouchableOpacity
+                style={[styles.socialButtonWide, styles.googleBtn]}
+                onPress={loginWithGoogle}
+                activeOpacity={0.85}
+              >
+                <Image
+                  source={require('../assets/images/icon_google.png')}
+                  style={styles.socialIconImage}
+                  resizeMode="contain"
+                />
+                <Text style={styles.socialButtonText}>Sign in with Google</Text>
+              </TouchableOpacity>
+
+              {/* Apple Button (iOS only) */}
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  style={[styles.socialButtonWide, styles.appleBtn]}
+                  onPress={loginWithApple}
+                  activeOpacity={0.85}
+                >
+                  <Image
+                    source={require('../assets/images/icon_google.png')}
+                    style={styles.socialIconImage}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.socialButtonText}>Sign in with Apple</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
             {/* Footer */}
             <View style={styles.footer}>
               <Text style={styles.footerText}>BitPlayPro</Text>
@@ -594,7 +633,68 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
     letterSpacing: 0.5,
-  }
+  },
+  socialLoginContainer: {
+    marginTop: 25,
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  dividerText: {
+    color: '#aaaaaa',
+    fontSize: 13,
+    marginHorizontal: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+
+  socialButtonWide: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    paddingVertical: 12,
+    marginVertical: 8,
+    width: '80%',
+    alignSelf: 'center',
+  },
+
+  googleBtn: {
+    backgroundColor: '#2E3646', // matches your gradient tone
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+
+  appleBtn: {
+    backgroundColor: '#000',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+
+  socialButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '600',
+    marginLeft: 10,
+    letterSpacing: 0.3,
+  },
+
+  socialIconImage: {
+    width: 22,
+    height: 22,
+  },
 });
 
 export default LoginScreen;
