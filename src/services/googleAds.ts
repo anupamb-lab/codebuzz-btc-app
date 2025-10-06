@@ -16,12 +16,12 @@ import { useEffect, useState, useCallback } from 'react';
 // Testing purpose
 
 const AD_UNIT_ID = Platform.select({
-  ios: 'ca-app-pub-3940256099942544/1712485313',
+  ios: 'ca-app-pub-9138199693214957/9133232797',
   android: 'ca-app-pub-3940256099942544/5224354917',
 });
 
 const HOMEBANNER_AD_UNIT_ID = Platform.select({
-  ios: 'ca-app-pub-3940256099942544/2934735716',
+  ios: 'ca-app-pub-9138199693214957/1972928079',
   android: 'ca-app-pub-3940256099942544/6300978111',
 });
 
