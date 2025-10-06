@@ -76,7 +76,7 @@ const Page: React.FC = () => {
   const [isMiningEnabled, setIsMiningEnabled] = useState(false);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
 
