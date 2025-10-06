@@ -26,6 +26,17 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1063839909090-tuitpjcj2lj0qgutd2pfa9d7ttarjd43</string>
+			</array>
+		</dict>
+	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9138199693214957~5805465526</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -41,8 +52,6 @@
 	<string></string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1063839909090-tuitpjcj2lj0qgutd2pfa9d7ttarjd43</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
