@@ -311,7 +311,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                   activeOpacity={0.85}
                 >
                   <Image
-                    source={require('../assets/images/icon_google.png')}
+                    source={require('../assets/images/icon_apple.png')}
                     style={styles.socialIconImage}
                     resizeMode="contain"
                   />
