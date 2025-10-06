@@ -182,7 +182,8 @@ const Page: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        if (!user?.id) return;
+        console.log("UseEffectBlock - 1 - UserStored: ", user);
+        if (!user?.id && !user?.uid) return;
 
         const storedAds = await AsyncStorage.getItem("adsWatched");
         const storedStart = await AsyncStorage.getItem("startTime");

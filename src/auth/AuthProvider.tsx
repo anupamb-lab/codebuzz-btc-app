@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const token = await firebaseUser.getIdToken();
       const userData = {
-        uid: firebaseUser.uid,
+        id: firebaseUser.uid,
         name: firebaseUser.displayName,
         email: firebaseUser.email,
         photo: firebaseUser.photoURL,
@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const token = await firebaseUser.getIdToken();
       const userData = {
-        uid: firebaseUser.uid,
+        id: firebaseUser.uid,
         name: firebaseUser.displayName,
         email: firebaseUser.email,
         provider: 'apple',
