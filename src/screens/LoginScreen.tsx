@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     padding: 16,
-    minHeight: Platform.OS === 'ios' ? "58%" : "45%",
+    height: "100%",
   },
 
   container: {
@@ -432,7 +432,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1, 
     paddingHorizontal: 20, 
     paddingVertical: 30
   },
@@ -442,7 +441,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginTop: '1%',
-    marginBottom: '10%'
+    marginBottom: '20%'
   },
 
   bitcoinLogo: {
@@ -635,7 +634,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   socialLoginContainer: {
-    marginTop: 25,
+    paddingTop: 25,
+    paddingBottom: 25,
     alignItems: 'center',
     width: '100%',
   },
