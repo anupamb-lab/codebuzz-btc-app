@@ -1,7 +1,7 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 
-platform :ios, '15.1'
+platform :ios, '16.0'
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -14,12 +14,10 @@ target 'BitPlayPro' do
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => false,
-    :fabric_enabled => false,
+    :fabric_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  
-  $RN_DISABLE_NEW_ARCHITECTURE = true
 
   post_install do |installer|
     react_native_post_install(installer)

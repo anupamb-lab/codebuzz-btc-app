@@ -8,6 +8,14 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
  */
 const config = {
   resolver: {
+    sourceExts: [
+      'js',
+      'jsx',
+      'json',
+      'ts',
+      'tsx',
+      'cjs',
+    ],
     blockList: [
       // Exclude unnecessary directories to reduce file watchers
       /node_modules\/.*\/android\/.*/,
@@ -18,7 +26,6 @@ const config = {
       /node_modules\/.*\/examples\/.*/,
       /node_modules\/.*\/test\/.*/,
       /node_modules\/.*\/tests\/.*/,
-      /node_modules\/.*\/spec\/.*/,
       /node_modules\/.*\/\.vscode\/.*/,
       /node_modules\/.*\/\.idea\/.*/,
       /node_modules\/react-native-fbsdk-next\/lib\/.*/,
