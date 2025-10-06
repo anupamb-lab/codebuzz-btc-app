@@ -2,10 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getSession, saveSession, clearSession, getUser, logoutApi } from './auth';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import appleAuth, {
+import {
   AppleRequestOperation,
   AppleRequestScope,
 } from '@invertase/react-native-apple-authentication';
+import appleAuth from '@invertase/react-native-apple-authentication';
 
 type AuthContextType = {
   authenticated: boolean;
@@ -98,8 +99,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const loginWithApple = async () => {
     try {
       const appleAuthResponse = await appleAuth.performRequest({
-        requestedOperation: AppleRequestOperation.LOGIN,
-        requestedScopes: [AppleRequestScope.EMAIL, AppleRequestScope.FULL_NAME],
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });
 
       if (!appleAuthResponse.identityToken) {

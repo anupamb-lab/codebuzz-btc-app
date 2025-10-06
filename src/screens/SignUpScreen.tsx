@@ -300,7 +300,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                   style={styles.socialIconImage}
                   resizeMode="contain"
                 />
-                <Text style={styles.socialButtonText}>Sign in with Google</Text>
+                <Text style={styles.socialButtonText}>Sign up with Google</Text>
               </TouchableOpacity>
 
               {/* Apple Button (iOS only) */}
@@ -315,7 +315,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
                     style={styles.socialIconImage}
                     resizeMode="contain"
                   />
-                  <Text style={styles.socialButtonText}>Sign in with Apple</Text>
+                  <Text style={styles.socialButtonText}>Sign up with Apple</Text>
                 </TouchableOpacity>
               )}
             </View>
