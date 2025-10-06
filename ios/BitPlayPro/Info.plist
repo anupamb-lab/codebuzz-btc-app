@@ -41,6 +41,8 @@
 	<string></string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1063839909090-tuitpjcj2lj0qgutd2pfa9d7ttarjd43</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
