@@ -149,7 +149,7 @@ const StoreScreen = () => {
                   colors={['#22D3EE', '#C084FC']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={styles.planButton}
+                  style={[styles.planButton, { justifyContent: 'center', alignItems: 'center' }]}
                 >
                   <TouchableOpacity
                     onPress={() => handlePurchase(plan)}
@@ -309,17 +309,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   planButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
     borderRadius: 8,
-    minHeight: Platform.OS === 'ios' ? 50 : 40,
-    minWidth: Platform.OS === 'ios' ? 140 : 110,
+    height: 30,
+    minWidth: 110,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   planButtonText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 13,
-    paddingRight: Platform.OS === 'ios' ? 5 : 0
+    textAlign: 'center',
   },
   customBox: {
     backgroundColor: '#334155',
