@@ -347,33 +347,30 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
               /> */}
 
             </View>
+            
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or continue with</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-            <View style={styles.socialLoginContainer}>
-              {/* Divider */}
-              <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or continue with</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
-              {/* Google Button */}
-              <TouchableOpacity
-                style={[styles.socialButtonWide, styles.googleBtn]}
-                onPress={loginWithGoogle}
-                activeOpacity={0.85}
-              >
-                <Image
-                  source={require('../assets/images/icon_google.png')}
-                  style={styles.socialIconImage}
-                  resizeMode="contain"
-                />
-                <Text style={styles.socialButtonText}>Sign in with Google</Text>
-              </TouchableOpacity>
-
-              {/* Apple Button (iOS only) */}
-              {Platform.OS === 'ios' && (
+            {Platform.OS === 'ios' ? (
+              <View style={styles.socialButtonsRow}>
                 <TouchableOpacity
-                  style={[styles.socialButtonWide, styles.appleBtn]}
+                  style={[styles.socialButtonSmall, styles.googleBtn]}
+                  onPress={loginWithGoogle}
+                  activeOpacity={0.85}
+                >
+                  <Image
+                    source={require('../assets/images/icon_google.png')}
+                    style={styles.socialIconImage}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.socialButtonText}>Google</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.socialButtonSmall, styles.appleBtn]}
                   onPress={loginWithApple}
                   activeOpacity={0.85}
                 >
@@ -382,10 +379,25 @@ const LoginScreen: React.FC<LoginScreenProps> = () => {
                     style={styles.socialIconImage}
                     resizeMode="contain"
                   />
-                  <Text style={styles.socialButtonText}>Sign in with Apple</Text>
+                  <Text style={styles.socialButtonText}>Apple</Text>
                 </TouchableOpacity>
-              )}
-            </View>
+              </View>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={[styles.socialButtonWide, styles.googleBtn]}
+                  onPress={loginWithGoogle}
+                  activeOpacity={0.85}
+                >
+                  <Image
+                    source={require('../assets/images/icon_google.png')}
+                    style={styles.socialIconImage}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.socialButtonText}>Sign in with Google</Text>
+                </TouchableOpacity>
+              </>
+            )}
 
             {/* Footer */}
             <View style={styles.footer}>
@@ -593,7 +605,7 @@ const styles = StyleSheet.create({
   footer: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: -5,
+    bottom: -35,
     left: 0,
     right: 0,
   },
@@ -672,7 +684,7 @@ const styles = StyleSheet.create({
   },
 
   googleBtn: {
-    backgroundColor: '#2E3646', // matches your gradient tone
+    backgroundColor: '#2E3646',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.15)',
   },
@@ -694,6 +706,24 @@ const styles = StyleSheet.create({
   socialIconImage: {
     width: 22,
     height: 22,
+  },
+  socialButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: 10,
+  },
+
+  socialButtonSmall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    width: '45%',
   },
 });
 
