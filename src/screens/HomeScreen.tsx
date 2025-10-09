@@ -76,7 +76,7 @@ const Page: React.FC = () => {
   const [isMiningEnabled, setIsMiningEnabled] = useState(false);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
 
@@ -93,6 +93,31 @@ const Page: React.FC = () => {
   }
 
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
+
+  const calculateOfflineEarnings = async () => {
+    try {
+      const storedStart = await AsyncStorage.getItem("startTime");
+      const storedBtc = await AsyncStorage.getItem("btcBalance");
+      const storedHashPower = hashPower;
+
+      if (!storedStart || !storedBtc) return 0;
+
+      const start = parseInt(storedStart);
+      const previousBalance = parseFloat(storedBtc);
+      const now = Date.now();
+
+      // how long user was away (in seconds)
+      const elapsed = Math.min((now - start) / 1000, MAX_MINING_DURATION / 1000);
+
+      // BTC mined while away
+      const offlineEarnings = elapsed * storedHashPower * BTC_PER_HASHPOWER_PER_SEC;
+
+      return previousBalance + offlineEarnings;
+    } catch (e) {
+      console.error("Error calculating offline earnings:", e);
+      return 0;
+    }
+  };
 
   async function saveFcmTokenToBackend(id: any, token: string) {
     try {
@@ -182,7 +207,6 @@ const Page: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log("UseEffectBlock - 1 - UserStored: ", user);
         if (!user?.id && !user?.uid) return;
 
         const storedAds = await AsyncStorage.getItem("adsWatched");
@@ -191,17 +215,21 @@ const Page: React.FC = () => {
 
         setAdsWatched(storedAds ? parseInt(storedAds) : 0);
 
+        let updatedBalance = storedBtc ? parseFloat(storedBtc) : 0;
+
         if (storedStart) {
           const start = parseInt(storedStart);
           const now = Date.now();
           if (now - start < MAX_MINING_DURATION) {
             setStartTime(start);
+            // offline gains
+            const offlineUpdated = await calculateOfflineEarnings();
+            updatedBalance = offlineUpdated;
           }
         }
 
-        if (storedBtc) {
-          setBtcBalance(parseFloat(storedBtc));
-        }
+        setBtcBalance(updatedBalance);
+        await AsyncStorage.setItem("btcBalance", updatedBalance.toString());
 
         await fetchBalance();
         await fetchTransactions();
