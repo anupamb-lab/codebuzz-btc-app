@@ -28,6 +28,7 @@ import { useHashPower } from "../stores/HashPowerStore";
 import messaging from '@react-native-firebase/messaging';
 import { Image } from 'react-native';
 import axios from 'axios';
+import RNFS from 'react-native-fs';
 
 const MAX_ADS = 10;
 const BASE_HASHPOWER_PER_AD = 5;
@@ -92,6 +93,29 @@ const Page: React.FC = () => {
     isPositive: boolean;
   }
 
+  const logToFile = async (message: string) => {
+    const logFilePath = `${RNFS.DocumentDirectoryPath}/app_log.txt`;
+
+    const timestamp = new Date().toISOString();
+    const logEntry = `[${timestamp}] ${message}\n`;
+    await RNFS.appendFile(logFilePath, logEntry, 'utf8');
+    console.log(message);
+  };
+
+  logToFile('App launched');
+  logToFile(`Start time: ${Date.now()}`);
+
+  logToFile(`--------------- Initial Values ---------------`);
+
+  logToFile(`Initial HashPower: ${hashPower}`);
+  logToFile(`UserID: ${!user?.id}`);
+  logToFile(`BTC Balance: ${btcBalance}`);
+  logToFile(`User Balance: ${userBalance}`);
+  logToFile(`Ads Watched: ${adsWatched}`);
+  logToFile(`Mining Enabled ? - ${isMiningEnabled}`);
+
+  logToFile(`----------------------------------------------`);
+
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
 
   const calculateOfflineEarnings = async () => {
@@ -100,7 +124,13 @@ const Page: React.FC = () => {
       const storedBtc = await AsyncStorage.getItem("btcBalance");
       const storedHashPower = hashPower;
 
-      if (!storedStart || !storedBtc) return 0;
+      console.log("OE - HashPower: ", storedHashPower);
+
+      logToFile(`OE - HashPower: ${storedHashPower}`);
+
+      if (!storedStart || !storedBtc || !storedHashPower) return 0;
+
+      if (storedHashPower === 0) return 0;
 
       const start = parseInt(storedStart);
       const previousBalance = parseFloat(storedBtc);
@@ -217,6 +247,10 @@ const Page: React.FC = () => {
 
         let updatedBalance = storedBtc ? parseFloat(storedBtc) : 0;
 
+        console.log("OE - StoredBalance: ", storedBtc);
+
+        logToFile(`OE - StoredBalance: ${storedBtc}`);
+
         if (storedStart) {
           const start = parseInt(storedStart);
           const now = Date.now();
@@ -225,6 +259,9 @@ const Page: React.FC = () => {
             // offline gains
             const offlineUpdated = await calculateOfflineEarnings();
             updatedBalance = offlineUpdated;
+
+            console.log("OE - OfflineUpdate: ", offlineUpdated);
+            logToFile(`OE - OfflineUpdate: ${offlineUpdated}`);
           }
         }
 
