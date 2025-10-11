@@ -471,7 +471,7 @@ const Page: React.FC = () => {
         setHashPower(HashsafeVal);
         setAdsWatched(ReawrdedAdsWatchedsafeVal);
         setIsMiningEnabled(LastMiningStatesafeVal);
-        
+
         if (!hashPower || hashPower <= 0) {
           if (isMiningEnabled) {
             setIsMiningEnabled(false);
@@ -870,14 +870,16 @@ const Page: React.FC = () => {
 
       </ScrollView>
 
-      <View style={styles.bannerContainer}>
-        <BannerAd
-          unitId={HOMEBANNER_AD_UNIT_ID ?? ""}
-          size={BannerAdSize.FULL_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
+      <View style={styles.bannerWrapper}>
+        <View style={styles.bannerContainer}>
+          <BannerAd
+            unitId={HOMEBANNER_AD_UNIT_ID ?? ""}
+            size={BannerAdSize.ADAPTIVE_BANNER}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+          />
+        </View>
       </View>
     </View>
   );
@@ -1244,13 +1246,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#10B981',
   },
-  bannerContainer: {
+  bannerWrapper: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: 'center',
     backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+
+  bannerContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonIcon: {
     marginRight: 8,
