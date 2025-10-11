@@ -471,6 +471,12 @@ const Page: React.FC = () => {
         setHashPower(HashsafeVal);
         setAdsWatched(ReawrdedAdsWatchedsafeVal);
         setIsMiningEnabled(LastMiningStatesafeVal);
+        
+        if (!hashPower || hashPower <= 0) {
+          if (isMiningEnabled) {
+            setIsMiningEnabled(false);
+          }
+        }
       }
       } catch (err) {
       console.error("UserData - Error fetching UserData:", err);
@@ -594,6 +600,14 @@ const Page: React.FC = () => {
     useEffect(() => {
       get_referrals();
     }, []);
+
+    useEffect(() => {
+      if (!hashPower || hashPower <= 0) {
+        if (isMiningEnabled) {
+          setIsMiningEnabled(false);
+        }
+      }
+  }, [hashPower]);
 
   const buttonLabel = loading
     ? "Loading..."
