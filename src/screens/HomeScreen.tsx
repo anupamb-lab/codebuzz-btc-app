@@ -103,19 +103,23 @@ const Page: React.FC = () => {
     console.log(message);
   };
 
-  logToFile('App launched');
-  logToFile(`Start time: ${Date.now()}`);
+  const firstlaunchlog = () => {
 
-  logToFile(`--------------- Initial Values ---------------`);
+    logToFile('App launched');
+    logToFile(`Start time: ${Date.now()}`);
 
-  logToFile(`Initial HashPower: ${hashPower}`);
-  logToFile(`UserID: ${!user?.id}`);
-  logToFile(`BTC Balance: ${btcBalance}`);
-  logToFile(`User Balance: ${userBalance}`);
-  logToFile(`Ads Watched: ${adsWatched}`);
-  logToFile(`Mining Enabled ? - ${isMiningEnabled}`);
+    logToFile(`--------------- Initial Values ---------------`);
 
-  logToFile(`----------------------------------------------`);
+    logToFile(`Initial HashPower: ${hashPower}`);
+    logToFile(`UserID: ${!user?.id}`);
+    logToFile(`BTC Balance: ${btcBalance}`);
+    logToFile(`User Balance: ${userBalance}`);
+    logToFile(`Ads Watched: ${adsWatched}`);
+    logToFile(`Mining Enabled ? - ${isMiningEnabled}`);
+
+    logToFile(`----------------------------------------------`);
+
+  }
 
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
 
@@ -239,6 +243,8 @@ const Page: React.FC = () => {
     const loadData = async () => {
       try {
         if (!user?.id && !user?.uid) return;
+
+        firstlaunchlog();
 
         const storedAds = await AsyncStorage.getItem("adsWatched");
         const storedStart = await AsyncStorage.getItem("startTime");
@@ -478,6 +484,10 @@ const Page: React.FC = () => {
             setIsMiningEnabled(false);
           }
         }
+
+        const overallBtc = data.calculated_btc;
+        if (overallBtc != 0 && overallBtc != null) setBtcBalance(overallBtc);
+        
       }
       } catch (err) {
       console.error("UserData - Error fetching UserData:", err);
