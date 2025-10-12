@@ -73,6 +73,7 @@ const Page: React.FC = () => {
   const { hashPower, setHashPower, addHashPower, resetHashPower } = useHashPower();
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
   const [loadingBalance, setLoadingBalance] = useState(true);
   const [isMiningEnabled, setIsMiningEnabled] = useState(false);
 
@@ -533,12 +534,26 @@ const Page: React.FC = () => {
       ads?: number
     ) => {
       try {
+
+        var starttime = null;
+        var endtime = null;
+
+        if (isMiningEnabled) {
+          starttime = Date.now();
+          endtime = null;
+        } else {
+          starttime = null;
+          endtime = Date.now();
+        }
+        
         const user_mining_data = {
           user_id: user.id,
           hashpower: hp ?? hashPower,              
           mining_isactive: isMiningEnabled,
           rewarded_ads_watched: ads ?? adsWatched, 
-          random_ads_watched: 0
+          random_ads_watched: 0,
+          start_time: starttime,
+          stop_time: endtime
         };
 
         const set_user_data_uri = get_data_uri("USERMININGDETAILS");
