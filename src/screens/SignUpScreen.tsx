@@ -142,7 +142,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 30 }}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >

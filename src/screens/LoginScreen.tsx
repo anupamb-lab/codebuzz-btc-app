@@ -445,15 +445,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20, 
-    paddingVertical: 30
   },
   content: {
     flex: 1,
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: '1%',
-    marginBottom: '20%'
+    marginBottom: '5%'
   },
 
   bitcoinLogo: {
