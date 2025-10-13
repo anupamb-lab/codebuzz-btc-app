@@ -1,11 +1,12 @@
 // App.tsx
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { createNavigationContainerRef, NavigationContainer, useNavigationState } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Alert, StatusBar, useColorScheme } from 'react-native';
 
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { initializeGoogleAds } from './src/services/googleAds';
+import analytics from '@react-native-firebase/analytics';
 
 // Screens
 import SplashScreen from './src/screens/SplashScreen';
@@ -47,6 +48,8 @@ import TwoFactorLoginScreen from './src/screens/TwoFactorLoginScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const RootStack = createStackNavigator<RootStackParamList>();
+
+export const navigationRef = createNavigationContainerRef();
 
 const AppNavigator = () => {
   const { authenticated, loading } = useAuth();
@@ -143,10 +146,30 @@ const App = () => {
     <AuthProvider>
       <HashPowerProvider>
         <AdConfigProvider>
-            <NavigationContainer>
+            <NavigationContainer
+              onReady={async () => {
+                const currentRoute = navigationRef.getCurrentRoute();
+                if (currentRoute) {
+                  await analytics().logScreenView({
+                    screen_name: currentRoute.name,
+                    screen_class: currentRoute.name,
+                  });
+                }
+              }}
+              onStateChange={async () => {
+                const currentRoute = navigationRef.getCurrentRoute();
+                if (currentRoute) {
+                  await analytics().logScreenView({
+                    screen_name: currentRoute.name,
+                    screen_class: currentRoute.name,
+                  });
+                }
+              }}
+              ref={navigationRef}
+            >
               <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
               <AppNavigator />
-          </NavigationContainer>
+            </NavigationContainer>
         </AdConfigProvider>
       </HashPowerProvider>
     </AuthProvider>
