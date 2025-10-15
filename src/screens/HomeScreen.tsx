@@ -201,7 +201,7 @@ const Page: React.FC = () => {
 
     await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
 
-    await syncUserData(updatedHashPower, newAdsCount);
+    await syncUserData(updatedHashPower, newAdsCount, true);
 };
 
   const { show, loading, loaded } = showRewardedAd(handleReward);
@@ -514,7 +514,8 @@ const Page: React.FC = () => {
 
     const syncUserData = async (
       hp?: number,
-      ads?: number
+      ads?: number,
+      mining_status?: boolean
     ) => {
       try {
 
@@ -532,7 +533,7 @@ const Page: React.FC = () => {
         const user_mining_data = {
           user_id: user.id,
           hashpower: hp ?? hashPower,              
-          mining_isactive: isMiningEnabled,
+          mining_isactive: mining_status ?? isMiningEnabled,
           rewarded_ads_watched: ads ?? adsWatched, 
           random_ads_watched: 0,
           start_time: starttime,
@@ -709,8 +710,8 @@ const Page: React.FC = () => {
                       { cancelable: false }
                     );
                   } else {
-                    syncUserData();
                     setIsMiningEnabled(false);
+                    syncUserData(undefined, undefined, false);
                     Alert.alert("Mining Disabled", "Mining has been turned off.");
                   }
                 }}
