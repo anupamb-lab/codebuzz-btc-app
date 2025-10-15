@@ -123,37 +123,6 @@ const Page: React.FC = () => {
 
   const [recent_activity_list, setRecentActivityList] = useState<Activity[]>([]);
 
-  const calculateOfflineEarnings = async () => {
-    try {
-      const storedStart = await AsyncStorage.getItem("startTime");
-      const storedBtc = await AsyncStorage.getItem("btcBalance");
-      const storedHashPower = hashPower;
-
-      console.log("OE - HashPower: ", storedHashPower);
-
-      logToFile(`OE - HashPower: ${storedHashPower}`);
-
-      if (!storedStart || !storedBtc || !storedHashPower) return 0;
-
-      if (storedHashPower === 0) return 0;
-
-      const start = parseInt(storedStart);
-      const previousBalance = parseFloat(storedBtc);
-      const now = Date.now();
-
-      // how long user was away (in seconds)
-      const elapsed = Math.min((now - start) / 1000, MAX_MINING_DURATION / 1000);
-
-      // BTC mined while away
-      const offlineEarnings = elapsed * storedHashPower * BTC_PER_HASHPOWER_PER_SEC;
-
-      return previousBalance + offlineEarnings;
-    } catch (e) {
-      console.error("Error calculating offline earnings:", e);
-      return 0;
-    }
-  };
-
   async function saveFcmTokenToBackend(id: any, token: string) {
     try {
       const fcm_uri = get_data_uri('CREATE_FCM');
@@ -246,34 +215,28 @@ const Page: React.FC = () => {
 
         firstlaunchlog();
 
-        const storedAds = await AsyncStorage.getItem("adsWatched");
-        const storedStart = await AsyncStorage.getItem("startTime");
-        const storedBtc = await AsyncStorage.getItem("btcBalance");
+        // const storedAds = await AsyncStorage.getItem("adsWatched");
+        // const storedStart = await AsyncStorage.getItem("startTime");
+        // const storedBtc = await AsyncStorage.getItem("btcBalance");
 
-        setAdsWatched(storedAds ? parseInt(storedAds) : 0);
+        // setAdsWatched(storedAds ? parseInt(storedAds) : 0);
 
-        let updatedBalance = storedBtc ? parseFloat(storedBtc) : 0;
+        // let updatedBalance = storedBtc ? parseFloat(storedBtc) : 0;
 
-        console.log("OE - StoredBalance: ", storedBtc);
+        // console.log("OE - StoredBalance: ", storedBtc);
 
-        logToFile(`OE - StoredBalance: ${storedBtc}`);
+        // logToFile(`OE - StoredBalance: ${storedBtc}`);
 
-        if (storedStart) {
-          const start = parseInt(storedStart);
-          const now = Date.now();
-          if (now - start < MAX_MINING_DURATION) {
-            setStartTime(start);
-            // offline gains
-            const offlineUpdated = await calculateOfflineEarnings();
-            updatedBalance = offlineUpdated;
+        // if (storedStart) {
+        //   const start = parseInt(storedStart);
+        //   const now = Date.now();
+        //   if (now - start < MAX_MINING_DURATION) {
+        //     setStartTime(start);
+        //   }
+        // }
 
-            console.log("OE - OfflineUpdate: ", offlineUpdated);
-            logToFile(`OE - OfflineUpdate: ${offlineUpdated}`);
-          }
-        }
-
-        setBtcBalance(updatedBalance);
-        await AsyncStorage.setItem("btcBalance", updatedBalance.toString());
+        // setBtcBalance(updatedBalance);
+        // await AsyncStorage.setItem("btcBalance", updatedBalance.toString());
 
         await fetchBalance();
         await fetchTransactions();
