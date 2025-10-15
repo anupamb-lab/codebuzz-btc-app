@@ -143,7 +143,7 @@ const StoreScreen = () => {
               <Text style={styles.planSub}>Daily Maintenance: {`$ ${plan.maintenance_cost}/day`}</Text>
 
               <View style={styles.planFooter}>
-                <Text style={[styles.planPrice, { color: fcolor }]}>{`$${plan.plan_cost}.00`}</Text>
+                <Text style={[styles.planPrice, { color: fcolor }]}>{`$${plan.plan_cost}`}</Text>
 
                 <LinearGradient
                   colors={['#22D3EE', '#C084FC']}

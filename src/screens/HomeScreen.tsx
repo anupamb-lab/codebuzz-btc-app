@@ -638,7 +638,7 @@ const Page: React.FC = () => {
     ? "Loading..."
     : adsWatched >= MAX_ADS
       ? "Max Videos Reached"
-      : `Increase 5 GH/s`
+      : `Increase 5 GH/s (${adsWatched}/${MAX_ADS})`
 
   return (
     <View style={styles.container}>
