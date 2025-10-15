@@ -301,6 +301,11 @@ const Page: React.FC = () => {
     const isMiningActive =
       isMiningEnabled && hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
 
+    console.log("Date Condition - Max Duration: ", MAX_MINING_DURATION);
+    console.log("Date Condition - Current Time: ", Date.now());
+    console.log("Date Condition - startTime: ", startTime);
+    console.log("Date Condition - Overall: ", Date.now() - startTime! < MAX_MINING_DURATION);
+
     if (isMiningActive) {
       intervalRef.current = setInterval(() => {
         setBtcBalance((prev) => {
@@ -434,14 +439,18 @@ const Page: React.FC = () => {
         );
 
         const LastMiningState = data.mining_details.mining_isactive ?? false;
+
+        const LastKnownStartTime = data.mining_details.start_time;
         
         const HashsafeVal = isNaN(HashPowerValue) ? 0 : HashPowerValue;
         const ReawrdedAdsWatchedsafeVal = isNaN(ReawrdedAdsWatched) ? 0 : ReawrdedAdsWatched;
         const LastMiningStatesafeVal = isNaN(LastMiningState) ? false : LastMiningState;
+        const LastKnownStartTimesafeVal = isNaN(LastKnownStartTime) ? Date.now() : LastKnownStartTime;
 
         setHashPower(HashsafeVal);
         setAdsWatched(ReawrdedAdsWatchedsafeVal);
         setIsMiningEnabled(LastMiningStatesafeVal);
+        setStartTime(LastKnownStartTimesafeVal);
 
         if (!hashPower || hashPower <= 0) {
           if (isMiningEnabled) {
@@ -591,7 +600,7 @@ const Page: React.FC = () => {
     }, []);
 
     useEffect(() => {
-      if (!hashPower || hashPower <= 0) {
+      if (!hashPower || hashPower <= 0 || !startTime) {
         if (isMiningEnabled) {
           setIsMiningEnabled(false);
         }
