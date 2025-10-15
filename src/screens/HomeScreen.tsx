@@ -190,6 +190,7 @@ const Page: React.FC = () => {
 
     // update hashPower via global store
     const updatedHashPower = hashPower + BASE_HASHPOWER_PER_AD;
+    console.log("Reward CallBack Fired: ", hashPower);
     addHashPower(BASE_HASHPOWER_PER_AD);
 
     if (!startTime) {
@@ -249,28 +250,28 @@ const Page: React.FC = () => {
     loadData();
   }, [user]);
 
-  useEffect(() => {
-    const fetchHashpower = async () => {
-      if (!user?.id) {
-        return;
-      }
-      console.log("UserSub - Setting HashPower");
+  // useEffect(() => {
+  //   const fetchHashpower = async () => {
+  //     if (!user?.id) {
+  //       return;
+  //     }
+  //     console.log("UserSub - Setting HashPower");
 
-      try {
-        const user_sum_haspower_uri = get_data_uri("GET_USER_HASHPOWER");
-        console.log("UserSub - Total HashPower URI: ", user_sum_haspower_uri);
+  //     try {
+  //       const user_sum_haspower_uri = get_data_uri("GET_USER_HASHPOWER");
+  //       console.log("UserSub - Total HashPower URI: ", user_sum_haspower_uri);
         
-        const res = await axios.get(`${user_sum_haspower_uri}/${user.id}`);
-        console.log("UserSub - Response: ", res.data);
+  //       const res = await axios.get(`${user_sum_haspower_uri}/${user.id}`);
+  //       console.log("UserSub - Response: ", res.data);
         
-        setHashPower(res.data.hashpower || 0);
-      } catch (err: any) {
-        console.error("Error fetching hashpower:", err.message);
-      }
-    };
+  //       setHashPower(res.data.hashpower || 0);
+  //     } catch (err: any) {
+  //       console.error("Error fetching hashpower:", err.message);
+  //     }
+  //   };
 
-    fetchHashpower();
-  }, [user?.id]);
+  //   fetchHashpower();
+  // }, [user?.id]);
 
   // -----------------------------
   // Save Local State
@@ -312,7 +313,7 @@ const Page: React.FC = () => {
       miningAnimationRef.current?.play();
     } else {
       miningAnimationRef.current?.pause();
-      resetHashPower();
+      // resetHashPower();
     }
 
     return () => {
