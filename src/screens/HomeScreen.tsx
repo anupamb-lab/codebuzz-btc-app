@@ -348,7 +348,7 @@ const Page: React.FC = () => {
       const res = await fetch(`${get_data_uri('GET_RECENT_TRANSACTIONS')}/${user.id}`);
       const data = await res.json();
 
-      console.log("RecentTransactions - RAW: ", res);
+      // console.log("RecentTransactions - RAW: ", res);
       console.log("RecentTransactions - RESPONSE: ", data);
 
       if (res.ok && Array.isArray(data.transactions)) {
@@ -383,7 +383,7 @@ const Page: React.FC = () => {
     const res = await fetch(fetch_balance_uri);
     const data = await res.json();
 
-    console.log("USER-BALANCE-RESPOSNE: ", res);
+    // console.log("USER-BALANCE-RESPOSNE: ", res);
     console.log("USER-BALANCE-DATA: ", data);
 
     if (res.ok && data.balance) {
@@ -403,6 +403,8 @@ const Page: React.FC = () => {
 
       setUserWalletBalance(dollar_balance);
 
+      console.log("Setting BTC Balance #1: ", safeVal);
+
       setBtcBalance(safeVal);
       balanceRef.current = safeVal;
     }
@@ -421,12 +423,12 @@ const Page: React.FC = () => {
           "USERMININGDETAILS"
       )}/${user.id}`;
 
-      console.log("Fetch UserData URL: ", fetch_user_details_uri);
+      // console.log("Fetch UserData URL: ", fetch_user_details_uri);
 
       const res = await fetch(fetch_user_details_uri);
       const data = await res.json();
 
-      console.log("UserData - RESPOSNE: ", res);
+      // console.log("UserData - RESPOSNE: ", res);
       console.log("UserData - DATA: ", data);
 
       if (res.ok) {
@@ -459,6 +461,7 @@ const Page: React.FC = () => {
         }
 
         const overallBtc = data.calculated_btc;
+        // console.log("Setting BTC Balance #2: ", overallBtc);
         if (overallBtc != 0 && overallBtc != null) setBtcBalance(overallBtc);
         
       }
@@ -689,10 +692,10 @@ const Page: React.FC = () => {
                 style={styles.toggleSwitchSmall}
                 value={isMiningEnabled}
                 onValueChange={(newValue) => {
-                  if (newValue) {
+                  if (loading) {
                     Alert.alert(
-                      "Mining Enabled",
-                      "Watch an ad to start mining.",
+                      "Please wait for Ads to load",
+                      "Try again in some seconds.",
                       [
                         {
                           text: "Cancel",
@@ -702,17 +705,40 @@ const Page: React.FC = () => {
                         {
                           text: "OK",
                           onPress: () => {
-                            setIsMiningEnabled(true);
-                            show();
+                            setIsMiningEnabled(false);
                           },
                         },
                       ],
                       { cancelable: false }
                     );
                   } else {
-                    setIsMiningEnabled(false);
-                    syncUserData(undefined, undefined, false);
-                    Alert.alert("Mining Disabled", "Mining has been turned off.");
+
+                    if (newValue) {
+                      Alert.alert(
+                        "Mining Enabled",
+                        "Watch an ad to start mining.",
+                        [
+                          {
+                            text: "Cancel",
+                            style: "cancel",
+                            onPress: () => setIsMiningEnabled(false),
+                          },
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              setIsMiningEnabled(true);
+                              show();
+                            },
+                          },
+                        ],
+                        { cancelable: false }
+                      );
+                    } else {
+                      setIsMiningEnabled(false);
+                      syncUserData(undefined, undefined, false);
+                      Alert.alert("Mining Disabled", "Mining has been turned off.");
+                    }
+
                   }
                 }}
                 trackColor={{ false: "#374151", true: "#22D3EE" }}
