@@ -1,4 +1,4 @@
-package com.bitplaypro.app
+package com.bitplay.app
 
 import android.app.Application
 import com.facebook.react.PackageList

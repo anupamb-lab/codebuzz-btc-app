@@ -201,6 +201,8 @@ const Page: React.FC = () => {
 
     await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
 
+    console.log("Rewarded Callback SyncingData!!");
+
     await syncUserData(updatedHashPower, newAdsCount, true);
 };
 

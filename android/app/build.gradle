@@ -19,7 +19,7 @@ android {
 
     namespace "com.bitplaypro.app"
     defaultConfig {
-        applicationId "com.bitplaypro.app"
+        applicationId "com.bitplay.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 6
