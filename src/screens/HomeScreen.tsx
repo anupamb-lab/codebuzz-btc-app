@@ -215,6 +215,9 @@ const Page: React.FC = () => {
     const offset = new Date().getTimezoneOffset();
     console.log("User Local Time: ", local_time, offset);
 
+    setHashPower(0);
+    setIsMiningEnabled(false);
+
     const init = async () => {
       if (!user?.id) return;
 
