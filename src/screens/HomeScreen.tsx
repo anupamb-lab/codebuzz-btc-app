@@ -20,7 +20,6 @@ import { RootStackParamList } from '../components/types';
 
 import { HOMEBANNER_AD_UNIT_ID, showRewardedAd } from '../services/googleAds';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_ENDPOINTS, get_data_uri } from '../config/api';
 import LottieView from 'lottie-react-native';
 import miningCardAnimation from '../assets/animations/mining-card.json';
@@ -196,10 +195,7 @@ const Page: React.FC = () => {
     if (!startTime) {
     const now = Date.now();
     setStartTime(now);
-    await AsyncStorage.setItem("startTime", now.toString());
     }
-
-    await AsyncStorage.setItem("adsWatched", newAdsCount.toString());
 
     console.log("Rewarded Callback SyncingData!!");
 
@@ -209,7 +205,7 @@ const Page: React.FC = () => {
   const { show, loading, loaded } = showRewardedAd(handleReward);
 
   // -----------------------------
-  // Load State from AsyncStorage
+  // Load State
   // -----------------------------
   useEffect(() => {
     const loadData = async () => {
@@ -217,29 +213,6 @@ const Page: React.FC = () => {
         if (!user?.id && !user?.uid) return;
 
         firstlaunchlog();
-
-        // const storedAds = await AsyncStorage.getItem("adsWatched");
-        // const storedStart = await AsyncStorage.getItem("startTime");
-        // const storedBtc = await AsyncStorage.getItem("btcBalance");
-
-        // setAdsWatched(storedAds ? parseInt(storedAds) : 0);
-
-        // let updatedBalance = storedBtc ? parseFloat(storedBtc) : 0;
-
-        // console.log("OE - StoredBalance: ", storedBtc);
-
-        // logToFile(`OE - StoredBalance: ${storedBtc}`);
-
-        // if (storedStart) {
-        //   const start = parseInt(storedStart);
-        //   const now = Date.now();
-        //   if (now - start < MAX_MINING_DURATION) {
-        //     setStartTime(start);
-        //   }
-        // }
-
-        // setBtcBalance(updatedBalance);
-        // await AsyncStorage.setItem("btcBalance", updatedBalance.toString());
 
         await fetchBalance();
         await fetchTransactions();
@@ -274,25 +247,6 @@ const Page: React.FC = () => {
 
   //   fetchHashpower();
   // }, [user?.id]);
-
-  // -----------------------------
-  // Save Local State
-  // -----------------------------
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem("btcBalance", btcBalance.toString());
-        await AsyncStorage.setItem("adsWatched", adsWatched.toString());
-        if (startTime) {
-          await AsyncStorage.setItem("startTime", startTime.toString());
-        }
-      } catch (e) {
-        console.error("Error saving mining state", e);
-      }
-    };
-
-    saveData();
-  }, [btcBalance, adsWatched, startTime]);
 
   // -----------------------------
   // Mining Logic
