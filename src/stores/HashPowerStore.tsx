@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HashPowerContextType = {
   hashPower: number;
@@ -14,24 +13,11 @@ export const HashPowerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [hashPower, setHashPowerState] = useState(0);
 
   // Load on mount
-  useEffect(() => {
-    const load = async () => {
-      const stored = await AsyncStorage.getItem("hashPower");
-      if (stored) setHashPowerState(parseInt(stored));
-    };
-    load();
-  }, []);
-
-  useEffect(() => {
-    AsyncStorage.setItem("hashPower", hashPower.toString());
-  }, [hashPower]);
-
   const setHashPower = (val: number) => setHashPowerState(val);
   const addHashPower = (val: number) => setHashPowerState((prev) => prev + val);
 
   const resetHashPower = () => {
     setHashPowerState(0);
-    AsyncStorage.removeItem("hashPower");
   };
 
   return (
