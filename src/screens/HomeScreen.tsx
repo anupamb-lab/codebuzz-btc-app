@@ -9,6 +9,7 @@ import {
   Switch,
   Alert,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -80,6 +81,9 @@ const Page: React.FC = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const balanceRef = useRef(btcBalance);
   const miningAnimationRef = useRef<LottieView>(null);
+
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [user_referrals, setUserReferrals] = useState(0);
 
@@ -156,26 +160,6 @@ const Page: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    if (!user) return;
-
-    const getToken = async () => {
-      const token = await messaging().getToken();
-      console.log("FirebaseLG - FCM Token:", token);
-
-      await saveFcmTokenToBackend(user.id, token);
-    };
-
-    getToken();
-
-    const unsubscribe = messaging().onTokenRefresh(async (token) => {
-      console.log("FirebaseLG - New FCM Token:", token);
-      await saveFcmTokenToBackend(user.id, token);
-    });
-
-    return unsubscribe;
-  }, [user]);
-
   // -----------------------------
   // Reward Handler (Ad Watched)
   // -----------------------------
@@ -207,83 +191,110 @@ const Page: React.FC = () => {
   // -----------------------------
   // Load State
   // -----------------------------
+
+  // useEffect(() => {
+  //   if (intervalRef.current) clearInterval(intervalRef.current);
+
+  //   const isMiningActive =
+  //     isMiningEnabled && hashPower > 0 && startTime;
+
+  //   console.log("Date Condition - Max Duration: ", MAX_MINING_DURATION);
+  //   console.log("Date Condition - Current Time: ", Date.now());
+  //   console.log("Date Condition - startTime: ", startTime);
+  //   console.log("Date Condition - Total Mining Time: ", (Date.now() - startTime!));
+  //   console.log("Date Condition - Overall: ", Date.now() - startTime! < MAX_MINING_DURATION);
+  //   console.log("Date Condition - MiningActive ?: ", isMiningActive);
+  //   console.log("Date Condition - MiningEnabled ?: ", isMiningEnabled);
+    
+  // }, [hashPower, startTime, isMiningEnabled]);
+
   useEffect(() => {
-    const loadData = async () => {
+    let isMounted = true;
+
+    const init = async () => {
+      if (!user?.id) return;
+
       try {
-        if (!user?.id && !user?.uid) return;
+        setIsLoading(true);
+        await logToFile('App launched');
 
-        firstlaunchlog();
+        // Get FCM token
+        const token = await messaging().getToken();
+        await fetch(get_data_uri('CREATE_FCM'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, token }),
+        });
 
-        await fetchBalance();
-        await fetchTransactions();
-        await fetchUserDetails();
-      } catch (e) {
-        console.error("Error loading mining state", e);
+        // Parallel API calls
+        const [balanceRes, userDetailsRes, txnsRes, referralsRes] = await Promise.all([
+          fetch(`${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`),
+          fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}`),
+          fetch(`${get_data_uri("GET_RECENT_TRANSACTIONS")}/${user.id}`),
+          fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
+        ]);
+
+        const [balanceData, userData, txnsData, refData] = await Promise.all([
+          balanceRes.json(),
+          userDetailsRes.json(),
+          txnsRes.json(),
+          referralsRes.json()
+        ]);
+
+        // Wallet balance
+        const btcValue = parseFloat(balanceData?.balance?.BTC?.$numberDecimal ?? 0);
+        const btcDeposited = parseFloat(balanceData?.balance?.BTC_DEPOSIT?.$numberDecimal ?? 0);
+        const priceRes = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
+          params: { ids: "bitcoin", vs_currencies: "usd" }
+        });
+        const btcPrice = priceRes.data.bitcoin.usd;
+        setUserWalletBalance(parseFloat((btcDeposited * btcPrice).toFixed(2)));
+        setBtcBalance(isNaN(btcValue) ? 0 : btcValue);
+        balanceRef.current = btcValue;
+
+        // User details
+        const details = userData?.mining_details ?? {};
+        setHashPower(parseFloat(details.hashpower ?? 0));
+        setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
+        setIsMiningEnabled(!!details.mining_isactive);
+        setStartTime(details.start_time ?? null);
+
+        // Transactions
+        if (Array.isArray(txnsData?.transactions)) {
+          setRecentActivity(txnsData.transactions);
+        }
+
+        // Referrals
+        setUserReferrals(Number(refData?.count) || 0);
+
+        // Start mining interval
+        if (details.mining_isactive && details.hashpower > 0) {
+          intervalRef.current = setInterval(() => {
+            setBtcBalance(prev => {
+              const updated = prev + details.hashpower * BTC_PER_HASHPOWER_PER_SEC;
+              balanceRef.current = updated;
+              return updated;
+            });
+          }, 1000);
+          miningAnimationRef.current?.play();
+        } else {
+          miningAnimationRef.current?.pause();
+        }
+
+      } catch (err) {
+        console.error("Initialization error:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    loadData();
-  }, [user]);
-
-  // useEffect(() => {
-  //   const fetchHashpower = async () => {
-  //     if (!user?.id) {
-  //       return;
-  //     }
-  //     console.log("UserSub - Setting HashPower");
-
-  //     try {
-  //       const user_sum_haspower_uri = get_data_uri("GET_USER_HASHPOWER");
-  //       console.log("UserSub - Total HashPower URI: ", user_sum_haspower_uri);
-        
-  //       const res = await axios.get(`${user_sum_haspower_uri}/${user.id}`);
-  //       console.log("UserSub - Response: ", res.data);
-        
-  //       setHashPower(res.data.hashpower || 0);
-  //     } catch (err: any) {
-  //       console.error("Error fetching hashpower:", err.message);
-  //     }
-  //   };
-
-  //   fetchHashpower();
-  // }, [user?.id]);
-
-  // -----------------------------
-  // Mining Logic
-  // -----------------------------
-  useEffect(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
-    const isMiningActive =
-      isMiningEnabled && hashPower > 0 && startTime;
-
-    console.log("Date Condition - Max Duration: ", MAX_MINING_DURATION);
-    console.log("Date Condition - Current Time: ", Date.now());
-    console.log("Date Condition - startTime: ", startTime);
-    console.log("Date Condition - Total Mining Time: ", (Date.now() - startTime!));
-    console.log("Date Condition - Overall: ", Date.now() - startTime! < MAX_MINING_DURATION);
-    console.log("Date Condition - MiningActive ?: ", isMiningActive);
-    console.log("Date Condition - MiningEnabled ?: ", isMiningEnabled);
-
-    if (isMiningActive) {
-      intervalRef.current = setInterval(() => {
-        setBtcBalance((prev) => {
-          const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
-          balanceRef.current = updated;
-          return updated;
-        });
-      }, 1000);
-
-      miningAnimationRef.current?.play();
-    } else {
-      miningAnimationRef.current?.pause();
-      // resetHashPower();
-    }
+    init();
 
     return () => {
+      isMounted = false;
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [hashPower, startTime, isMiningEnabled]);
+  }, [user]);
 
   async function getBTCPrice() {
     try {
@@ -434,24 +445,6 @@ const Page: React.FC = () => {
       inputRange: [0, 1],
       outputRange: ["#111827", "#22D3EE"], // dark -> cyan blink
     });
-
-
-    useEffect(() => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(blinkAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: false,
-          }),
-          Animated.timing(blinkAnim, {
-            toValue: 0,
-            duration: 600,
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
-    });
   
   
     const syncBalance = async () => {
@@ -522,21 +515,6 @@ const Page: React.FC = () => {
       }
     };
   
-    // Sync balance periodically (every 30s)
-    useEffect(() => {
-      balanceRef.current = btcBalance;
-    }, [btcBalance]);
-  
-    useEffect(() => {
-      const syncInterval = setInterval(syncBalance, 30000);
-      return () => clearInterval(syncInterval);
-    }, []);
-
-    // useEffect(() => {
-    //   const syncInterval = setInterval(syncUserData, 30000);
-    //   return () => clearInterval(syncInterval);
-    // }, []);
-  
     // -----------------------------
     // Referrals
     // -----------------------------
@@ -557,18 +535,6 @@ const Page: React.FC = () => {
         console.error("Error fetching referrals:", error);
       }
     };
-  
-    useEffect(() => {
-      get_referrals();
-    }, []);
-
-    useEffect(() => {
-      if (!hashPower || hashPower <= 0 || !startTime) {
-        if (isMiningEnabled) {
-          setIsMiningEnabled(false);
-        }
-      }
-  }, [hashPower]);
 
   const buttonLabel = loading
     ? "Loading..."
@@ -576,6 +542,16 @@ const Page: React.FC = () => {
       ? "Max Videos Reached"
       : `Increase 5 GH/s (${adsWatched}/${MAX_ADS})`
 
+
+  if (isLoading) {
+    return (
+      <View style={styles.splash}>
+        <ActivityIndicator size="large" color="#22D3EE" />
+        <Text style={styles.splashText}>Loading data...</Text>
+      </View>
+    );
+  }
+  
   return (
     <View style={styles.container}>
 
@@ -607,7 +583,7 @@ const Page: React.FC = () => {
                   <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
                   <View style={styles.balanceTextContainer}>
                     <Text style={styles.balanceAmount}>
-                      {loadingBalance ? "Loading..." : btcBalance?.toFixed(12) + " BTC"}
+                      {isLoading ? "Loading..." : btcBalance?.toFixed(12) + " BTC"}
                     </Text>
                   </View>
                 </View>
@@ -874,6 +850,17 @@ export default Page;
 
 // Styles
 const styles = StyleSheet.create({
+  splash: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  splashText: {
+    color: '#fff',
+    marginTop: 16,
+    fontSize: 16,
+  },
   toggle_switch: {
     transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }]
   },
