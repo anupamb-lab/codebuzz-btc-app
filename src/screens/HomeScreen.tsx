@@ -301,12 +301,15 @@ const Page: React.FC = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     const isMiningActive =
-      isMiningEnabled && hashPower > 0 && startTime && Date.now() - startTime < MAX_MINING_DURATION;
+      isMiningEnabled && hashPower > 0 && startTime;
 
     console.log("Date Condition - Max Duration: ", MAX_MINING_DURATION);
     console.log("Date Condition - Current Time: ", Date.now());
     console.log("Date Condition - startTime: ", startTime);
+    console.log("Date Condition - Total Mining Time: ", (Date.now() - startTime!));
     console.log("Date Condition - Overall: ", Date.now() - startTime! < MAX_MINING_DURATION);
+    console.log("Date Condition - MiningActive ?: ", isMiningActive);
+    console.log("Date Condition - MiningEnabled ?: ", isMiningEnabled);
 
     if (isMiningActive) {
       intervalRef.current = setInterval(() => {
