@@ -253,7 +253,6 @@ const Page: React.FC = () => {
         }
 
         // Wallet balance
-        const btcValue = parseFloat(balanceData?.balance?.BTC?.$numberDecimal ?? 0);
         const btcDeposited = parseFloat(balanceData?.balance?.BTC_DEPOSIT?.$numberDecimal ?? 0);
 
         // Fetch BTC price
@@ -265,12 +264,13 @@ const Page: React.FC = () => {
         if (!isMounted) return;
 
         setUserWalletBalance(parseFloat((btcDeposited * btcPrice).toFixed(2)));
-        setBtcBalance(isNaN(btcValue) ? 0 : btcValue);
-        balanceRef.current = btcValue;
 
         // User details
         const details = userData.mining_details;
-        console.log("UserDetails #1: ", details, !!details.mining_isactive);
+        const user_calculatedBTC = parseFloat(userData?.calculated_btc ?? 0);
+        setBtcBalance(user_calculatedBTC);
+
+        console.log("UserDetails #1: ", details, !!details.mining_isactive, "OLD BTC COUNT: ", user_calculatedBTC);
 
         setHashPower(parseFloat(details.hashpower ?? 0));
         setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
