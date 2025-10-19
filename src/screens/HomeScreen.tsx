@@ -212,7 +212,8 @@ const Page: React.FC = () => {
     let isMounted = true;
 
     const local_time = new Date().toLocaleString();
-    console.log("User Local Time: ", local_time);
+    const offset = new Date().getTimezoneOffset();
+    console.log("User Local Time: ", local_time, offset);
 
     const init = async () => {
       if (!user?.id) return;
@@ -229,7 +230,7 @@ const Page: React.FC = () => {
           body: JSON.stringify({ user_id: user.id, token }),
         });
 
-        // Parallel API calls
+        // --- Wait for all API calls ---
         const [balanceRes, userDetailsRes, txnsRes, referralsRes] = await Promise.all([
           fetch(`${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`),
           fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}`),
@@ -237,6 +238,12 @@ const Page: React.FC = () => {
           fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
         ]);
 
+        // --- Only proceed if all responses are OK ---
+        if (![balanceRes, userDetailsRes, txnsRes, referralsRes].every(r => r.ok)) {
+          throw new Error("One or more API responses failed");
+        }
+
+        // Parse JSON after confirming responses are ready
         const [balanceData, userData, txnsData, refData] = await Promise.all([
           balanceRes.json(),
           userDetailsRes.json(),
@@ -244,19 +251,32 @@ const Page: React.FC = () => {
           referralsRes.json()
         ]);
 
+        // --- Wait conditionally: only proceed if all required data exists ---
+        if (!balanceData || !userData?.mining_details) {
+          console.warn("Data not ready yet, waiting...");
+          return; // Exit early, don't set state
+        }
+
         // Wallet balance
         const btcValue = parseFloat(balanceData?.balance?.BTC?.$numberDecimal ?? 0);
         const btcDeposited = parseFloat(balanceData?.balance?.BTC_DEPOSIT?.$numberDecimal ?? 0);
+
+        // Fetch BTC price
         const priceRes = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
           params: { ids: "bitcoin", vs_currencies: "usd" }
         });
         const btcPrice = priceRes.data.bitcoin.usd;
+
+        if (!isMounted) return;
+
         setUserWalletBalance(parseFloat((btcDeposited * btcPrice).toFixed(2)));
         setBtcBalance(isNaN(btcValue) ? 0 : btcValue);
         balanceRef.current = btcValue;
 
         // User details
-        const details = userData?.mining_details ?? {};
+        const details = userData.mining_details;
+        console.log("UserDetails #1: ", details, !!details.mining_isactive);
+
         setHashPower(parseFloat(details.hashpower ?? 0));
         setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
         setIsMiningEnabled(!!details.mining_isactive);
@@ -269,20 +289,6 @@ const Page: React.FC = () => {
 
         // Referrals
         setUserReferrals(Number(refData?.count) || 0);
-
-        // Start mining interval
-        if (details.mining_isactive && details.hashpower > 0) {
-          intervalRef.current = setInterval(() => {
-            setBtcBalance(prev => {
-              const updated = prev + details.hashpower * BTC_PER_HASHPOWER_PER_SEC;
-              balanceRef.current = updated;
-              return updated;
-            });
-          }, 1000);
-          miningAnimationRef.current?.play();
-        } else {
-          miningAnimationRef.current?.pause();
-        }
 
       } catch (err) {
         console.error("Initialization error:", err);
@@ -298,6 +304,22 @@ const Page: React.FC = () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [user]);
+
+  useEffect(() => {
+    // Start mining interval only if data is ready
+    if (isMiningEnabled && hashPower > 0) {
+      intervalRef.current = setInterval(() => {
+        setBtcBalance(prev => {
+          const updated = prev + hashPower * BTC_PER_HASHPOWER_PER_SEC;
+          balanceRef.current = updated;
+          return updated;
+        });
+      }, 1000);
+      miningAnimationRef.current?.play();
+    } else {
+      miningAnimationRef.current?.pause();
+    }
+  }, [isMiningEnabled, hashPower]);
 
   async function getBTCPrice() {
     try {
