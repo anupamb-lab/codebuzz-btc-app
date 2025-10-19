@@ -304,7 +304,11 @@ const Page: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    // Start mining interval only if data is ready
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (isMiningEnabled && hashPower > 0) {
       intervalRef.current = setInterval(() => {
         setBtcBalance(prev => {
@@ -314,9 +318,24 @@ const Page: React.FC = () => {
         });
       }, 1000);
       miningAnimationRef.current?.play();
+
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(blinkAnim, { toValue: 1, duration: 500, useNativeDriver: false }),
+          Animated.timing(blinkAnim, { toValue: 0, duration: 500, useNativeDriver: false }),
+        ])
+      ).start();
     } else {
       miningAnimationRef.current?.pause();
+      blinkAnim.setValue(0);
     }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isMiningEnabled, hashPower]);
 
   async function getBTCPrice() {
@@ -366,129 +385,12 @@ const Page: React.FC = () => {
     }
   }, [user?.id]);
 
-  const fetchBalance = async () => {
-    try {
-    const fetch_balance_uri = `${get_data_uri(
-        "GET_WALLET_BALANCE"
-    )}?userId=${user.id}`;
-    console.log("Fetch Balance URL: ", fetch_balance_uri);
-
-    const res = await fetch(fetch_balance_uri);
-    const data = await res.json();
-
-    // console.log("USER-BALANCE-RESPOSNE: ", res);
-    console.log("USER-BALANCE-DATA: ", data);
-
-    if (res.ok && data.balance) {
-      const btcValue = parseFloat(
-      data.balance.BTC?.$numberDecimal ?? data.balance.BTC ?? "0"
-      );
-
-      const btcValueDeposited = parseFloat(
-        data.balance.BTC_DEPOSIT?.$numberDecimal ?? data.balance.BTC ?? "0"
-      );
-      
-      const safeVal = isNaN(btcValue) ? 0 : btcValue;
-
-      const price = await getBTCPrice();
-
-      const dollar_balance = parseFloat((btcValueDeposited * price).toFixed(2))
-
-      setUserWalletBalance(dollar_balance);
-
-      console.log("Setting BTC Balance #1: ", safeVal);
-
-      setBtcBalance(safeVal);
-      balanceRef.current = safeVal;
-    }
-    } catch (err) {
-    console.error("Error fetching balance:", err);
-    } finally {
-    setLoadingBalance(false);
-    }
-  };
-
     const blinkAnim = useRef(new Animated.Value(0)).current;
-
-    const fetchUserDetails = async () => {
-      try {
-      const fetch_user_details_uri = `${get_data_uri(
-          "USERMININGDETAILS"
-      )}/${user.id}`;
-
-      // console.log("Fetch UserData URL: ", fetch_user_details_uri);
-
-      const res = await fetch(fetch_user_details_uri);
-      const data = await res.json();
-
-      // console.log("UserData - RESPOSNE: ", res);
-      console.log("UserData - DATA: ", data);
-
-      if (res.ok) {
-        const HashPowerValue = parseFloat(
-          data.mining_details.hashpower ?? 0
-        );
-
-        const ReawrdedAdsWatched = parseFloat(
-          data.mining_details.rewarded_ads_watched ?? 0
-        );
-
-        const LastMiningState = data.mining_details.mining_isactive ?? false;
-
-        const LastKnownStartTime = data.mining_details.start_time;
-        
-        const HashsafeVal = isNaN(HashPowerValue) ? 0 : HashPowerValue;
-        const ReawrdedAdsWatchedsafeVal = isNaN(ReawrdedAdsWatched) ? 0 : ReawrdedAdsWatched;
-        const LastMiningStatesafeVal = isNaN(LastMiningState) ? false : LastMiningState;
-        const LastKnownStartTimesafeVal = isNaN(LastKnownStartTime) ? Date.now() : LastKnownStartTime;
-
-        setHashPower(HashsafeVal);
-        setAdsWatched(ReawrdedAdsWatchedsafeVal);
-        setIsMiningEnabled(LastMiningStatesafeVal);
-        setStartTime(LastKnownStartTimesafeVal);
-
-        if (!hashPower || hashPower <= 0) {
-          if (isMiningEnabled) {
-            setIsMiningEnabled(false);
-          }
-        }
-
-        const overallBtc = data.calculated_btc;
-        // console.log("Setting BTC Balance #2: ", overallBtc);
-        if (overallBtc != 0 && overallBtc != null) setBtcBalance(overallBtc);
-        
-      }
-      } catch (err) {
-      console.error("UserData - Error fetching UserData:", err);
-      } finally {
-      }
-    };
 
     const backgroundColor = blinkAnim.interpolate({
       inputRange: [0, 1],
       outputRange: ["#111827", "#22D3EE"], // dark -> cyan blink
     });
-  
-  
-    const syncBalance = async () => {
-      try {
-        const res = await fetch(get_data_uri("SET_WALLET_BALANCE"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            asset: "BTC",
-            amount: balanceRef.current,
-          }),
-        });
-  
-        const data = await res.json();
-        console.log("Setting Balance in DB: ", balanceRef.current);
-        console.log("API RESPONSE: ", data);
-      } catch (err) {
-        console.error("Error syncing balance:", err);
-      }
-    };
 
     const syncUserData = async (
       hp?: number,
@@ -550,27 +452,6 @@ const Page: React.FC = () => {
         console.log("User Details - API RESPONSE: ", data);
       } catch (err) {
         console.error("Error syncing user details:", err);
-      }
-    };
-  
-    // -----------------------------
-    // Referrals
-    // -----------------------------
-    const get_referrals = async () => {
-      try {
-        const fetch_referrals_uri = `${get_data_uri("REFERRALS")}?code=${encodeURIComponent(
-          user.referralCode
-        )}`;
-  
-        const res = await fetch(fetch_referrals_uri, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-  
-        const data = await res.json();
-        setUserReferrals(Number(data.count) || 0);
-      } catch (error) {
-        console.error("Error fetching referrals:", error);
       }
     };
 
