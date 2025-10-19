@@ -238,11 +238,6 @@ const Page: React.FC = () => {
           fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
         ]);
 
-        // --- Only proceed if all responses are OK ---
-        if (![balanceRes, userDetailsRes, txnsRes, referralsRes].every(r => r.ok)) {
-          throw new Error("One or more API responses failed");
-        }
-
         // Parse JSON after confirming responses are ready
         const [balanceData, userData, txnsData, refData] = await Promise.all([
           balanceRes.json(),
