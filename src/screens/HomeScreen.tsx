@@ -211,6 +211,9 @@ const Page: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
 
+    const local_time = new Date().toLocaleString();
+    console.log("User Local Time: ", local_time);
+
     const init = async () => {
       if (!user?.id) return;
 
@@ -474,15 +477,27 @@ const Page: React.FC = () => {
     ) => {
       try {
 
+        const offset = new Date().getTimezoneOffset();
+        const local_time = new Date().toLocaleString();
+
         var starttime = null;
         var endtime = null;
+
+        var local_start_time = null;
+        var local_end_time = null;
 
         if (isMiningEnabled) {
           starttime = Date.now();
           endtime = null;
+
+          local_start_time = local_time;
+          local_end_time = null;
         } else {
           starttime = null;
           endtime = Date.now();
+
+          local_start_time = null;
+          local_end_time = local_time;
         }
         
         const user_mining_data = {
@@ -492,7 +507,10 @@ const Page: React.FC = () => {
           rewarded_ads_watched: ads ?? adsWatched, 
           random_ads_watched: 0,
           start_time: starttime,
-          stop_time: endtime
+          stop_time: endtime,
+          local_start_time: local_start_time,
+          local_end_time: local_end_time,
+          offset: offset
         };
 
         const set_user_data_uri = get_data_uri("USERMININGDETAILS");
