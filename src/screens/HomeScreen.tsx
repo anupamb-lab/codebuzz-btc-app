@@ -1037,7 +1037,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: Platform.OS === 'ios' ? 8 : 4,
     minHeight: Platform.OS === 'ios' ? 54 : 55,
   },
   actionButtonText: {

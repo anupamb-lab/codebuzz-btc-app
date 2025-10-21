@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(240,255,255,0.14)',
     padding: 16,
     borderRadius: 12,
-    marginBottom: 24,
+    marginBottom: 40,
   },
   formTitle: {
     color: 'white',
