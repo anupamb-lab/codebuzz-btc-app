@@ -18,11 +18,16 @@ import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
 import axios from 'axios';
 
-const paymentMethods = [
-  { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
-  { key: 'card', label: 'Credit/Debit Card', icon: 'card-outline' },
-  { key: 'bank', label: 'Bank Deposit', icon: 'business-outline' },
-];
+const paymentMethods =
+  Platform.OS === 'android'
+  ? [
+      { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
+    ]
+  : [
+      { key: 'crypto', label: 'Pay with Crypto', icon: 'logo-bitcoin' },
+      { key: 'card', label: 'Credit/Debit Card', icon: 'card-outline' },
+      { key: 'bank', label: 'Bank Deposit', icon: 'business-outline' },
+    ];
 
 const coinOptions = ['BTC', 'USDT', 'USDC'];
 const chainOptions = ['BTC', 'BEP20'];
