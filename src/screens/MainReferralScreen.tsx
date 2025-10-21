@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   formBox: {
-    width: '100%',
+    width: Platform.OS === 'ios' ? '100%' : 'auto',
     borderRadius: 16,
     padding: 16,
   },
