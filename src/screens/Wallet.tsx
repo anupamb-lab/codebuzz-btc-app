@@ -135,14 +135,15 @@ const WalletScreen = () => {
 
   useEffect(() => {
     async function updateBalance() {
+      const final_balance = btcBalance / 4;
       if (showUSD) {
         setBalanceLoading(true);
         const price = await getBTCPrice();
-        const dollar_balance = btcBalance * price
+        const dollar_balance = final_balance * price
         setDisplayedBalance(`$${dollar_balance.toFixed(2)}`);
         setBalanceLoading(false);
       } else {
-        setDisplayedBalance(`${btcBalance.toFixed(12)} BTC`);
+        setDisplayedBalance(`${final_balance.toFixed(12)} BTC`);
       }
     }
     updateBalance();

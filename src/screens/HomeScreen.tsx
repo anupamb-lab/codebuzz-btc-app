@@ -303,7 +303,7 @@ const Page: React.FC = () => {
 
         if (!isMounted) return;
 
-        setUserWalletBalance(parseFloat((btcDeposited * btcPrice).toFixed(2)));
+        setUserWalletBalance(parseFloat(((btcDeposited * btcPrice)/4).toFixed(2)));
 
         // User details
         const details = userData.mining_details;
