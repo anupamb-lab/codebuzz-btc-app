@@ -141,7 +141,8 @@ const DepositScreen = () => {
           {[
             'Deposits may take 1-5 business days to clear depending on the method.',
             'Please ensure the name on the deposit account matches your wallet name.',
-            'Minimum deposit amount is $5.00.',
+            'Minimum deposit amount is $10.00 for USDT/USDC',
+            'Minimum deposit amount is $20.00 for BTC',
             'For Crypto deposits, double-check the wallet address and network.',
           ].map((note, i) => (
             <View key={i} style={styles.noteItem}>

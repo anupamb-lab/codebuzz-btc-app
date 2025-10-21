@@ -32,7 +32,7 @@ import RNFS from 'react-native-fs';
 
 const MAX_ADS = 10;
 const BASE_HASHPOWER_PER_AD = 5;
-const BTC_PER_HASHPOWER_PER_SEC = 0.000000000001;
+const BTC_PER_HASHPOWER_PER_SEC = 0.0000000000000001;
 const MAX_MINING_DURATION = 24 * 60 * 60 * 1000;
 // const MAX_MINING_DURATION = 60 * 1000;
 
@@ -502,7 +502,7 @@ const Page: React.FC = () => {
                   <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
                   <View style={styles.balanceTextContainer}>
                     <Text style={styles.balanceAmount}>
-                      {isLoading ? "Loading..." : btcBalance?.toFixed(12) + " BTC"}
+                      {isLoading ? "Loading..." : btcBalance?.toFixed(16) + " BTC"}
                     </Text>
                   </View>
                 </View>
@@ -898,7 +898,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceAmount: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
   },
