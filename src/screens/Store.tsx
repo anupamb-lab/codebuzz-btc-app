@@ -23,6 +23,7 @@ interface SubscriptionItem {
   _id: string;
   name: string;
   hashrate: number;
+  unit: string;
   duration: number;
   maintenance_cost: number;
   plan_cost: number;
@@ -138,9 +139,9 @@ const StoreScreen = () => {
                 <Text style={styles.planTitle}>{plan.name}</Text>
               </View>
 
-              <Text style={styles.planSub}>Hashrate: {`${plan.hashrate}`}</Text>
+              <Text style={styles.planSub}>Hashrate: {`${plan.hashrate} ${plan.unit}`}</Text>
               <Text style={styles.planSub}>Duration: {`${plan.duration}`}</Text>
-              <Text style={styles.planSub}>Daily Maintenance: {`$ ${plan.maintenance_cost}`}</Text>
+              <Text style={styles.planSub}>Daily Maintenance: {`$${plan.maintenance_cost}`}</Text>
 
               <View style={styles.planFooter}>
                 <Text style={[styles.planPrice, { color: fcolor }]}>{`$${plan.plan_cost}`}</Text>

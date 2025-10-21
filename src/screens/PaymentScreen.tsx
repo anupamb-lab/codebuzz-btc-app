@@ -303,7 +303,7 @@ const MakePaymentScreen = ({ navigation, route }: any) => {
   const renderCardForm = () => (
     <View style={styles.formBox}>
       <Text style={styles.formTitle}>Pay with Credit/Debit Card</Text>
-      <Text style={styles.formSub}>You’ll be redirected to a secure payment gateway to complete your transaction.</Text>
+      <Text style={styles.formSub}>You'll be redirected to a secure payment gateway to complete your transaction.</Text>
     </View>
   );
 
