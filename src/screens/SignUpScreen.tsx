@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     height: 55,
-    width: Platform.OS === 'ios' ? 280 : 350
+    width: Platform.OS === 'ios' ? 280 : '100%'
   },
   inputIcon: {
     fontSize: 16,

@@ -487,30 +487,30 @@ const Page: React.FC = () => {
 
         {/* Main Balance Card */}
         <View style={styles.shadowWrapper}>
-          <TouchableOpacity 
-            onPress={() => navigation.navigate('BalanceHistoryScreen')} 
-            style={styles.balanceCard}
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('BalanceHistoryScreen')} 
+          style={styles.balanceCard}
+        >
+          <LinearGradient
+            colors={['#667eea', '#764ba2']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.balanceGradient}
           >
-            <LinearGradient
-              colors={['#667eea', '#764ba2']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.balanceGradient}
-            >
-              <View style={styles.balanceContent}>
-                <View style={styles.balanceLeft}>
-                  <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
-                  <View style={styles.balanceTextContainer}>
-                    <Text style={styles.balanceAmount}>
-                      {isLoading ? "Loading..." : btcBalance?.toFixed(16) + " BTC"}
-                    </Text>
-                  </View>
+            <View style={styles.balanceContent}>
+              <View style={styles.balanceLeft}>
+                <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
+                <View style={styles.balanceTextContainer}>
+                  <Text style={styles.balanceAmount}>
+                    {isLoading ? "Loading..." : btcBalance?.toFixed(16) + " BTC"}
+                  </Text>
                 </View>
-                <Icon name="chevron-right" size={24} color="#fff" />
               </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+              <Icon name="chevron-right" size={24} color="#fff" />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
 {/* Notification Banner (like circled section) */}
         <View style={styles.notificationBanner}>
           <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
@@ -860,7 +860,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? 15 : 0,
+    padding: Platform.OS === 'ios' ? 15 : 0,
     paddingLeft: Platform.OS === 'ios' ? 20 : 0,
     paddingRight: Platform.OS === 'ios' ? 20 : 0
   },
@@ -870,12 +870,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     borderRadius: 20,
+    marginVertical: 12,
   },
 
   balanceCard: {
     borderRadius: 20,
     overflow: 'hidden',
-    paddingBottom: Platform.OS === 'ios' ? 10: 20
   },
 
   balanceGradient: {
@@ -889,8 +889,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   balanceTextContainer: {
-    marginLeft: 16,
+    marginLeft: 8,
     flex: 1,
+    alignItems: 'flex-end',
   },
   balanceLabel: {
     fontSize: 14,
@@ -898,9 +899,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceAmount: {
-    fontSize: 18,
+    fontSize: Platform.OS === 'ios' ? 17 : 25,
     fontWeight: 'bold',
     color: '#fff',
+    textAlign: 'right',
   },
   miningSection: {
     backgroundColor: '#1F2937',

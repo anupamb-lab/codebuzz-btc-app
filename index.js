@@ -11,4 +11,5 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Firebase FCM message received in background:', remoteMessage);
 });
 
+AppRegistry.registerComponent('BitPlay', () => App);
 AppRegistry.registerComponent('BitPlayPro', () => App);
