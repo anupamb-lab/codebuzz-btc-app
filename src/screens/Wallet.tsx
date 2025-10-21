@@ -143,7 +143,7 @@ const WalletScreen = () => {
         setDisplayedBalance(`$${dollar_balance.toFixed(2)}`);
         setBalanceLoading(false);
       } else {
-        setDisplayedBalance(`${final_balance.toFixed(12)} BTC`);
+        setDisplayedBalance(`${final_balance.toFixed(16)} BTC`);
       }
     }
     updateBalance();

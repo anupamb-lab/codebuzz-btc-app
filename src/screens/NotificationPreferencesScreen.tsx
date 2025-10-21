@@ -9,7 +9,8 @@ import {
   StatusBar,
   Alert,
   ImageBackground,
-  ScrollView
+  ScrollView,
+  Platform
 } from 'react-native';
 import { get_data_uri } from '../config/api';
 import { useAuth } from '../auth/AuthProvider';
@@ -152,6 +153,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
+    marginTop: Platform.OS === 'ios' ? 0 : 50,
+    marginBottom: Platform.OS === 'ios' ? 0 : 50
   },
   backArrow: {
     color: 'white',

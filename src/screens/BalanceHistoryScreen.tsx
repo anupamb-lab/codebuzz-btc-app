@@ -137,6 +137,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: Platform.OS === 'ios' ? 0 : 50,
+    marginBottom: Platform.OS === 'ios' ? 0 : 50
   },
   topBarTitle: {
     color: '#fff',

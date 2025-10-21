@@ -9,6 +9,7 @@ import {
   ImageBackground,
   SafeAreaView,
   StatusBar,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Image } from 'react-native';
@@ -173,6 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16,
     position: 'relative',
+    marginTop: Platform.OS === 'ios' ? 0 : 50,
   },
   backButton: {
     position: 'absolute',
