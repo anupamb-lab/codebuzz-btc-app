@@ -64,6 +64,39 @@ const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress })
   </TouchableOpacity>
 );
 
+const useCountdown = (initialSeconds: number) => {
+  const [timeLeft, setTimeLeft] = useState(initialSeconds);
+
+  // Reset when new initialSeconds arrives
+  useEffect(() => {
+    setTimeLeft(initialSeconds);
+  }, [initialSeconds]);
+
+  // Tick down each second
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  // Format to HH:MM:SS
+  const formatTime = (s: number) => {
+    const hrs = String(Math.floor(s / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+    const secs = String(s % 60).padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+  };
+
+  return {
+    formatted: formatTime(timeLeft),
+    seconds: timeLeft,
+  };
+};
+
 const Page: React.FC = () => {
   const { user } = useAuth();
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -76,6 +109,7 @@ const Page: React.FC = () => {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [loadingBalance, setLoadingBalance] = useState(true);
   const [isMiningEnabled, setIsMiningEnabled] = useState(false);
+  const [serverTimeRemaining, setServerTimeRemaining] = useState(0);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -86,6 +120,9 @@ const Page: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [user_referrals, setUserReferrals] = useState(0);
+  const [timer, setTimer] = useState(0);
+
+  const { formatted: formattedTimer, seconds: timerSecs } = useCountdown(serverTimeRemaining);
 
   interface Activity {
     type: string;
@@ -279,6 +316,7 @@ const Page: React.FC = () => {
         setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
         setIsMiningEnabled(!!details.mining_isactive);
         setStartTime(details.start_time ?? null);
+        setServerTimeRemaining(userData?.time_remaining ?? 0);
 
         // Transactions
         if (Array.isArray(txnsData?.transactions)) {
@@ -325,9 +363,6 @@ const Page: React.FC = () => {
           Animated.timing(blinkAnim, { toValue: 0, duration: 500, useNativeDriver: false }),
         ])
       ).start();
-    } else {
-      miningAnimationRef.current?.pause();
-      blinkAnim.setValue(0);
     }
 
     return () => {
@@ -625,6 +660,7 @@ const Page: React.FC = () => {
 
         {/* Action Buttons */}
         <View style={styles.actionButtonsRow}>
+          
           <TouchableOpacity 
             style={styles.actionButton}
             onPress={() => navigation.navigate('DailyRewardsScreen')}
@@ -633,10 +669,15 @@ const Page: React.FC = () => {
               colors={['#22D3EE', '#C084FC']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.actionButtonGradient}
+              style={[styles.actionButtonGradient, styles.rewardButtonGradient]}
             >
-              <Icon name="gift" size={20} color="#fff" />
-              <Text style={styles.actionButtonText}>Free Rewards</Text>
+              <View style={styles.rewardButtonContent}>
+                <View style={styles.rewardTopRow}>
+                  <Icon name="gift" size={20} color="#fff" />
+                  <Text style={styles.actionButtonText}>Free Rewards</Text>
+                </View>
+                <Text style={styles.rewardTimerText}>{formattedTimer}</Text>
+              </View>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -993,7 +1034,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    minHeight: Platform.OS === 'ios' ? 45 : 55,
+    minHeight: Platform.OS === 'ios' ? 54 : 55,
   },
   actionButtonText: {
     fontSize: 16,
@@ -1167,5 +1208,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 40,
     minHeight: Platform.OS === 'ios' ? 45 : 55,
+  },
+  rewardButtonGradient: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  rewardButtonContent: {
+    alignItems: 'center',
+  },
+
+  rewardTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+
+  rewardTimerText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#E0E7FF',
+    marginTop: 2,
+    opacity: 0.9,
   },
 });

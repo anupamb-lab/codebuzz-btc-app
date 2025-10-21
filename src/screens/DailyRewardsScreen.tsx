@@ -10,6 +10,7 @@ import {
   ScrollView,
   Modal,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { RootStackParamList } from "../components/types";
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
+    marginTop: Platform.OS === 'ios' ? 0 : 40
   },
   topTitle: {
     color: "white",

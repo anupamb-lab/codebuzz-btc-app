@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
 
   backButton: {
     marginRight: 5,
+    marginTop: Platform.OS === 'ios' ? 0 : 40
   },
 
   headerTitle: {
