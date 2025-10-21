@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16,
     position: 'relative',
+    marginTop: Platform.OS === 'ios' ? 0 : 45
   },
   backArrow: {
     color: 'white',

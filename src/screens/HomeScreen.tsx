@@ -522,30 +522,33 @@ const Page: React.FC = () => {
 
         {/* Main Balance Card */}
         <View style={styles.shadowWrapper}>
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('BalanceHistoryScreen')} 
-          style={styles.balanceCard}
-        >
-          <LinearGradient
-            colors={['#667eea', '#764ba2']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.balanceGradient}
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('BalanceHistoryScreen')} 
+            style={styles.balanceCard}
           >
-            <View style={styles.balanceContent}>
-              <View style={styles.balanceLeft}>
-                <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
-                <View style={styles.balanceTextContainer}>
-                  <Text style={styles.balanceAmount}>
-                    {isLoading ? "Loading..." : btcBalance?.toFixed(16) + " BTC"}
-                  </Text>
+            <LinearGradient
+              colors={['#667eea', '#764ba2']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.balanceGradient}
+            >
+              <View style={styles.balanceContent}>
+                <View style={styles.balanceLeft}>
+                  <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
+                  <View style={styles.balanceTextContainer}>
+                    <Text style={styles.balanceAmount}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.5}>
+                      {isLoading ? "Loading..." : btcBalance?.toFixed(16) + " BTC"}
+                    </Text>
+                  </View>
                 </View>
+                <Icon name="chevron-right" size={24} color="#fff" />
               </View>
-              <Icon name="chevron-right" size={24} color="#fff" />
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
 {/* Notification Banner (like circled section) */}
         <View style={styles.notificationBanner}>
           <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
@@ -933,6 +936,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     flex: 1,
     alignItems: 'flex-end',
+    maxWidth: '85%'
   },
   balanceLabel: {
     fontSize: 14,

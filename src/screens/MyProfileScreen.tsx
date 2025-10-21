@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: Platform.OS === 'ios' ? 0 : 45
   },
   topBarTitle: {
     color: '#fff',

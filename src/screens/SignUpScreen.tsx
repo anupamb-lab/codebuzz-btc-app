@@ -318,7 +318,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = () => {
             ) : (
               <>
                 <TouchableOpacity
-                  style={[styles.socialButtonWide, styles.googleBtn]}
+                  style={[styles.socialButtonWide, styles.googleBtn, styles.marginbottom ]}
                   onPress={loginWithGoogle}
                   activeOpacity={0.85}
                 >
@@ -669,6 +669,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '45%',
   },
+  marginbottom: {
+    marginBottom: 100
+  }
 });
 
 export default SignUpScreen;
