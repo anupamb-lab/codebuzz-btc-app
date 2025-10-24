@@ -48,6 +48,13 @@ interface GradientButtonProps {
   disabled?: boolean; 
 }
 
+interface GradientButtonProp {
+  text: string;
+  fullWidth?: boolean;
+  onPress?: () => void;
+  disabled?: boolean; 
+}
+
 interface FAQItem {
   _id: string;
   name: string;
@@ -67,6 +74,23 @@ const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress })
       style={styles.gradientButton}
     >
       {icon && <Icon name={icon} size={18} color="#fff" style={styles.buttonIcon} />}
+      <Text style={styles.buttonText}>{text}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
+);
+
+const GradientButton: React.FC<GradientButtonProp> = ({ text, onPress }) => (
+  <TouchableOpacity 
+    style={{ flex: 1, borderRadius: 2, overflow: "hidden" }}
+    activeOpacity={0.8}
+    onPress={onPress}
+  >
+    <LinearGradient
+      colors={['#22D3EE', '#C084FC']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={styles.gradientClaimButton}
+    >
       <Text style={styles.buttonText}>{text}</Text>
     </LinearGradient>
   </TouchableOpacity>
@@ -325,9 +349,13 @@ const Page: React.FC = () => {
           setIsLoading(true);
           await logToFile('Home focused - reloading data');
 
+          const local_time = new Date().toLocaleString();
+
+          console.log("Current Time: ", encodeURIComponent(local_time))
+
           const [balanceRes, userDetailsRes, txnsRes, referralsRes] = await Promise.all([
             fetch(`${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`),
-            fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}`),
+            fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}?local_time=${encodeURIComponent(local_time)}`),
             fetch(`${get_data_uri("GET_RECENT_TRANSACTIONS")}/${user.id}`),
             fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
           ]);
@@ -702,9 +730,7 @@ const Page: React.FC = () => {
             </View>
 
             {/* Claim Button */}
-            <TouchableOpacity style={styles.claimButton}>
-              <Text style={styles.claimButtonText}>Claim</Text>
-            </TouchableOpacity>
+            <GradientButton onPress={() => show() } text = "Claim" />
           </TouchableOpacity>
 
           {/* Box 2 - Video Claim */}
@@ -734,60 +760,13 @@ const Page: React.FC = () => {
             </View>
 
             {/* Claim Button */}
-            <TouchableOpacity style={styles.claimButton}>
-              <Text style={styles.claimButtonText}>{buttonLabel}</Text>
-            </TouchableOpacity>
+            <GradientButton onPress={() => show()} text = {buttonLabel} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.gradientButtonContainer}>
-          <GradientButtonB icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Free Rewards" fullWidth />
+          <GradientButtonB icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Claim Daily Rewards" fullWidth />
         </View>
-
-        {/* Quick Actions */}
-        {/* <View style={styles.quickActionsRow}>
-          <TouchableOpacity 
-            style={styles.quickActionCard}
-            onPress={() => navigation.navigate('DepositScreen')}
-          >
-            <View style={styles.iconBox}>
-              <Image
-                source={require('../assets/images/home_deposit.png')}
-                style={styles.iconImage}
-                resizeMode="contain"
-              />
-            </View>
-            <Text style={styles.quickActionText}>Deposit</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.quickActionCard}
-            onPress={() => navigation.navigate('WithdrawScreen')}
-          >
-            <View style={styles.iconBox}>
-              <Image
-                source={require('../assets/images/home_withdrawal.png')}
-                style={styles.iconImage}
-                resizeMode="contain"
-              />
-            </View>
-            <Text style={styles.quickActionText}>Withdraw</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.quickActionCard}
-            onPress={() => navigation.navigate('Wallet')}
-          >
-            <View style={styles.iconBox}>
-              <Image
-                source={require('../assets/images/home_wallet.png')}
-                style={styles.iconImage}
-                resizeMode="contain"
-              />
-            </View>
-            <Text style={styles.quickActionText}>Wallet</Text>
-          </TouchableOpacity>
-        </View> */}
 
         <View style={styles.FAQHeading}>
           <Text style={styles.sectionTitle}>FAQ</Text>
@@ -1293,6 +1272,14 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     minHeight: Platform.OS === 'ios' ? 45 : 55,
   },
+  gradientClaimButton: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 13,
+    minHeight: Platform.OS === 'ios' ? 35 : 40,
+  },
   rewardButtonGradient: {
     flexDirection: 'column',
     alignItems: 'center',
@@ -1440,8 +1427,8 @@ const styles = StyleSheet.create({
 
   powerRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
     marginTop: 10,
+    alignItems: 'baseline',
   },
 
   powerValue: {
