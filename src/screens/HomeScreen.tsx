@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -10,6 +11,7 @@ import {
   Alert,
   Animated,
   ActivityIndicator,
+  Easing,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -44,6 +46,12 @@ interface GradientButtonProps {
   fullWidth?: boolean;
   onPress?: () => void;
   disabled?: boolean; 
+}
+
+interface FAQItem {
+  _id: string;
+  name: string;
+  message: string;
 }
 
 const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress }) => (
@@ -102,7 +110,9 @@ const Page: React.FC = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const [btcBalance, setBtcBalance] = useState(0);
+  const [btcReferralBalance, setBtcRefBalance] = useState(0);
   const [userBalance, setUserWalletBalance] = useState(0);
+  const [userBalanceBTC, setUserBTCWalletBalance] = useState(0);
   const { hashPower, setHashPower, addHashPower, resetHashPower } = useHashPower();
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -124,6 +134,10 @@ const Page: React.FC = () => {
 
   const { formatted: formattedTimer, seconds: timerSecs } = useCountdown(serverTimeRemaining);
 
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [faqVisible, setFaqVisible] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+
   interface Activity {
     type: string;
     method: string;
@@ -133,6 +147,78 @@ const Page: React.FC = () => {
     date: string;
     isPositive: boolean;
   }
+
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+
+  type FAQResponse = {
+    success: boolean;
+    faqs: FAQItem[];
+  };
+
+  const [faqData, setFaqData] = useState<FAQItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      try {
+        const response = await axios.get<FAQResponse>(
+          get_data_uri('GET_FAQS')
+        );
+        setFaqData(response.data.faqs);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load FAQ data');
+      }
+    };
+
+    fetchFAQ();
+  }, []);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedItems(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
+    );
+  };
+
+  const renderFAQItem = (item: FAQItem) => {
+    const isExpanded = expandedItems.includes(item._id);
+
+    return (
+      <View key={item._id} style={styles.faqItem}>
+        <TouchableOpacity
+          style={styles.questionContainer}
+          onPress={() => toggleExpanded(item._id)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.questionText}>{item.name}</Text>
+          <Text style={[styles.expandIcon, isExpanded && styles.expandIconRotated]}>
+            ▼
+          </Text>
+        </TouchableOpacity>
+
+        {isExpanded && (
+          <View style={styles.answerContainer}>
+            <Text style={styles.answerText}>{item.message}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const toggleFAQ = () => {
+    const toValue = faqVisible ? 0 : contentHeight;
+
+    setFaqVisible(!faqVisible);
+
+    Animated.timing(animatedHeight, {
+      toValue,
+      duration: 350,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false,
+    }).start();
+  };
 
   const logToFile = async (message: string) => {
     const logFilePath = `${RNFS.DocumentDirectoryPath}/app_log.txt`;
@@ -229,117 +315,70 @@ const Page: React.FC = () => {
   // Load State
   // -----------------------------
 
-  // useEffect(() => {
-  //   if (intervalRef.current) clearInterval(intervalRef.current);
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
 
-  //   const isMiningActive =
-  //     isMiningEnabled && hashPower > 0 && startTime;
+      const init = async () => {
+        if (!user?.id) return;
+        try {
+          setIsLoading(true);
+          await logToFile('Home focused - reloading data');
 
-  //   console.log("Date Condition - Max Duration: ", MAX_MINING_DURATION);
-  //   console.log("Date Condition - Current Time: ", Date.now());
-  //   console.log("Date Condition - startTime: ", startTime);
-  //   console.log("Date Condition - Total Mining Time: ", (Date.now() - startTime!));
-  //   console.log("Date Condition - Overall: ", Date.now() - startTime! < MAX_MINING_DURATION);
-  //   console.log("Date Condition - MiningActive ?: ", isMiningActive);
-  //   console.log("Date Condition - MiningEnabled ?: ", isMiningEnabled);
-    
-  // }, [hashPower, startTime, isMiningEnabled]);
+          const [balanceRes, userDetailsRes, txnsRes, referralsRes] = await Promise.all([
+            fetch(`${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`),
+            fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}`),
+            fetch(`${get_data_uri("GET_RECENT_TRANSACTIONS")}/${user.id}`),
+            fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
+          ]);
 
-  useEffect(() => {
-    let isMounted = true;
+          const [balanceData, userData, txnsData, refData] = await Promise.all([
+            balanceRes.json(),
+            userDetailsRes.json(),
+            txnsRes.json(),
+            referralsRes.json()
+          ]);
 
-    const local_time = new Date().toLocaleString();
-    const offset = new Date().getTimezoneOffset();
-    console.log("User Local Time: ", local_time, offset);
+          if (!isMounted) return;
 
-    setHashPower(0);
-    setIsMiningEnabled(false);
+          const btcDeposited = parseFloat(balanceData?.balance?.BTC_DEPOSIT?.$numberDecimal ?? 0);
+          const priceRes = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
+            params: { ids: "bitcoin", vs_currencies: "usd" }
+          });
+          const btcPrice = priceRes.data.bitcoin.usd;
 
-    const init = async () => {
-      if (!user?.id) return;
+          setUserBTCWalletBalance(btcDeposited);
 
-      try {
-        setIsLoading(true);
-        await logToFile('App launched');
+          setUserWalletBalance(parseFloat(((btcDeposited * btcPrice)/4).toFixed(2)));
 
-        // Get FCM token
-        const token = await messaging().getToken();
-        await fetch(get_data_uri('CREATE_FCM'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: user.id, token }),
-        });
+          const details = userData.mining_details;
+          const user_calculatedBTC = parseFloat(userData?.calculated_btc ?? 0);
+          setBtcBalance(user_calculatedBTC);
+          setHashPower(parseFloat(details.hashpower ?? 0));
+          setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
+          setIsMiningEnabled(!!details.mining_isactive);
+          setStartTime(details.start_time ?? null);
+          setServerTimeRemaining(userData?.time_remaining ?? 0);
 
-        // --- Wait for all API calls ---
-        const [balanceRes, userDetailsRes, txnsRes, referralsRes] = await Promise.all([
-          fetch(`${get_data_uri("GET_WALLET_BALANCE")}?userId=${user.id}`),
-          fetch(`${get_data_uri("USERMININGDETAILS")}/${user.id}`),
-          fetch(`${get_data_uri("GET_RECENT_TRANSACTIONS")}/${user.id}`),
-          fetch(`${get_data_uri("REFERRALS")}?code=${encodeURIComponent(user.referralCode)}`)
-        ]);
+          if (Array.isArray(txnsData?.transactions)) {
+            setRecentActivity(txnsData.transactions);
+          }
 
-        // Parse JSON after confirming responses are ready
-        const [balanceData, userData, txnsData, refData] = await Promise.all([
-          balanceRes.json(),
-          userDetailsRes.json(),
-          txnsRes.json(),
-          referralsRes.json()
-        ]);
-
-        // --- Wait conditionally: only proceed if all required data exists ---
-        if (!balanceData || !userData?.mining_details) {
-          console.warn("Data not ready yet, waiting...");
-          return; // Exit early, don't set state
+          setUserReferrals(Number(refData?.count) || 0);
+        } catch (err) {
+          console.error("Error reloading on focus:", err);
+        } finally {
+          if (isMounted) setIsLoading(false);
         }
+      };
 
-        // Wallet balance
-        const btcDeposited = parseFloat(balanceData?.balance?.BTC_DEPOSIT?.$numberDecimal ?? 0);
+      init();
 
-        // Fetch BTC price
-        const priceRes = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
-          params: { ids: "bitcoin", vs_currencies: "usd" }
-        });
-        const btcPrice = priceRes.data.bitcoin.usd;
-
-        if (!isMounted) return;
-
-        setUserWalletBalance(parseFloat(((btcDeposited * btcPrice)/4).toFixed(2)));
-
-        // User details
-        const details = userData.mining_details;
-        const user_calculatedBTC = parseFloat(userData?.calculated_btc ?? 0);
-        setBtcBalance(user_calculatedBTC);
-
-        console.log("UserDetails #1: ", details, !!details.mining_isactive, "OLD BTC COUNT: ", user_calculatedBTC);
-
-        setHashPower(parseFloat(details.hashpower ?? 0));
-        setAdsWatched(parseFloat(details.rewarded_ads_watched ?? 0));
-        setIsMiningEnabled(!!details.mining_isactive);
-        setStartTime(details.start_time ?? null);
-        setServerTimeRemaining(userData?.time_remaining ?? 0);
-
-        // Transactions
-        if (Array.isArray(txnsData?.transactions)) {
-          setRecentActivity(txnsData.transactions);
-        }
-
-        // Referrals
-        setUserReferrals(Number(refData?.count) || 0);
-
-      } catch (err) {
-        console.error("Initialization error:", err);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    init();
-
-    return () => {
-      isMounted = false;
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [user]);
+      return () => {
+        isMounted = false;
+      };
+    }, [user])
+  );
 
   useEffect(() => {
     if (intervalRef.current) {
@@ -389,36 +428,6 @@ const Page: React.FC = () => {
   // -----------------------------
   // API Calls
   // -----------------------------
-
-  const fetchTransactions = useCallback(async () => {
-    try {
-      const res = await fetch(`${get_data_uri('GET_RECENT_TRANSACTIONS')}/${user.id}`);
-      const data = await res.json();
-
-      // console.log("RecentTransactions - RAW: ", res);
-      console.log("RecentTransactions - RESPONSE: ", data);
-
-      if (res.ok && Array.isArray(data.transactions)) {
-        const txns: Activity[] = data.transactions.map((txn: any) => ({
-          type: txn.type,
-          method: txn.method,
-          date: txn.date,
-          amount: txn.amount,
-          amountNumeric: txn.amountNumeric,
-          isPositive: parseFloat(txn.amountNumeric?.$numberDecimal ?? '0') >= 0,
-        }));
-
-        // console.log("TXNs: ", txns);
-
-        setRecentActivityList(txns);
-      } else {
-        setRecentActivityList([]);
-      }
-    } catch (err) {
-      console.error("Error fetching RecentTransactions:", err);
-      setRecentActivityList([]);
-    }
-  }, [user?.id]);
 
     const blinkAnim = useRef(new Animated.Value(0)).current;
 
@@ -494,7 +503,7 @@ const Page: React.FC = () => {
     ? "Loading..."
     : adsWatched >= MAX_ADS
       ? "Max Videos Reached"
-      : `Increase 5 GH/s (${adsWatched}/${MAX_ADS})`
+      : `Claim (${adsWatched}/${MAX_ADS})`
 
 
   if (isLoading) {
@@ -513,28 +522,9 @@ const Page: React.FC = () => {
         {/* Header Section */}
         <View style={styles.headerSection}>
           <View style={styles.headerTop}>
-            <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeText}>Welcome back, {user?.name}!</Text>
-              <Text style={styles.subWelcomeText}>Your mining dashboard</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Main Balance Card */}
-        <View style={styles.shadowWrapper}>
-          <TouchableOpacity 
-            onPress={() => navigation.navigate('BalanceHistoryScreen')} 
-            style={styles.balanceCard}
-          >
-            <LinearGradient
-              colors={['#667eea', '#764ba2']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.balanceGradient}
-            >
-              <View style={styles.balanceContent}>
+            <View style={styles.balanceContent}>
                 <View style={styles.balanceLeft}>
-                  <Icon5 name="bitcoin" size={32} color="#FFFFFF" />
+                  <Icon5 name="bitcoin" size={25} color="#ffb700ff" />
                   <View style={styles.balanceTextContainer}>
                     <Text style={styles.balanceAmount}
                       numberOfLines={1}
@@ -544,12 +534,59 @@ const Page: React.FC = () => {
                     </Text>
                   </View>
                 </View>
-                <Icon name="chevron-right" size={24} color="#fff" />
               </View>
-            </LinearGradient>
+          </View>
+        </View>
+
+        <View style={styles.detailsRow}>
+          {/* Box 1 - Earning Details */}
+          <TouchableOpacity 
+            style={styles.detailBox}
+            onPress={() => navigation.navigate('BalanceHistoryScreen')}
+            >
+            <View style={styles.detailLeft}>
+              <Text
+                style={styles.detailBTCValue}
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}
+              >
+                <Text style={styles.detailBTCNumber}>
+                  {userBalanceBTC?.toFixed(16)}
+                </Text>
+                <Text style={styles.detailBTCUnit}> BTC</Text>
+              </Text>
+              <Text style={styles.detailSubtitle}>Earning Details</Text>
+            </View>
+
+            <Icon name="chevron-right" size={20} color="#9CA3AF" style={styles.detailArrow} />
+          </TouchableOpacity>
+
+          {/* Box 2 - Invitation Rewards */}
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("InternalReferral")}
+            style={styles.detailBox}
+            >
+            <View style={styles.detailLeft}>
+              <Text
+                style={styles.detailBTCValue}
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}
+              >
+                <Text style={styles.detailBTCNumber}>
+                  {btcReferralBalance?.toFixed(16)}
+                </Text>
+                <Text style={styles.detailBTCUnit}> BTC</Text>
+              </Text>
+              <Text style={styles.detailSubtitle}>Invitation Rewards</Text>
+            </View>
+
+            <Icon name="chevron-right" size={20} color="#9CA3AF" style={styles.detailArrow} />
           </TouchableOpacity>
         </View>
-{/* Notification Banner (like circled section) */}
+
+        {/* Notification Banner (like circled section) */}
         <View style={styles.notificationBanner}>
           <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
           <Text style={styles.notificationText} numberOfLines={1}>
@@ -640,83 +677,75 @@ const Page: React.FC = () => {
           </View>
         </View>
 
-        {/* Quick Stats Cards */}
-        <View style={styles.statsRow}>
-          <TouchableOpacity
-            style={styles.statCard}
-            onPress={() => navigation.navigate("Wallet")}
-          >
-            <Icon name="credit-card-multiple" size={26} color="#FFFFFF" />
-            <Text style={styles.statValue}>${userBalance}</Text>
-            <Text style={styles.statLabel}>Wallet Balance</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.statCard}
-            onPress={() => navigation.navigate("InternalReferral")}
-          >
-            <Icon name="account-heart" size={26} color="#FFFFFF" />
-            <Text style={styles.statValue}>{user_referrals}</Text>
-            <Text style={styles.statLabel}>Referrals</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtonsRow}>
-          
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('DailyRewardsScreen')}
-          >
-            <LinearGradient
-              colors={['#22D3EE', '#C084FC']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.actionButtonGradient, styles.rewardButtonGradient]}
-            >
-              <View style={styles.rewardButtonContent}>
-                <View style={styles.rewardTopRow}>
-                  <Icon name="gift" size={20} color="#fff" />
-                  <Text style={styles.actionButtonText}>Free Rewards</Text>
-                </View>
-                <Text style={styles.rewardTimerText}>{formattedTimer}</Text>
+        <View style={styles.claimRow}>
+          {/* Box 1 - Gift Claim */}
+          <TouchableOpacity style={styles.claimBox}>
+            {/* Top Row */}
+            <View style={styles.claimTopRow}>
+              <View style={styles.iconCorner}>
+                <Icon name="gift" size={16} color="#fff" />
               </View>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('Store')}
-          >
-            <LinearGradient
-              colors={['#22D3EE', '#C084FC']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionButtonGradient}
-            >
-              <Icon name="crown" size={20} color="#fff" />
-              <Text style={styles.actionButtonText}>Premium Miners</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.gradientButtonContainer}>
-          <GradientButtonB icon="play-circle" onPress={() => show()} text={buttonLabel} fullWidth />
-        </View>
-
-        {/* Portfolio Performance */}
-        <View style={styles.portfolioSection}>
-          <Text style={styles.sectionTitle}>Portfolio Performance</Text>
-          <View style={styles.chartContainer}>
-            <View style={styles.chartPlaceholder}>
-              <Icon name="chart-line" size={40} color="#22D3EE" />
-              <Text style={styles.chartText}>Performance Chart</Text>
-              <Text style={styles.chartSubtext}>Coming soon</Text>
+              <TouchableOpacity style={styles.infoButton}>
+                <Icon name="information" size={14} color="#9CA3AF" />
+              </TouchableOpacity>
             </View>
-          </View>
+
+            {/* +100% Claim Tag */}
+            <View style={styles.bonusTag}>
+              <Text style={styles.bonusTagText}>+100% Claim</Text>
+            </View>
+
+            {/* Power Row */}
+            <View style={styles.powerRow}>
+              <Text style={styles.powerValue}>3</Text>
+              <Text style={styles.powerUnit}> Gh/s</Text>
+            </View>
+
+            {/* Claim Button */}
+            <TouchableOpacity style={styles.claimButton}>
+              <Text style={styles.claimButtonText}>Claim</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+
+          {/* Box 2 - Video Claim */}
+          <TouchableOpacity 
+            style={styles.claimBox}
+            onPress={() => show()}
+            >
+            {/* Top Row */}
+            <View style={styles.claimTopRow}>
+              <View style={styles.iconCorner}>
+                <Icon name="video" size={16} color="#fff" />
+              </View>
+              <TouchableOpacity style={styles.infoButton}>
+                <Icon name="information" size={14} color="#9CA3AF" />
+              </TouchableOpacity>
+            </View>
+
+            {/* +100% Claim Tag */}
+            <View style={styles.bonusTag}>
+              <Text style={styles.bonusTagText}>+100% Claim</Text>
+            </View>
+
+            {/* Power Row */}
+            <View style={styles.powerRow}>
+              <Text style={styles.powerValue}>5</Text>
+              <Text style={styles.powerUnit}> Gh/s</Text>
+            </View>
+
+            {/* Claim Button */}
+            <TouchableOpacity style={styles.claimButton}>
+              <Text style={styles.claimButtonText}>{buttonLabel}</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.gradientButtonContainer}>
+          <GradientButtonB icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Free Rewards" fullWidth />
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.quickActionsRow}>
+        {/* <View style={styles.quickActionsRow}>
           <TouchableOpacity 
             style={styles.quickActionCard}
             onPress={() => navigation.navigate('DepositScreen')}
@@ -758,37 +787,83 @@ const Page: React.FC = () => {
             </View>
             <Text style={styles.quickActionText}>Wallet</Text>
           </TouchableOpacity>
+        </View> */}
+
+        <View style={styles.FAQHeading}>
+          <Text style={styles.sectionTitle}>FAQ</Text>
         </View>
 
-        {/* Recent Activity */}
-        <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
-          {recent_activity_list.length === 0 ? (
-            <View style={styles.emptyActivity}>
-              <LottieView
-                source={{ uri: 'https://lottie.host/7b3e44d0-5de2-4434-9731-45dcf7f12b7a/cwLLBxENUP.json' }}
-                autoPlay
-                loop
-                style={{ width: 120, height: 120 }}
-              />
-              <Text style={styles.emptyActivityText}>No recent activity</Text>
-              <Text style={styles.emptyActivitySubtext}>Start mining to see your progress</Text>
-            </View>
-          ) : (
-            <View style={styles.activityList}>
-              {recent_activity_list.map((activity, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <View style={styles.activityDetails}>
-                    <Text style={styles.activityType}>{activity.type}</Text>
-                    <Text style={styles.activityCrypto}>{activity.method} - {activity.amount}</Text>
-                  </View>
-                  <Text style={styles.activityAmount}>
-                    {activity.isPositive ? "+" : "-"}${parseFloat(activity.amountNumeric?.$numberDecimal ?? "0").toFixed(2)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
+        <View style={styles.faqSection}>
+          <View
+            style={[
+              styles.faqContainer,
+              faqVisible ? styles.faqContainerExpanded : styles.faqContainerCollapsed,
+            ]}
+          >
+            {/* Header Button */}
+            <TouchableOpacity
+              style={styles.faqHeaderButton}
+              onPress={toggleFAQ}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.faqHeaderText}>FAQs</Text>
+              <Animated.Text
+                style={[
+                  styles.faqArrow,
+                  {
+                    transform: [
+                      {
+                        rotate: animatedHeight.interpolate({
+                          inputRange: [0, contentHeight],
+                          outputRange: ['0deg', '90deg'],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                ▶
+              </Animated.Text>
+            </TouchableOpacity>
+
+            {/* Animated expanding section */}
+            <Animated.View style={[styles.faqExpandedArea, { height: animatedHeight }]}>
+              {/* The visible FAQ content */}
+              {faqVisible && (
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.scrollContent}
+                >
+                  {faqData.length > 0 ? (
+                    faqData.map(renderFAQItem)
+                  ) : error ? (
+                    <Text style={styles.errorText}>{error}</Text>
+                  ) : (
+                    <Text style={styles.loadingText}>Loading FAQs...</Text>
+                  )}
+                  <View style={styles.bottomSpacing} />
+                </ScrollView>
+              )}
+
+              {/* Invisible layout measurer */}
+              <View
+                style={styles.hiddenContentWrapper}
+                onLayout={(e) => {
+                  const { height } = e.nativeEvent.layout;
+                  setContentHeight(height);
+                }}
+              >
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.scrollContent}
+                >
+                  {faqData.length > 0 ? (
+                    faqData.map(renderFAQItem)
+                  ) : null}
+                </ScrollView>
+              </View>
+            </Animated.View>
+          </View>
         </View>
 
       </ScrollView>
@@ -856,6 +931,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     marginBottom: 16,
+    marginTop: 20
   },
   
   notificationText: {
@@ -875,7 +951,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
   headerSection: {
-    marginBottom: 24,
+    marginBottom: 4,
   },
   headerTop: {
     flexDirection: 'row',
@@ -903,10 +979,8 @@ const styles = StyleSheet.create({
   balanceContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Platform.OS === 'ios' ? 15 : 0,
-    paddingLeft: Platform.OS === 'ios' ? 20 : 0,
-    paddingRight: Platform.OS === 'ios' ? 20 : 0
+    justifyContent: 'center',
+    paddingVertical: 8,
   },
   shadowWrapper: {
     shadowColor: '#000',
@@ -927,33 +1001,40 @@ const styles = StyleSheet.create({
     minHeight: 80,
     borderRadius: 20,
   },
-  balanceLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  balanceTextContainer: {
-    marginLeft: 8,
-    flex: 1,
-    alignItems: 'flex-end',
-    maxWidth: '85%'
-  },
   balanceLabel: {
     fontSize: 14,
     color: '#E2E8F0',
     marginBottom: 4,
   },
+  
+  balanceLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 1,
+  },
+
+  balanceTextContainer: {
+    marginLeft: 6,
+    flexShrink: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   balanceAmount: {
-    fontSize: Platform.OS === 'ios' ? 17 : 25,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: 500,
     color: '#fff',
-    textAlign: 'right',
+    textAlign: 'center',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    flexShrink: 1,
   },
   miningSection: {
     backgroundColor: '#1F2937',
     padding: 20,
     borderRadius: 16,
-    marginBottom: 24,
+    marginBottom: 4,
   },
 
   miningHeader: {
@@ -1083,7 +1164,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 16,
   },
   chartContainer: {
     backgroundColor: '#1F2937',
@@ -1124,7 +1204,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   activitySection: {
-    marginBottom: Platform.OS === 'ios' ? 65 : 110,
+    marginBottom: Platform.OS === 'ios' ? 65 : 110
   },
   emptyActivity: {
     backgroundColor: '#1F2937',
@@ -1236,4 +1316,295 @@ const styles = StyleSheet.create({
     marginTop: 2,
     opacity: 0.9,
   },
+
+  // Top Boxes 
+
+  detailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    gap: 10,
+  },
+
+  detailBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  detailLeft: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+
+  detailBTCValue: {
+    flexShrink: 1,
+    textAlign: 'left',
+  },
+
+  detailBTCNumber: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+
+  detailBTCUnit: {
+    color: '#9CA3AF',
+    fontWeight: '600',
+    fontSize: 13,
+  },
+
+  detailSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    marginTop: 5,
+  },
+
+  detailArrow: {
+    marginLeft: 8,
+    alignSelf: 'center',
+  },
+
+  // Claim Boxes
+
+  claimRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    gap: 10,
+    marginBottom: 20
+  },
+
+  claimBox: {
+    flex: 1,
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    padding: 12,
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+    minHeight: 150,
+  },
+
+  claimTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  iconCorner: {
+    width: 35,
+    height: 35,
+    backgroundColor: '#3784efff',
+    borderTopLeftRadius: 16,
+    borderBottomRightRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  infoButton: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  bonusTag: {
+    borderWidth: 1,
+    borderColor: '#FBBF24',
+    borderRadius: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    marginLeft: 35
+  },
+
+  bonusTagText: {
+    color: '#FBBF24',
+    fontWeight: '600',
+    fontSize: 12,
+  },
+
+  powerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginTop: 10,
+  },
+
+  powerValue: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: '700',
+  },
+
+  powerUnit: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+
+  claimButton: {
+    backgroundColor: '#3B82F6',
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+
+  claimButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+  // FAQs
+
+  FAQHeading: {
+    marginTop: 10
+  },
+
+  scrollView: {
+    flex: 1,
+    backgroundColor: "#1E293B",
+    borderRadius: 20,
+    paddingTop: 30
+  },
+  bottomSpacing: {
+    height: 50,
+  },
+  answerContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#202024ff',
+  },
+  answerText: {
+    color: '#b0b0b0',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 15,
+  },
+  questionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
+  questionText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    flex: 1,
+    marginRight: 10,
+  },
+  faqItem: {
+    marginBottom: 15,
+    borderRadius: 12,
+    backgroundColor: '#2d2d44',
+    overflow: 'hidden',
+  },
+  expandIcon: {
+    color: '#00d4ff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    transform: [{ rotate: '0deg' }],
+  },
+  expandIconRotated: {
+    transform: [{ rotate: '180deg' }],
+  },
+  faqSection: {
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 80
+  },
+
+
+  faqArrowRotated: {
+    transform: [{ rotate: '90deg' }],
+  },
+
+  errorText: {
+    color: '#F87171',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+
+  loadingText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+
+  faqContainer: {
+    overflow: 'hidden',
+    backgroundColor: '#1E293B',
+    borderRadius: 14,
+  },
+
+  faqContainerCollapsed: {
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+  },
+
+  faqContainerExpanded: {
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+  },
+
+  faqHeaderButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+  },
+
+  faqHeaderText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  faqArrow: {
+    color: '#9CA3AF',
+    fontSize: 16,
+  },
+
+  faqExpandedArea: {
+    overflow: 'hidden',
+    backgroundColor: '#334155',
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+  },
+
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
+  },
+
+  hiddenContentWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    opacity: 0,
+  },
+
 });

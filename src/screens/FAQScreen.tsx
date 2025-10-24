@@ -107,17 +107,17 @@ const FAQScreen = ({ navigation }: any) => {
 
       {/* FAQ Icon */}
    
-                         <View style={styles.logoContainer}>
-                           <View style={styles.supportLogo}>
-                             <Image
-                               source={require('../assets/images/icon_faq.png')}
-                               style={styles.supportImage}
-                               resizeMode="contain"
-                             />
-                           </View>
-                         </View>
+      <View style={styles.logoContainer}>
+        <View style={styles.supportLogo}>
+          <Image
+            source={require('../assets/images/icon_faq.png')}
+            style={styles.supportImage}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
      
-             {/* Form */}
+      {/* Form */}
 
       {/* FAQ List */}
 
