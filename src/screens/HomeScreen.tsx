@@ -627,7 +627,7 @@ const Page: React.FC = () => {
           {/* Header Row */}
           <View style={styles.miningHeader}>
             <View style={styles.miningTitleContainer}>
-              <Icon name="pickaxe" size={20} color="#22D3EE" />
+              <Icon name="pickaxe" size={15} color="#22D3EE" />
               <Text style={styles.miningTitle}>Mining Power</Text>
             </View>
 
@@ -640,7 +640,8 @@ const Page: React.FC = () => {
           {/* Mining Power + Toggle inline */}
           <View style={styles.hashrateRow}>
             <Text style={styles.hashrateValue}>
-              {hashPower.toLocaleString()} GH/s
+              {hashPower.toLocaleString()}{" "}
+              <Text style={styles.hashrateUnit}>Gh/s</Text>
             </Text>
 
             {/* Smaller toggle aligned right */}
@@ -1030,13 +1031,13 @@ const styles = StyleSheet.create({
 
   miningTitle: {
     marginLeft: 8,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#fff',
   },
 
   toggleLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#22D3EE',
     fontWeight: '500',
   },
@@ -1050,12 +1051,12 @@ const styles = StyleSheet.create({
   hashrateValue: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#22D3EE',
+    color: '#fff',
   },
 
   switchWrapperSmall: {
     borderRadius: 16,
-    transform: [{ scale: 0.8 }],
+    transform: [{ scale: 0.7 }],
   },
 
   toggleSwitchSmall: {
@@ -1592,6 +1593,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     opacity: 0,
+  },
+
+  hashrateUnit: {
+    fontSize: 15,
+    color: '#9CA3AF',
+    fontWeight: 'normal',
   },
 
 });
