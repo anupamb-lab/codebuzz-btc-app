@@ -103,7 +103,7 @@ const BalanceHistoryScreen = () => {
           return (
             <View key={item._id} style={styles.historyRow}>
               <Text style={styles.dateText}>{formatDate(item.date)}</Text>
-              <Text style={styles.value}>{formatBalance(BTC, 12)} BTC</Text>
+              <Text style={styles.value}>{formatBalance(BTC, 16)} BTC</Text>
             </View>
           );
         })
