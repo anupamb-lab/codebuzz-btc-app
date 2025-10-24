@@ -343,6 +343,13 @@ const Page: React.FC = () => {
     useCallback(() => {
       let isMounted = true;
 
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(blinkAnim, { toValue: 1, duration: 500, useNativeDriver: false }),
+          Animated.timing(blinkAnim, { toValue: 0, duration: 500, useNativeDriver: false }),
+        ])
+      ).start();
+
       const init = async () => {
         if (!user?.id) return;
         try {
@@ -423,13 +430,6 @@ const Page: React.FC = () => {
         });
       }, 1000);
       miningAnimationRef.current?.play();
-
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(blinkAnim, { toValue: 1, duration: 500, useNativeDriver: false }),
-          Animated.timing(blinkAnim, { toValue: 0, duration: 500, useNativeDriver: false }),
-        ])
-      ).start();
     }
 
     return () => {
