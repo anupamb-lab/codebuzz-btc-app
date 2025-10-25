@@ -43,6 +43,7 @@ export const DATA_ENDPOINTS = {
   TWOFACTORSTATUS: '/api/security/2fa-status',
   CHANGETWOFACTORSTATUS: '/api/security/switch',
   USERMININGDETAILS: '/api/user_mining',
+  USERDAILYREWARD: '/api/claim_daily_miner',
 
   NOTIFICATION_PREFS: '/api/notification-preferences',
 } as const;

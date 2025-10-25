@@ -53,6 +53,7 @@ interface GradientButtonProp {
   fullWidth?: boolean;
   onPress?: () => void;
   disabled?: boolean; 
+  enabled?: boolean;
 }
 
 interface FAQItem {
@@ -79,20 +80,32 @@ const GradientButtonB: React.FC<GradientButtonProps> = ({ icon, text, onPress })
   </TouchableOpacity>
 );
 
-const GradientButton: React.FC<GradientButtonProp> = ({ text, onPress }) => (
-  <TouchableOpacity 
+const GradientButton: React.FC<GradientButtonProp> = ({ text, onPress, enabled = true }) => (
+  <TouchableOpacity
     style={{ flex: 1, borderRadius: 2, overflow: "hidden" }}
-    activeOpacity={0.8}
-    onPress={onPress}
+    activeOpacity={enabled ? 0.8 : 1}
+    onPress={enabled ? onPress : undefined}
+    disabled={!enabled}
   >
-    <LinearGradient
-      colors={['#22D3EE', '#C084FC']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={styles.gradientClaimButton}
-    >
-      <Text style={styles.buttonText}>{text}</Text>
-    </LinearGradient>
+    {enabled ? (
+      <LinearGradient
+        colors={['#22D3EE', '#C084FC']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.gradientClaimButton}
+      >
+        <Text style={styles.buttonText}>{text}</Text>
+      </LinearGradient>
+    ) : (
+      <View
+        style={[
+          styles.gradientClaimButton,
+          { backgroundColor: '#9CA3AF', justifyContent: 'center', alignItems: 'center' } // gray tone
+        ]}
+      >
+        <Text style={[styles.buttonText, { color: '#E5E7EB' }]}>{text}</Text>
+      </View>
+    )}
   </TouchableOpacity>
 );
 
@@ -162,6 +175,8 @@ const Page: React.FC = () => {
   const [faqVisible, setFaqVisible] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
 
+  const [isDailyRewardClaimed, setDailyRewardClaimed] = useState(false);
+
   interface Activity {
     type: string;
     method: string;
@@ -230,6 +245,42 @@ const Page: React.FC = () => {
       </View>
     );
   };
+
+  const ClaimDailyReward = async () => {
+    const daily_check_uri = get_data_uri('USERDAILYREWARD');
+
+    const local_time = new Date().toLocaleString();
+
+    console.log("Claiming Daily Reward!!");
+    console.log("UserID: ", !user?.id);
+    console.log("User Local Time: ", local_time);
+
+    const res = await fetch(daily_check_uri, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user.id,
+        local_time: local_time
+      }),
+    });
+
+    const data = await res.json();
+
+    console.log("Claiming Rewards Response: ", data);
+
+    if (data.success) {
+      setServerTimeRemaining(data?.time_remaining ?? 0);
+
+      setDailyRewardClaimed(data.success ?? false);
+
+      addHashPower(3);
+
+      const updatedHashPower = hashPower + 3
+
+      syncUserData(updatedHashPower, adsWatched, true);
+    }
+    
+  }
 
   const toggleFAQ = () => {
     const toValue = faqVisible ? 0 : contentHeight;
@@ -395,6 +446,8 @@ const Page: React.FC = () => {
           setStartTime(details.start_time ?? null);
           setServerTimeRemaining(userData?.time_remaining ?? 0);
 
+          setDailyRewardClaimed(userData?.daily_reward_claimed ?? false);
+
           if (Array.isArray(txnsData?.transactions)) {
             setRecentActivity(txnsData.transactions);
           }
@@ -533,6 +586,7 @@ const Page: React.FC = () => {
       ? "Max Videos Reached"
       : `Claim (${adsWatched}/${MAX_ADS})`
 
+  const DailyClaimLabel = isDailyRewardClaimed ? formattedTimer : "Claim";
 
   if (isLoading) {
     return (
@@ -731,7 +785,7 @@ const Page: React.FC = () => {
             </View>
 
             {/* Claim Button */}
-            <GradientButton onPress={() => show() } text = "Claim" />
+            <GradientButton onPress={() => ClaimDailyReward() } text = {DailyClaimLabel} enabled = {!isDailyRewardClaimed} />
           </TouchableOpacity>
 
           {/* Box 2 - Video Claim */}
@@ -761,7 +815,7 @@ const Page: React.FC = () => {
             </View>
 
             {/* Claim Button */}
-            <GradientButton onPress={() => show()} text = {buttonLabel} />
+            <GradientButton onPress={() => show()} text = {buttonLabel} enabled = {true} />
           </TouchableOpacity>
         </View>
 
