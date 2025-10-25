@@ -279,6 +279,8 @@ const Page: React.FC = () => {
       const updatedHashPower = hashPower + 3
 
       syncUserData(updatedHashPower, adsWatched, true);
+    } else {
+      alert(data.message ?? "Error Claiming Daily Reward");
     }
   }
 
