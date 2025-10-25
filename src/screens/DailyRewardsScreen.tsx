@@ -102,8 +102,41 @@ const DailyRewardsScreen = () => {
     }
   };
 
+  const CheckDailyClaimed = async () => {
+
+    const ApiBase = get_data_uri("USERDAILYREWARD");
+    const final_check_uri = `${ApiBase}/${user_id}`
+
+    try {
+      const res = await fetch(final_check_uri)
+
+      const data = await res.json();
+
+      const DailyRewardClaimed = data.success
+
+      if (DailyRewardClaimed) {
+        console.log("Daily Reward Claimed !!!");
+        return true;
+      } else {
+        alert(data.message);
+        return false;
+      }
+    } catch (err) {
+      console.error("Error claiming reward", err);
+    }
+  }
+
   const handleClaim = async (rewardId: string, reward_amount: any) => {
     try {
+
+      const CheckDailyRewardClaimed = await CheckDailyClaimed();
+
+
+      if (!CheckDailyRewardClaimed) {
+        console.log("Claim request skipped — daily reward not yet claimed.");
+        return;
+      }
+
       const res = await fetch(`${API_BASE}/claim`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

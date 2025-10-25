@@ -280,7 +280,6 @@ const Page: React.FC = () => {
 
       syncUserData(updatedHashPower, adsWatched, true);
     }
-    
   }
 
   const toggleFAQ = () => {
