@@ -274,6 +274,7 @@ const Page: React.FC = () => {
       setDailyRewardClaimed(data.success ?? false);
 
       addHashPower(3);
+      setIsMiningEnabled(true);
 
       const updatedHashPower = hashPower + 3
 
