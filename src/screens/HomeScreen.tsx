@@ -1573,7 +1573,7 @@ const styles = StyleSheet.create({
   faqSection: {
     width: '100%',
     marginTop: 20,
-    marginBottom: 80
+    marginBottom: Platform.OS === 'ios' ? 80 : 120
   },
 
 
