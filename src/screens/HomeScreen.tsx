@@ -31,6 +31,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Image } from 'react-native';
 import axios from 'axios';
 import RNFS from 'react-native-fs';
+import { HelpCircle, MessageCircle } from "lucide-react-native";
 
 const MAX_ADS = 10;
 const BASE_HASHPOWER_PER_AD = 5;
@@ -176,6 +177,21 @@ const Page: React.FC = () => {
   const [contentHeight, setContentHeight] = useState(0);
 
   const [isDailyRewardClaimed, setDailyRewardClaimed] = useState(false);
+
+  const [currentMessage, setCurrentMessage] = useState('');
+
+  const messages = [
+    '*****374 purchased 300 Gh/s power',
+    '*****543 purchased 20 Th/s power',
+    '*****928 purchased 150 Gh/s power',
+    '*****112 purchased 5 Th/s power',
+    '*****876 purchased 75 Gh/s power',
+    '*****452 purchased 1 Th/s power',
+    '*****709 purchased 400 Gh/s power',
+    '*****998 purchased 250 Gh/s power',
+    '*****134 purchased 50 Th/s power',
+    '*****621 purchased 120 Gh/s power',
+  ];
 
   interface Activity {
     type: string;
@@ -392,6 +408,19 @@ const Page: React.FC = () => {
   // Load State
   // -----------------------------
 
+  useEffect(() => {
+    // pick a random message every 5 seconds
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * messages.length);
+      setCurrentMessage(messages[randomIndex]);
+    }, 5000);
+
+    // set initial message
+    setCurrentMessage(messages[0]);
+
+    return () => clearInterval(interval);
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       let isMounted = true;
@@ -585,7 +614,7 @@ const Page: React.FC = () => {
   const buttonLabel = loading
     ? "Loading..."
     : adsWatched >= MAX_ADS
-      ? "Max Videos Reached"
+      ? "Claimed"
       : `Claim (${adsWatched}/${MAX_ADS})`
 
   const DailyClaimLabel = isDailyRewardClaimed ? formattedTimer : "Claim";
@@ -674,7 +703,7 @@ const Page: React.FC = () => {
         <View style={styles.notificationBanner}>
           <Icon name="volume-high" size={20} color="#22D3EE" style={{ marginRight: 8 }} />
           <Text style={styles.notificationText} numberOfLines={1}>
-            *****2826 purchased 200 Gh/s power
+            {currentMessage}
           </Text>
         </View>
 
@@ -821,12 +850,37 @@ const Page: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.gradientButtonContainer}>
-          <GradientButtonB icon="gift" onPress={() => navigation.navigate('DailyRewardsScreen')} text="Claim Daily Rewards" fullWidth />
+        <View style={styles.dailyRewardSection}>
+          <View style={styles.dailyRewardContainer}>
+            {/* Left Icon */}
+            <Image
+              source={require('../assets/images/daily_reward_icon.png')}
+              style={styles.rewardIcon}
+              resizeMode="contain"
+            />
+
+            {/* Center Texts */}
+            <View style={styles.rewardTextContainer}>
+              <Text style={styles.rewardTitle}>Daily Rewards</Text>
+              <Text style={styles.rewardSubtitle}>Claim your free bonus</Text>
+            </View>
+
+            {/* Right Button */}
+            <TouchableOpacity
+              style={styles.NewClaimButton}
+              onPress={() => navigation.navigate('DailyRewardsScreen')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.NewClaimButtonText}>Claim</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.FAQHeading}>
-          <Text style={styles.sectionTitle}>FAQ</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <HelpCircle size={22} color="#06b6d4" style={{ marginRight: 6 }} />
+            <Text style={styles.sectionTitle}>FAQ</Text>
+          </View>
         </View>
 
         <View style={styles.faqSection}>
@@ -842,7 +896,10 @@ const Page: React.FC = () => {
               onPress={toggleFAQ}
               activeOpacity={0.8}
             >
-              <Text style={styles.faqHeaderText}>FAQs</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <MessageCircle size={18} color="#a855f7" style={{ marginRight: 6 }} />
+                <Text style={styles.faqHeaderText}>FAQs</Text>
+              </View>
               <Animated.Text
                 style={[
                   styles.faqArrow,
@@ -1094,7 +1151,7 @@ const styles = StyleSheet.create({
 
   toggleLabel: {
     fontSize: 13,
-    color: '#22D3EE',
+    color: '#fff',
     fontWeight: '500',
   },
 
@@ -1450,7 +1507,7 @@ const styles = StyleSheet.create({
   iconCorner: {
     width: 35,
     height: 35,
-    backgroundColor: '#3784efff',
+    backgroundColor: '#22D3EE',
     borderTopLeftRadius: 16,
     borderBottomRightRadius: 30,
     justifyContent: 'center',
@@ -1655,6 +1712,67 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#9CA3AF',
     fontWeight: 'normal',
+  },
+
+  dailyRewardSection: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 30
+  },
+
+  dailyRewardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    backgroundColor: '#1F2937',
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+
+  rewardIcon: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+    transform: [{ scale: 1.3 }],
+  },
+
+  rewardTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+
+  rewardTitle: {
+    color: '#F3F4F6',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  rewardSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 13,
+    marginTop: 2,
+  },
+
+  NewClaimButton: {
+    backgroundColor: '#334155',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#475569',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  NewClaimButtonText: {
+    color: '#E2E8F0',
+    fontSize: 14,
+    fontWeight: '600',
   },
 
 });
