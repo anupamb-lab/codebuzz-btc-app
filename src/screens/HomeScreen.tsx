@@ -891,6 +891,30 @@ const Page: React.FC = () => {
           </View>
         </View>
 
+        <View style={styles.offerBanner}>
+          <View style={styles.offerTextContainer}>
+            <Text style={styles.offerLabel}>Special Offer</Text>
+            <Text 
+              style={styles.offerTitle}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.5}
+            >
+              Get 20% off on your first Subscription Plan
+            </Text>
+
+            <TouchableOpacity style={styles.offerButton}>
+              <Text style={styles.offerButtonText}>Claim</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Image
+            source={require('../assets/images/offer_banner.png')}
+            style={styles.offerImage}
+            resizeMode="contain"
+          />
+        </View>
+
         <View style={styles.FAQHeading}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <HelpCircle size={22} color="#06b6d4" style={{ marginRight: 6 }} />
@@ -1517,14 +1541,14 @@ const styles = StyleSheet.create({
   claimBox: {
     flex: 1,
     backgroundColor: '#1F2937',
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 14,
+    padding: 8,
     justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-    minHeight: 150,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+    minHeight: 110,
   },
 
   claimTopRow: {
@@ -1534,11 +1558,11 @@ const styles = StyleSheet.create({
   },
 
   iconCorner: {
-    width: 35,
-    height: 35,
+    width: 28,
+    height: 28,
     backgroundColor: '#22D3EE',
-    borderTopLeftRadius: 16,
-    borderBottomRightRadius: 30,
+    borderTopLeftRadius: 12,
+    borderBottomRightRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1555,17 +1579,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FBBF24',
     borderRadius: 6,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
     alignSelf: 'flex-start',
-    marginTop: 8,
-    marginLeft: 35
+    marginTop: 6,
+    marginLeft: 28
   },
 
   bonusTagText: {
     color: '#FBBF24',
     fontWeight: '600',
-    fontSize: 12,
+    fontSize: 11,
+  },
+
+  claimButton: {
+    backgroundColor: '#3B82F6',
+    borderRadius: 8,
+    paddingVertical: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+
+  claimButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
   },
 
   powerRow: {
@@ -1576,29 +1614,15 @@ const styles = StyleSheet.create({
 
   powerValue: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
   },
 
   powerUnit: {
     color: '#9CA3AF',
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 4,
     fontWeight: '500',
-  },
-
-  claimButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 10,
-    paddingVertical: 10,
-    marginTop: 12,
-    alignItems: 'center',
-  },
-
-  claimButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
   },
 
   // FAQs
@@ -1746,8 +1770,8 @@ const styles = StyleSheet.create({
   dailyRewardSection: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 30
+    marginTop: 5,
+    marginBottom: 5
   },
 
   dailyRewardContainer: {
@@ -1828,6 +1852,65 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     fontSize: 11,
     marginTop: 2,
+  },
+
+  offerBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+
+  offerTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingRight: 10,
+  },
+
+  offerLabel: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+
+  offerTitle: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 10,
+    flexShrink: 1,
+  },
+
+  offerButton: {
+    borderWidth: 1,
+    borderColor: '#9CA3AF',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 25,
+  },
+
+  offerButtonText: {
+    color: '#E5E7EB',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  offerImage: {
+    width: 80,
+    height: 80,
+    marginLeft: 10,
   },
 
 });
