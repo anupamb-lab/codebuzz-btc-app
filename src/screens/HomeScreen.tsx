@@ -151,6 +151,7 @@ const Page: React.FC = () => {
   const [btcReferralBalance, setBtcRefBalance] = useState(0);
   const [userBalance, setUserWalletBalance] = useState(0);
   const [userBalanceBTC, setUserBTCWalletBalance] = useState(0);
+  
   const { hashPower, setHashPower, addHashPower, resetHashPower } = useHashPower();
   const [adsWatched, setAdsWatched] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -179,6 +180,8 @@ const Page: React.FC = () => {
   const [isDailyRewardClaimed, setDailyRewardClaimed] = useState(false);
 
   const [currentMessage, setCurrentMessage] = useState('');
+
+  const [AndroidBTCBalString, SetAndroidBTCBalString] = useState('');
 
   const messages = [
     '*****374 purchased 300 Gh/s power',
@@ -320,6 +323,15 @@ const Page: React.FC = () => {
     const logEntry = `[${timestamp}] ${message}\n`;
     await RNFS.appendFile(logFilePath, logEntry, 'utf8');
     console.log(message);
+  };
+
+  const formattedBTC = (value: string) => {
+    if (!value) return '';
+    const str = value.toString();
+    const breakIndex = 14;
+    return str.length > breakIndex
+      ? `${str.slice(0, breakIndex)}\n${str.slice(breakIndex)}`
+      : str;
   };
 
   const firstlaunchlog = () => {
@@ -465,6 +477,10 @@ const Page: React.FC = () => {
           const btcPrice = priceRes.data.bitcoin.usd;
 
           setUserBTCWalletBalance(btcDeposited);
+
+          const formatted_btc = formattedBTC(`${btcDeposited.toFixed(16)} BTC`);
+
+          SetAndroidBTCBalString(formatted_btc);
 
           setUserWalletBalance(parseFloat(((btcDeposited * btcPrice)/4).toFixed(2)));
 
@@ -658,17 +674,34 @@ const Page: React.FC = () => {
             onPress={() => navigation.navigate('BalanceHistoryScreen')}
           >
             <View style={styles.detailLeft}>
-              <Text
-                style={styles.detailBTCValue}
-                numberOfLines={2}
-                adjustsFontSizeToFit
-                minimumFontScale={0.6}
-              >
-                <Text style={styles.detailBTCNumber}>
-                  {userBalanceBTC?.toFixed(16)}
+
+              {Platform.OS === 'ios' ? (
+                <Text
+                  style={styles.detailBTCValue}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}
+                >
+                  <Text style={styles.detailBTCNumber}>
+                    {userBalanceBTC?.toFixed(16)}
+                  </Text>
+
+                  <Text style={styles.detailBTCUnit}> BTC</Text>
                 </Text>
-                <Text style={styles.detailBTCUnit}> BTC</Text>
+              ) : (
+
+                <Text
+                  style={styles.detailBTCNumber}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}
+                >
+                {AndroidBTCBalString}
+
               </Text>
+
+              )}
+
               <Text style={styles.detailSubtitle}>Earning Details</Text>
             </View>
 
