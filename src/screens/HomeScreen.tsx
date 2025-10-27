@@ -861,7 +861,7 @@ const Page: React.FC = () => {
             </View>
 
             {/* Claim Button */}
-            <GradientButton onPress={() => show()} text = {buttonLabel} enabled = {true} />
+            <GradientButton onPress={() => show()} text = {buttonLabel} enabled = {!(adsWatched >= MAX_ADS)} />
           </TouchableOpacity>
         </View>
 
