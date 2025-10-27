@@ -654,9 +654,9 @@ const Page: React.FC = () => {
         <View style={styles.detailsRow}>
           {/* Box 1 - Earning Details */}
           <TouchableOpacity 
-            style={styles.detailBox}
+            style={[styles.detailBox, { flex: 1 }]}
             onPress={() => navigation.navigate('BalanceHistoryScreen')}
-            >
+          >
             <View style={styles.detailLeft}>
               <Text
                 style={styles.detailBTCValue}
@@ -678,21 +678,36 @@ const Page: React.FC = () => {
           {/* Box 2 - Invitation Rewards */}
           <TouchableOpacity 
             onPress={() => navigation.navigate("InternalReferral")}
-            style={styles.detailBox}
-            >
-            <View style={styles.detailLeft}>
-              <Text
-                style={styles.detailBTCValue}
-                numberOfLines={2}
-                adjustsFontSizeToFit
-                minimumFontScale={0.6}
-              >
-                <Text style={styles.detailBTCNumber}>
-                  {btcReferralBalance?.toFixed(16)}
+            style={[styles.detailReferralBox, { flex: 1 }]}
+          >
+            <View style={styles.detailReferralLeft}>
+              <Image
+                source={require('../assets/images/referral_banner.png')}
+                style={styles.rewardIcon}
+                resizeMode="contain"
+              />
+
+              {/* Text Block beside icon */}
+              <View style={styles.detailTextContainer}>
+                <Text 
+                  style={styles.detailTitle}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.7}
+                >
+                  Get Extra BTC
                 </Text>
-                <Text style={styles.detailBTCUnit}> BTC</Text>
-              </Text>
-              <Text style={styles.detailSubtitle}>Invitation Rewards</Text>
+
+                <Text 
+                  style={styles.detailReferralSubtitle} 
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.7}
+                > 
+                  invite friends 
+                </Text>
+
+              </View>
             </View>
 
             <Icon name="chevron-right" size={20} color="#9CA3AF" style={styles.detailArrow} />
@@ -1423,23 +1438,37 @@ const styles = StyleSheet.create({
   detailsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'stretch',
     marginTop: 10,
     gap: 10,
   },
 
   detailBox: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: '48%',
     backgroundColor: '#1F2937',
     borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  detailReferralBox: {
+    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: '48%',
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   detailLeft: {
@@ -1735,10 +1764,10 @@ const styles = StyleSheet.create({
   },
 
   rewardIcon: {
-    width: 60,
-    height: 60,
-    marginRight: 12,
-    transform: [{ scale: 1.3 }],
+    width: 35,
+    height: 35,
+    marginRight: 18,
+    transform: [{ scale: 2 }],
   },
 
   rewardTextContainer: {
@@ -1773,6 +1802,32 @@ const styles = StyleSheet.create({
     color: '#E2E8F0',
     fontSize: 14,
     fontWeight: '600',
+  },
+
+  detailReferralLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+    flexGrow: 1,
+    flexBasis: 0,
+  },
+
+  detailTextContainer: {
+    flexShrink: 1,
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+
+  detailTitle: {
+    color: '#F3F4F6',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  detailReferralSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 11,
+    marginTop: 2,
   },
 
 });
