@@ -1,6 +1,6 @@
 # BP- BTC App
 
-Welcome to **BP- BTC App** Developed by **Codebuzzweb Developers**– a feature-rich React Native application designed for secure and gamified cryptocurrency mining, with seamless user authentication and a robust backend.
+Welcome to **BP- BTC App** - a feature-rich React Native application designed for secure and gamified cryptocurrency mining, with seamless user authentication and a robust backend.
 <p align="center">
   <img src="https://codebuzzweb.net/wp-content/uploads/2025/10/Borcelle-Studio-1.gif" alt="Banner" />
 </p>
@@ -104,12 +104,6 @@ npm start
 
 ---
 
-## 📚 Screenshots & UI Highlights
-
-*(Add screenshots of your home/login/mining dashboard screens here)*
-
----
-
 ## 🧑‍💻 Contributing
 
 1. Fork the repo & clone locally.
@@ -121,7 +115,7 @@ npm start
 
 ## 📄 License
 
-*No license specified.* Please request clarification if you wish to contribute or reuse.
+*No license specified.
 
 ---
 
@@ -133,7 +127,7 @@ For issues or feature requests, [create a new issue](https://github.com/anupamb-
 
 ## 🤝 Credits
 
-Developed by [anupamb-lab](https://github.com/anupamb-lab).
+Developed by Cpdebuzzweb Developers Team [anupamb-lab](https://github.com/anupamb-lab).
 
 ---
 
