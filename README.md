@@ -1,4 +1,4 @@
-# CodeBuzzweb BTC App
+# BP- BTC App
 
 Welcome to **CodeBuzz BTC App** – a feature-rich React Native application designed for secure and gamified cryptocurrency mining, with seamless user authentication and a robust backend.
 <p align="center">
